@@ -1,0 +1,15 @@
+{
+  "name": "Trước giờ đi học",
+  "short_name": "Đi học",
+  "description": "TKB HUST, thời tiết theo giờ, kế hoạch ôn, giờ ngủ, bấm giờ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f3f5",
+  "theme_color": "#b5121b",
+  "lang": "vi",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

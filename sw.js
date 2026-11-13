@@ -1,5 +1,5 @@
 // Mạng trước, mất mạng thì dùng bản đã lưu (TKB vẫn mở được offline)
-const C = "tgdh-v1";
+const C = "tgdh-v2";
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", e => {

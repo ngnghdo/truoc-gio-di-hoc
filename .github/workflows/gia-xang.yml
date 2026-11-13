@@ -1,0 +1,24 @@
+name: Cập nhật giá xăng
+on:
+  schedule:
+    - cron: "17 */3 * * *"   # mỗi 3 giờ
+    - cron: "12 8,9 * * 4"   # thêm 15:12 và 16:12 (giờ VN) thứ Năm — kỳ điều hành
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm i --no-save playwright@1.47.0 && npx playwright install --with-deps chromium
+      - run: node scripts/gia-xang.mjs
+      - name: Commit
+        run: |
+          if [ -n "$(git status --porcelain gia-xang.json)" ]; then
+            git config user.name "gia-xang-bot"; git config user.email "actions@users.noreply.github.com"
+            git add gia-xang.json && git commit -m "Cập nhật giá xăng" && git push
+          fi

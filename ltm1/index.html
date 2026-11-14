@@ -234,7 +234,7 @@ function prep(circ) {
     const b = { ...b0, els: [] };
     for (const e0 of (b0.els || [])) {
       const e = { ...e0 }; const p = (e.k === 'W' || e.k === 'Ed' || e.k === 'Jd') ? null : getP(e.n);
-      if (circ.dc_reduce && e.k === 'L') { notes.push(`Cuộn dây $${subName(e.n)}$ trong mạch DC xác lập: $u_L = L\\,\\frac{di}{dt}=0$ → coi như dây dẫn (nhưng dòng qua nó khác 0).`); e.short = true; }
+      if (circ.dc_reduce && e.k === 'L') { notes.push(`Cuộn dây $${subName(e.n)}$ trong mạch DC xác lập: $u_L = L\\,\\frac{di}{dt}=0$ → coi như <b>dây dẫn</b>: $Z_L = 0$, $U_L = 0$ (nhưng dòng qua nó khác 0, phải tính).`); e.short = true; }
       switch (e.k) {
         case 'R': e.sym = e.n; S[e.sym] = { tex: subName(e.n), val: cx(p.v) }; e.ut = 'U_{' + e.n + '}'; break;
         case 'L': case 'C': case 'Z': {
@@ -276,7 +276,7 @@ function prep(circ) {
   }
   // DC: nhánh có tụ -> hở mạch
   const active = brs.filter(b => !b.isC);
-  if (circ.dc_reduce) for (const b of brs) if (b.isC) notes.push(`Tụ điện $${subName(b.els.find(e => e.k === 'C').n)}$ trong mạch DC xác lập: $i_C = C\\,\\frac{du}{dt} = 0$ → hở mạch, nhánh ${b.id} có dòng bằng 0 (nhưng điện áp trên tụ khác 0).`);
+  if (circ.dc_reduce) for (const b of brs) if (b.isC) notes.push(`Tụ điện $${subName(b.els.find(e => e.k === 'C').n)}$ trong mạch DC xác lập: $i_C = C\\,\\frac{du}{dt} = 0$ → <b>hở mạch</b>: $Z_C = \\infty$, dòng nhánh ${b.id} bằng 0 (nhưng điện áp trên tụ khác 0, phải tính).`);
   // couplings
   const cps = [];
   for (const c of (circ.couplings || [])) {
@@ -966,7 +966,7 @@ function drawCircuit(circ, opt = {}) {
   };
   for (const b of circ.branches) drawBranch(b, b._short ? 'sc' : 'w');
   for (const b of (circ._offBr || [])) { const bb2 = { ...b, els: [] }; drawBranch(bb2, 'off'); const m = b.p[Math.floor(b.p.length / 2) - (b.p.length % 2 ? 0 : 1)], m2 = b.p[Math.ceil(b.p.length / 2) - (b.p.length % 2 ? 0 : 0)]; const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : b.p[1]; text(q[0] + 0.15, q[1], esc(b.els[0].n.replace(/^([A-Z])/, '$1') + ' = 0 (hở mạch)'), 'start', 'loff'); }
-  for (const b of circ.branches) if (b._offE) { const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2]; text(q[0] + 0.12, q[1], esc(b._offE.join(', ') + ' = 0 (nối tắt)'), 'start', 'loff'); }
+  for (const b of circ.branches) if (b._offE) { const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2]; const allx = circ.branches.flatMap(x => x.p.map(pp => pp[0])); const midx = (Math.min(...allx) + Math.max(...allx)) / 2; const rt = q[0] > midx; text(q[0] + (rt ? -0.12 : 0.12), q[1], esc(b._offE.join(', ') + ' = 0 (nối tắt)'), rt ? 'end' : 'start', 'loff'); }
   for (const b of (circ._openBr || [])) { const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : b.p[1]; text(q[0], q[1] - 0.12, 'hở mạch (bỏ ' + esc((b.els[0] || {}).n || '') + ')', 'middle', 'loff'); }
   // node dots & labels
   for (const n in circ.nodes) {
@@ -1755,6 +1755,19 @@ function solveCompact(ctx, prefer) {
   return { html, I: mm.I, V: Vn, method: 'mesh', mm, loops: allL };
 }
 
+
+function srcOffList(ctx, keep) { // danh sách nguồn bị tắt / giữ, ghi rõ 0 và ∞
+  const items = [];
+  for (const b of ctx.active) for (const e of b.els) {
+    const nmx = M(nm(ctx, e.sym));
+    if (e.n === keep) { items.push(`<li>${nmx}: <b>giữ nguyên</b> (nguồn đang xét).</li>`); continue; }
+    if (e.k === 'E') items.push(`<li>${nmx} $= 0$ (nhánh ${b.id}, ${b.n[0]}→${b.n[1]}): thay bằng <b>dây nối</b> → tổng trở chỗ nguồn $Z = 0$, điện áp chỗ nguồn $U = 0$; dòng qua chỗ đó vẫn có thể khác 0.</li>`);
+    else if (e.k === 'J') items.push(`<li>${nmx} $= 0$ (nhánh ${b.id}, ${b.n[0]}→${b.n[1]}): <b>bỏ nhánh</b> (hở mạch) → $Z = \\infty$, dòng nhánh $I = 0$; điện áp giữa ${b.n[0]} và ${b.n[1]} vẫn có thể khác 0.</li>`);
+    else if (e.k === 'Ed' || e.k === 'Jd') items.push(`<li>${nmx} là nguồn <b>phụ thuộc</b> → <b>không tắt</b>, giữ nguyên ${M(depTex(ctx).find(x => x.startsWith(nm(ctx, e.sym))) || nm(ctx, e.sym))}.</li>`);
+  }
+  return '<ul>' + items.join('') + '</ul>';
+}
+
 /* ======================================================
    THÉVENIN – NORTON
 ======================================================*/
@@ -1777,7 +1790,8 @@ function renderThevenin(ctx, R) {
   const ctxO = L.prep(oc);
   const so = solveCompact(ctxO, th.open && th.open.method);
   const Eth = csub(so.V[a], so.V[b]);
-  let b2 = `<div class="fig">${G.drawCircuit(oc, { values: false, terminals: [a, b], loops: so.loops, ground: so.method === 'node' ? ctxO.nodes.filter(n => ctxO.isGround(n)) : null })}<div class="cap">Mạch hở cửa ${a}–${b}.</div></div>` + so.html;
+  let b2 = (loadBr ? `<p><b>Hở mạch cửa ${a}–${b}</b>: bỏ nhánh tải ${M(brElsTex(ctx, loadBr))} → giữa ${a} và ${b} coi như ${M('Z = \\infty')}, nên <b>dòng qua cửa bằng 0</b> (${M(ctx.dotX('I') + '_{' + a + b + '} = 0')}). Điện áp giữa hai cực lúc này <b>khác 0</b>, chính là ${M(ctx.dotX('E') + '_{Th} = ' + Ut + '_{' + a + b + '\\text{-hở}}')} – cần giải mạch còn lại để tìm. Các nguồn vẫn giữ nguyên (không tắt).</p>` : `<p><b>Hở mạch cửa ${a}–${b}</b>: chưa nối tải, giữa ${a} và ${b} là ${M('Z = \\infty')} → dòng ra cửa bằng 0; điện áp ${M(Ut + '_{' + a + b + '\\text{-hở}}')} khác 0 chính là ${M(ctx.dotX('E') + '_{Th}')}. Các nguồn giữ nguyên.</p>`)
+    + `<div class="fig">${G.drawCircuit(oc, { values: false, terminals: [a, b], loops: so.loops, ground: so.method === 'node' ? ctxO.nodes.filter(n => ctxO.isGround(n)) : null })}<div class="cap">Mạch hở cửa ${a}–${b}: ${M('I_{' + a + b + '} = 0')}, ${M('Z = \\infty')}.</div></div>` + so.html;
   b2 += D(`${ctx.dotX('E')}_{Th} = ${Ut}_{${a}${b}\\text{-hở}} = ${Vt(a)} - ${Vt(b)} = ${par(ctx, so.V[a])} - ${par(ctx, so.V[b])} = ${Vboth(ctx, Eth, '\\,\\text{V}')}`);
   h += step(`Tìm ${M(ctx.dotX('E') + '_{Th}')} = điện áp hở mạch ${M(Ut + '_{' + a + b + '}')}`, b2);
   // B3 Z
@@ -1789,7 +1803,7 @@ function renderThevenin(ctx, R) {
     Zt = top.v;
     const off = L.deriveSuper(oc, '__none__'); off._allBr = c.branches;
     b3 += `<div class="fig">${G.drawCircuit(off, { values: false, terminals: [a, b], currents: false })}<div class="cap">“Tắt” các nguồn độc lập: nguồn áp → nối tắt, nguồn dòng → hở mạch.</div></div>`;
-    b3 += `<p>Nhìn từ hai cực ${a}–${b} vào mạch đã tắt nguồn:</p>` + D(`Z_{${a}${b}} = ${treeFormula(ctxO, th.zt)}`) + D(L.aligned(steps.map(s => s.tex.replace(' = ', ' &= '))));
+    b3 += `<p><b>Tắt các nguồn độc lập</b> của mạch hở (tải vẫn bỏ ra):</p>` + srcOffList(ctxO, null) + `<p>Nhìn từ hai cực ${a}–${b} vào mạch đã tắt nguồn (chỉ còn các tổng trở):</p>` + D(`Z_{${a}${b}} = ${treeFormula(ctxO, th.zt)}`) + D(L.aligned(steps.map(s => s.tex.replace(' = ', ' &= '))));
     b3 += D(`\\Rightarrow Z_{${a}${b}} = ${Valg(ctx, Zt, '\\,\\Omega')}`);
     b3 += tip('Ký hiệu ' + M('\\parallel') + ' là ghép song song: ' + M('Z_1\\parallel Z_2 = \\frac{Z_1 Z_2}{Z_1+Z_2}') + '; ghép nối tiếp thì cộng.');
   }
@@ -1801,7 +1815,10 @@ function renderThevenin(ctx, R) {
   const IN = ss.I['sc'];
   const degen = cabs(IN) < 1e-9;
   const Zsc = degen ? cx(NaN) : cdiv(Eth, IN);
-  let b3b = `<div class="fig">${G.drawCircuit(sc, { values: false, terminals: [a, b], loops: ss.loops, ground: ss.method === 'node' ? ctxS.nodes.filter(n => ctxS.isGround(n)) : null })}<div class="cap">Nối tắt cửa ${a}–${b} (dây xanh), dòng ngắn mạch chạy từ ${a} sang ${b}.</div></div>` + ss.html;
+  const Vab_s = csub(ss.V[a], ss.V[b]);
+  let b3b = `<p><b>Ngắn mạch cửa ${a}–${b}</b>: nối ${a} với ${b} bằng dây → ${M('Z = 0')} nên <b>điện áp giữa hai cực bằng 0</b> (${M(Ut + '_{' + a + b + '} = 0')}, tức ${M(Vt(a) + ' = ' + Vt(b))}: hai nút gộp thành một). Dòng qua dây <b>khác 0</b>, chính là ${M(ctx.dotX('J') + '_N = ' + ctx.dotX('I') + '_{' + a + b + '\\text{-ngắn}}')} (chiều ${a} → ${b}). Các nguồn giữ nguyên.</p>`
+    + `<div class="fig">${G.drawCircuit(sc, { values: false, terminals: [a, b], loops: ss.loops, ground: ss.method === 'node' ? ctxS.nodes.filter(n => ctxS.isGround(n)) : null })}<div class="cap">Nối tắt cửa ${a}–${b} (dây xanh): ${M('U_{' + a + b + '} = 0')}, ${M('Z = 0')}; dòng ngắn mạch chạy từ ${a} sang ${b}.</div></div>` + ss.html
+    + chk(`trên mạch ngắn: ${M(Vt(a) + ' - ' + Vt(b) + ' = ' + par(ctx, ss.V[a]) + ' - ' + par(ctx, ss.V[b]) + ' = ' + Valg(ctx, Vab_s))} – đúng là điện áp cửa bằng 0.`, cabs(Vab_s) < 1e-6 * Math.max(1, cabs(ss.V[a])));
   b3b += D(`${ctx.dotX('J')}_N = ${ctx.dotX('I')}_{${a}${b}\\text{-ngắn}} = ${V(ctx, IN, '\\,\\text{A}')}`) + (degen ? note('Dòng ngắn mạch bằng 0 (và điện áp hở mạch bằng 0, ví dụ cầu cân bằng) → không suy ra được Z bằng tỉ số E/J; phải dùng cách tắt nguồn hoặc lắp nguồn ngoài.') : D(`Z_{${a}${b}} = \\frac{${ctx.dotX('E')}_{Th}}{${ctx.dotX('J')}_N} = \\frac{${Valg(ctx, Eth)}}{${Valg(ctx, IN)}} = ${Valg(ctx, Zsc, '\\,\\Omega')}`));
   if (Zt) { b3 += '<h5>Cách 2 (kiểm chứng): dùng dòng ngắn mạch Norton</h5>' + b3b + (degen ? '' : chk(`hai cách cho cùng ${M('Z_{' + a + b + '} = ' + Valg(ctx, Zt))}`, cabs(csub(Zt, Zsc)) < 1e-6 * cabs(Zt))); }
   else { b3 += (hasDep || hasM ? note('Mạch có ' + (hasDep ? 'nguồn phụ thuộc' : '') + (hasDep && hasM ? ' và ' : '') + (hasM ? 'hỗ cảm' : '') + ' → không dùng công thức ghép nối tiếp/song song được (slide 5.1, 6.4). Dùng cách “mạch hở + mạch ngắn”: ' + M('Z_{ab} = \\frac{U_{ab\\text{-hở}}}{I_{ab\\text{-ngắn}}}') + '.') : '') + b3b; Zt = Zsc; }
@@ -1869,7 +1886,7 @@ function renderSuperpos(ctx, R) {
     const cs = L.prep(sub);
     const so = solveCompact(cs, sp.method);
     const v = so.I[tgt]; tot = cadd(tot, v); parts.push(v);
-    let body = `<div class="fig">${G.drawCircuit(sub, { values: false, loops: so.loops, ground: so.method === 'node' ? cs.nodes.filter(n => cs.isGround(n)) : null })}<div class="cap">Chỉ còn nguồn ${M(nm(ctx, e.sym))}.</div></div>` + so.html;
+    let body = '<p>Giữ ' + M(nm(ctx, e.sym)) + ', tắt các nguồn độc lập còn lại:</p>' + srcOffList(ctx, e.n) + `<div class="fig">${G.drawCircuit(sub, { values: false, loops: so.loops, ground: so.method === 'node' ? cs.nodes.filter(n => cs.isGround(n)) : null })}<div class="cap">Chỉ còn nguồn ${M(nm(ctx, e.sym))}; nguồn áp bị tắt → dây nối (Z = 0), nguồn dòng bị tắt → hở mạch (Z = ∞).</div></div>` + so.html;
     body += D(`${ctx.dotX('I')}_{${tgt}}^{(${nm(ctx, e.sym)})} = ${V(ctx, v, '\\,\\text{A}')}`);
     h += step('Thành phần do riêng nguồn ' + M(nm(ctx, e.sym)), body);
   }

@@ -101,6 +101,13 @@ svg .lvn{font-size:12px;fill:#0d47a1}
 
 .tb.os td,.tb.os th{text-align:center}.tb.os td:first-child{text-align:left}
 ul.why{font-size:15px}
+
+body.embed header h1,body.embed header .sub{display:none}
+body.embed header{border-bottom-width:2px}
+body.embed header{padding:6px 10px;gap:8px}
+body.embed #tools{gap:6px;margin-left:0}
+body.embed #tools button{padding:4px 9px;font-size:13px}
+body.embed #tools label{font-size:13px}
 </style></head><body>
 <header><button id="menu">☰</button><h1>Ôn thi giữa kỳ LTM1</h1><span class="sub">Chương 1 → 6 · dòng nhánh · dòng vòng · thế nút · Thévenin · xếp chồng · hỗ cảm</span>
 <div id="tools"><label><input type="checkbox" id="self"> Chế độ tự luyện</label><button id="rand">🎲 Đổi số liệu</button><button id="reset">↺ Số liệu gốc</button><button id="prt">🖨 In bài</button><span id="rnote"></span></div></header>
@@ -2083,9 +2090,9 @@ function buildNav() {
 function show(id) {
   document.querySelectorAll('.navi').forEach(a => a.classList.toggle('on', a.dataset.id === id));
   const main = $('#main');
-  if (id === 'theory' || !id) { main.innerHTML = THEORY_HTML; renderMath(main); cur = null; $('#tools').style.visibility = 'hidden'; window.scrollTo(0, 0); return; }
+  if (id === 'theory' || !id) { main.innerHTML = THEORY_HTML; renderMath(main); cur = null; $('#tools').style.display = 'none'; window.scrollTo(0, 0); return; }
   const p = PROBLEMS.find(x => x.id === id); if (!p) return;
-  cur = p; $('#tools').style.visibility = 'visible';
+  cur = p; $('#tools').style.display = '';
   let out;
   try { out = RENDER.renderProblem(p); }
   catch (e) { main.innerHTML = `<div class="note">Lỗi khi giải với bộ số liệu này: ${e.message}. Bấm “Số liệu gốc”.</div>`; return; }
@@ -2135,12 +2142,15 @@ function randomize() {
 }
 function resetP() { if (!cur) return; cur.params = JSON.parse(JSON.stringify(ORIG[PROBLEMS.indexOf(cur)])); show(cur.id); $('#rnote').textContent = ''; }
 window.addEventListener('DOMContentLoaded', () => {
+  if (/embed/.test(location.search)) { document.body.classList.add('embed'); $('#menu').textContent = '☰ Danh sách bài'; }
   buildNav();
   $('#self').onchange = e => { selfMode = e.target.checked; applySelf(); };
   $('#rand').onclick = randomize; $('#reset').onclick = resetP;
   $('#prt').onclick = () => { document.querySelectorAll('.pane').forEach(p => p.style.display = 'block'); document.querySelectorAll('details').forEach(d => d.open = true); try { window.print(); } catch (e) { } selTab(curTab); };
   $('#menu').onclick = () => document.body.classList.toggle('navopen');
-  const go = () => { const id = location.hash.slice(1) || 'theory'; show(id); $('#rnote').textContent = ''; document.body.classList.remove('navopen'); window.scrollTo(0, 0); };
+  const EMB = /embed/.test(location.search);
+  if (EMB && !location.hash) { try { const l = localStorage.getItem('ltm1_last'); if (l) history.replaceState(null, '', '#' + l); } catch (e) { } }
+  const go = () => { const id = location.hash.slice(1) || 'theory'; if (EMB) { try { localStorage.setItem('ltm1_last', id); } catch (e) { } } show(id); $('#rnote').textContent = ''; document.body.classList.remove('navopen'); window.scrollTo(0, 0); };
   window.addEventListener('hashchange', go); go();
 });
 })();

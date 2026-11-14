@@ -98,6 +98,9 @@ svg .lvn{font-size:12px;fill:#0d47a1}
   .tabs{top:auto;position:static}
 }
 @media print{header,nav,.tabs{display:none!important}main#main{max-width:none;padding:0}details.step{break-inside:avoid}body{background:#fff}}
+
+.tb.os td,.tb.os th{text-align:center}.tb.os td:first-child{text-align:left}
+ul.why{font-size:15px}
 </style></head><body>
 <header><button id="menu">☰</button><h1>Ôn thi giữa kỳ LTM1</h1><span class="sub">Chương 1 → 6 · dòng nhánh · dòng vòng · thế nút · Thévenin · xếp chồng · hỗ cảm</span>
 <div id="tools"><label><input type="checkbox" id="self"> Chế độ tự luyện</label><button id="rand">🎲 Đổi số liệu</button><button id="reset">↺ Số liệu gốc</button><button id="prt">🖨 In bài</button><span id="rnote"></span></div></header>
@@ -1396,6 +1399,14 @@ const chk = (t, ok = true) => `<div class="chk ${ok ? 'ok' : 'bad'}"><b>${ok ? '
 const note = t => `<div class="note">${t}</div>`;
 const unitI = ' \\,\\text{A}', unitV = ' \\,\\text{V}', unitO = ' \\,\\Omega';
 
+const OPEN_SHORT = `<table class="tb os"><tr><th>Trạng thái</th><th>Thay bằng</th><th>Tổng trở</th><th>Điện áp hai đầu</th><th>Dòng điện qua</th></tr>
+<tr><td><b>Tắt nguồn áp</b> ($E = 0$)</td><td>dây nối (ngắn mạch)</td><td>$Z = 0$</td><td>$U = 0$</td><td>khác 0, do mạch quyết định</td></tr>
+<tr><td><b>Tắt nguồn dòng</b> ($J = 0$)</td><td>bỏ nhánh (hở mạch)</td><td>$Z = \\infty$</td><td>khác 0, do mạch quyết định</td><td>$I = 0$</td></tr>
+<tr><td><b>Hở mạch</b> cửa a–b</td><td>không nối gì giữa a và b</td><td>$Z = \\infty$</td><td>$U_{ab\\text{-hở}} = E_{Th}$</td><td>$I = 0$</td></tr>
+<tr><td><b>Ngắn mạch</b> cửa a–b</td><td>dây nối a với b</td><td>$Z = 0$</td><td>$U = 0$</td><td>$I_{ab\\text{-ngắn}} = J_N$</td></tr>
+<tr><td>Nguồn <b>phụ thuộc</b></td><td colspan="4">KHÔNG được tắt (giá trị của nó do tín hiệu điều khiển quyết định, không phải nguồn năng lượng độc lập).</td></tr></table>`;
+const OPEN_SHORT_WHY = '<ul class="why"><li>Nguồn áp lý tưởng giữ điện áp $E$ với mọi dòng (nội trở $= 0$). Cho $E = 0$ thì nó chỉ còn là phần tử có điện áp luôn bằng 0 với mọi dòng – chính là <b>dây dẫn</b>.</li><li>Nguồn dòng lý tưởng giữ dòng $J$ với mọi điện áp (nội trở $= \\infty$). Cho $J = 0$ thì nhánh luôn có dòng bằng 0 với mọi điện áp – chính là <b>hở mạch</b>.</li><li><b>Sai lầm hay gặp</b>: nối tắt nguồn dòng (làm thay đổi cả mạch) hoặc để hở nguồn áp (cắt mất đường dòng).</li><li>Hệ quả cho Thévenin–Norton: $E_{Th} = Z_{ab}\\cdot J_N$. Nếu $Z_{ab} = 0$ thì mạch chỉ có dạng Thévenin (nguồn áp lý tưởng, $J_N = \\infty$); nếu $Z_{ab} = \\infty$ thì chỉ có dạng Norton (nguồn dòng lý tưởng, $E_{Th} = \\infty$). Nếu cả $E_{Th}=0$ và $J_N=0$ (ví dụ cầu cân bằng) thì không tính được $Z_{ab}$ bằng tỉ số $E_{Th}/J_N$.</li></ul>';
+
 /* ---------- helpers ---------- */
 function V(ctx, z, unit = '') { return (ctx.ac ? fpol(z) : fnum(z.re, 4, true)) + unit; }
 function Valg(ctx, z, unit = '') { return ctx.ac ? falg(z, 4, true) + unit : fnum(z.re, 4, true) + unit; }
@@ -1757,6 +1768,7 @@ function renderThevenin(ctx, R) {
   let b1 = loadBr ? `<p>Tách nhánh tải ${M(brElsTex(ctx, loadBr))} (nhánh ${loadBr.id}, nối hai nút <b>${a}</b>–<b>${b}</b>) ra khỏi mạch. Phần mạch còn lại là mạng một cửa có nguồn nhìn từ hai cực <b>${a}</b>–<b>${b}</b>; theo định lý Thévenin, nó tương đương một nguồn áp ${M(ctx.dotX('E') + '_{Th}')} nối tiếp tổng trở ${M('Z_{' + a + b + '}')}.</p>`
     : `<p>Xét mạng một cửa nhìn từ hai nút <b>${a}</b>–<b>${b}</b> (tải ${M('Z_t')} sẽ được mắc thêm vào giữa ${a} và ${b}). Theo định lý Thévenin, cả mạch nhìn từ ${a}–${b} tương đương nguồn áp ${M(ctx.dotX('E') + '_{Th}')} nối tiếp ${M('Z_{' + a + b + '}')}.</p>`;
   b1 += tip('Cần tìm 2 trong 3 đại lượng: ' + M('E_{Th} = U_{ab\\text{-hở}}') + ', ' + M('J_N = I_{ab\\text{-ngắn}}') + ', ' + M('Z_{ab}') + '; liên hệ ' + M('E_{Th} = Z_{ab}\\cdot J_N') + ' (slide 5.1). Thứ tự nút a→b rất quan trọng!');
+  b1 += '<h5>Ghi nhớ: tắt nguồn – hở mạch – ngắn mạch, đại lượng nào bằng 0, đại lượng nào bằng ∞</h5>' + OPEN_SHORT + OPEN_SHORT_WHY;
   h += step('Xác định cửa ' + a + '–' + b + ' và ý tưởng', b1);
   // B2 open circuit
   const oc = L.deriveOpen(c, th.remove, th.open); oc._allBr = c.branches;
@@ -1850,7 +1862,7 @@ function renderSuperpos(ctx, R) {
   const sp = ctx.circ.superpos; const tgt = sp.target;
   const srcs = []; for (const b of ctx.active) for (const e of b.els) if (e.k === 'E' || e.k === 'J') srcs.push(e);
   let h = '';
-  h += step('Nguyên lý xếp chồng', `<p>Mạch tuyến tính có ${srcs.length} nguồn độc lập ${M(srcs.map(e => nm(ctx, e.sym)).join(',\\ '))}. Dòng cần tìm ${M(curTex(ctx, tgt))} bằng tổng đại số các thành phần do <b>từng nguồn tác động riêng</b> (các nguồn độc lập khác “tắt”):</p>` + D(curTex(ctx, tgt) + ' = ' + srcs.map(e => ctx.dotX('I') + '_{' + tgt + '}^{(' + nm(ctx, e.sym) + ')}').join(' + ')) + tip('Tắt nguồn áp: thay bằng dây nối (E = 0). Tắt nguồn dòng: bỏ nhánh, để hở mạch (J = 0). Nguồn <b>phụ thuộc</b> KHÔNG được tắt.'));
+  h += step('Nguyên lý xếp chồng', `<p>Mạch tuyến tính có ${srcs.length} nguồn độc lập ${M(srcs.map(e => nm(ctx, e.sym)).join(',\\ '))}. Dòng cần tìm ${M(curTex(ctx, tgt))} bằng tổng đại số các thành phần do <b>từng nguồn tác động riêng</b> (các nguồn độc lập khác “tắt”):</p>` + D(curTex(ctx, tgt) + ' = ' + srcs.map(e => ctx.dotX('I') + '_{' + tgt + '}^{(' + nm(ctx, e.sym) + ')}').join(' + ')) + tip('Tắt nguồn áp: thay bằng dây nối (E = 0). Tắt nguồn dòng: bỏ nhánh, để hở mạch (J = 0). Nguồn <b>phụ thuộc</b> KHÔNG được tắt.') + OPEN_SHORT.replace(/<tr><td><b>Hở mạch[\s\S]*?<\/tr>\n<tr><td><b>Ngắn mạch[\s\S]*?<\/tr>\n/, '') + OPEN_SHORT_WHY.replace(/<li>Hệ quả cho Thévenin[\s\S]*?<\/li>/, ''));
   let tot = cx(0); const parts = [];
   for (const e of srcs) {
     const sub = L.deriveSuper(ctx.circ, e.n); sub._allBr = ctx.circ.branches;
@@ -2008,6 +2020,14 @@ G.RENDER = { renderProblem, solveAll, loopName, loopPath };
 <p>$P = UI\cos(\varphi_u - \varphi_i)$ (W); $\tilde S = \dot U\cdot\dot I^* = P + jQ$; $Q$ (VAr); $S = |\tilde S|$ (VA). Điện trở $Q=0$; cuộn dây $Q_L = \omega L I^2 > 0$; tụ $Q_C = -\frac{I^2}{\omega C} < 0$. Bảo toàn đúng cho $P$, $Q$, $\tilde S$ (không đúng cho $S$). Tải $Z$: $\cos\varphi = \cos(\angle Z)$, $P = \mathrm{Re}(Z)|\dot I|^2$.</p></div>
 
 <div class="card"><h3>5. Thévenin – Norton & hòa hợp tải (Chương 5)</h3>
+<p><b>Bảng ghi nhớ: tắt nguồn, hở mạch, ngắn mạch</b></p>
+<table class="tb os"><tr><th>Trạng thái</th><th>Thay bằng</th><th>Tổng trở</th><th>Điện áp hai đầu</th><th>Dòng điện qua</th></tr>
+<tr><td><b>Tắt nguồn áp</b> ($E=0$)</td><td>dây nối (ngắn mạch)</td><td>$Z=0$</td><td>$U=0$</td><td>khác 0, do mạch quyết định</td></tr>
+<tr><td><b>Tắt nguồn dòng</b> ($J=0$)</td><td>bỏ nhánh (hở mạch)</td><td>$Z=\infty$</td><td>khác 0, do mạch quyết định</td><td>$I=0$</td></tr>
+<tr><td><b>Hở mạch</b> cửa a–b</td><td>không nối gì</td><td>$Z=\infty$</td><td>$U_{ab\text{-hở}}=E_{Th}$</td><td>$I=0$</td></tr>
+<tr><td><b>Ngắn mạch</b> cửa a–b</td><td>dây nối a với b</td><td>$Z=0$</td><td>$U=0$</td><td>$I_{ab\text{-ngắn}}=J_N$</td></tr>
+<tr><td>Nguồn <b>phụ thuộc</b></td><td colspan="4">KHÔNG được tắt.</td></tr></table>
+<p>Lý do: nguồn áp lý tưởng có nội trở $0$ → $E=0$ thành dây dẫn; nguồn dòng lý tưởng có nội trở $\infty$ → $J=0$ thành hở mạch. $E_{Th}=Z_{ab}J_N$: $Z_{ab}=0$ → chỉ có dạng Thévenin; $Z_{ab}=\infty$ → chỉ có dạng Norton; $E_{Th}=J_N=0$ → không tính được $Z_{ab}$ bằng tỉ số.</p>
 <ul><li>Mạng một cửa tuyến tính có nguồn ≡ nguồn áp $\dot E_{Th}$ nối tiếp $Z_{ab}$ ≡ nguồn dòng $\dot J_N$ song song $Z_{ab}$.</li>
 <li>$\dot E_{Th} = \dot U_{ab\text{-hở}}$ (giải mạch hở a–b); $\dot J_N = \dot I_{ab\text{-ngắn}}$ (giải mạch nối tắt a–b); $Z_{ab} = \dot E_{Th}/\dot J_N$, hoặc tắt các nguồn độc lập rồi tính tổng trở nhìn từ a–b (chỉ khi không có nguồn phụ thuộc/hỗ cảm; nếu có thì dùng hở/ngắn hoặc lắp nguồn ngoài).</li>
 <li>Hòa hợp tải DC: $R_t = R_{ab}$, $P_{max} = \frac{E_{Th}^2}{4R_{ab}}$. AC: $Z_t = Z_{ab}^*$, $P_{max} = \frac{|\dot E_{Th}|^2}{4\,\mathrm{Re}(Z_{ab})}$.</li></ul></div>

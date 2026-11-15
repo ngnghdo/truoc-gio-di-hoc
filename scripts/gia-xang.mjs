@@ -29,8 +29,8 @@ const out = {
   src: "Petrolimex", ky: ky || (old && old.ky) || "", kyIso: kyIso || (old && old.kyIso) || null,
   items: data.items, link: data.link,
   prev: same ? (old.prev || null) : (old ? { ky: old.ky, items: old.items } : null),
-  updated: new Date().toISOString()
+  updated: (same && old.ky === (ky || old.ky)) ? (old.updated || new Date().toISOString()) : new Date().toISOString(),
+  checked: new Date().toISOString()
 };
-if (same && old.ky === out.ky) { console.log("Giá không đổi"); process.exit(0); }
 fs.writeFileSync(f, JSON.stringify(out, null, 1));
 console.log("Đã cập nhật", out.ky, out.items);

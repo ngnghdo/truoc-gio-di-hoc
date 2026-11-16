@@ -2427,13 +2427,15 @@ function randomize() {
 }
 function resetP() { if (!cur) return; cur.params = JSON.parse(JSON.stringify(ORIG[PROBLEMS.indexOf(cur)])); show(cur.id); $('#rnote').textContent = ''; }
 window.addEventListener('DOMContentLoaded', () => {
-  if (/embed/.test(location.search)) { document.body.classList.add('embed'); $('#menu').textContent = '☰ Danh sách bài'; }
+  if (/embed/.test(location.search)) { document.body.classList.add('embed'); }
   buildNav();
   $('#self').onchange = e => { selfMode = e.target.checked; applySelf(); };
   $('#rand').onclick = randomize; $('#reset').onclick = resetP;
   $('#prt').onclick = () => { document.querySelectorAll('.pane').forEach(p => p.style.display = 'block'); document.querySelectorAll('details').forEach(d => d.open = true); try { window.print(); } catch (e) { } selTab(curTab); };
   try { if (localStorage.getItem('ltm1_navhide') === '1') document.body.classList.add('navhide'); } catch (e) { }
-  $('#menu').onclick = () => { if (window.innerWidth <= 900) { document.body.classList.toggle('navopen'); return; } const h = document.body.classList.toggle('navhide'); try { localStorage.setItem('ltm1_navhide', h ? '1' : '0'); } catch (e) { } };
+  const lblMenu = () => { const m = $('#menu'); if (window.innerWidth <= 900) { m.textContent = '☰ Danh sách bài'; return; } m.textContent = document.body.classList.contains('navhide') ? '☰ Hiện danh sách bài' : '« Ẩn danh sách bài'; };
+  $('#menu').onclick = () => { if (window.innerWidth <= 900) { document.body.classList.toggle('navopen'); return; } const h = document.body.classList.toggle('navhide'); try { localStorage.setItem('ltm1_navhide', h ? '1' : '0'); } catch (e) { } lblMenu(); };
+  lblMenu(); window.addEventListener('resize', lblMenu);
   const EMB = /embed/.test(location.search);
   if (EMB && !location.hash) { try { const l = localStorage.getItem('ltm1_last'); if (l) history.replaceState(null, '', '#' + l); } catch (e) { } }
   const go = () => { const id = location.hash.slice(1) || 'theory'; if (EMB) { try { localStorage.setItem('ltm1_last', id); } catch (e) { } } show(id); $('#rnote').textContent = ''; document.body.classList.remove('navopen'); window.scrollTo(0, 0); };

@@ -288,6 +288,7 @@ function prep(circ) {
   // couplings
   const cps = [];
   for (const c of (circ.couplings || [])) {
+    if (circ.dc_reduce) { notes.push(`Hỗ cảm $${'M'}$: ở chế độ DC xác lập dòng không đổi nên $u_M = M\\frac{di}{dt} = 0$ → hỗ cảm <b>không có tác dụng</b>.`); continue; }
     const p = getP(c.M); const sym = c.sym || ('Z' + c.M);
     let val = p.z ? cx(p.z[0], p.z[1]) : cx(0, w * p.M);
     S[sym] = { tex: p.tex || ('Z_{' + c.M + '}'), val };
@@ -1497,7 +1498,120 @@ P.push({
     short: { loops: [{ id: 'a', br: [['E', 1], ['sc', 1], ['1', -1]] }], xa: [{ j: 'J', id: 'b', br: [['J', 1], ['2', 1], ['1', 1]] }] } },
 });
 
-const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk2', 'gk3', 'gk4', 'gk1'];
+P.push({
+  id: 'gk5', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 20/11/2025 · Đề 1 · Câu 1: hệ dòng vòng, nguồn dòng phụ thuộc αİ₄',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 20/11/2025, Đề 1, Câu 1 (3,5 điểm). Đề chỉ yêu cầu viết hệ (không cho số) → web tự cho số liệu minh họa để thay số và kiểm chứng.',
+  text: 'Viết hệ phương trình dòng vòng mô tả mạch và biểu diễn dòng điện trong các nhánh theo các dòng vòng đã chọn. (Xem tab <b>Dòng vòng</b> – bước 2 và 3 là đáp án; số liệu chỉ để minh họa.)',
+  ac: true,
+  nodes: {
+    A: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'A', 'w'] }, B: { bus: [[3, 0]], dot: [[3, 0]], lbl: [3, 0, 'B', 'n'] },
+    C: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'C', 'e'] }, D: { bus: [[3, 4]], dot: [[3, 4]], lbl: [3, 4, 'D', 's'] },
+    E: { bus: [[3, 2]], dot: [[3, 2]], lbl: [3, 2, 'E', 'sw'] },
+  },
+  ground: 'D',
+  branches: [
+    { id: '5', n: ['A', 'B'], p: [[0, 2], [0, 0], [3, 0]], els: [{ k: 'Z', n: 'Z5', seg: 1 }], ia: { seg: 0, t: 0.5 } },
+    { id: '3', n: ['E', 'B'], p: [[3, 2], [3, 0]], els: [{ k: 'E', n: 'E3', dir: 1, lbl: 'l' }] },
+    { id: '4', n: ['C', 'B'], p: [[6, 2], [6, 0], [3, 0]], els: [{ k: 'Z', n: 'Z4', seg: 1 }], ia: { seg: 0, t: 0.5 } },
+    { id: '6', n: ['A', 'E'], p: [[0, 2], [3, 2]], els: [{ k: 'Z', n: 'Z6', lbl: 'd' }], ia: { seg: 0, t: 0.15 } },
+    { id: 'd', n: ['E', 'C'], p: [[3, 2], [6, 2]], els: [{ k: 'Jd', n: 'J8', g: 'alpha', ctrl: { k: 'I', br: '4' } }] },
+    { id: '1', n: ['D', 'E'], p: [[3, 4], [3, 2]], els: [{ k: 'E', n: 'E1', dir: 1, lbl: 'r' }] },
+    { id: '2', n: ['D', 'C'], p: [[3, 4], [6, 4], [6, 2]], els: [{ k: 'E', n: 'E2', dir: 1, seg: 0, lbl: 'd' }, { k: 'Z', n: 'Z2', seg: 1 }], ia: { seg: 1, t: 0.15 } },
+    { id: '7', n: ['D', 'A'], p: [[3, 4], [0, 4], [0, 2]], els: [{ k: 'J', n: 'J7', seg: 0, lbl: 'd' }, { k: 'Z', n: 'Z7', seg: 1, lbl: 'l' }] },
+  ],
+  loops: [{ id: 'a', br: [['5', 1], ['3', -1], ['6', -1]], c: [1.5, 1] }, { id: 'b', br: [['3', 1], ['4', -1], ['2', -1], ['1', 1]], c: [4.5, 1] }],
+  xa: [{ j: '7', id: 'c', br: [['7', 1], ['6', 1], ['1', -1]], c: [1.5, 3] }, { j: 'd', id: 'd', br: [['d', 1], ['2', -1], ['1', 1]], c: [4.5, 3] }],
+  params: { E1: { m: 10, ph: 0 }, E2: { m: 5, ph: 30 }, E3: { m: 8, ph: -45 }, J7: { m: 1, ph: 0 }, Z2: { z: [2, 3] }, Z4: { z: [4, -2] }, Z5: { z: [3, 4] }, Z6: { z: [5, 0] }, Z7: { z: [2, 0] }, alpha: { v: 0.5 } },
+});
+P.push({
+  id: 'gk6', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 05/12/2025 · Đề 01 · Câu 1b: DC có L, M, C – tính i₁ và P nguồn e₁',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 05/12/2025, Đề 01, Câu 1 (5 điểm). Ý a (hệ dòng nhánh khi e₁ hình sin) viết như tab Dòng nhánh nhưng thay R → Z, thêm số hạng ±Z_M·İ cho L₁, L₂ (cùng đi vào đầu chấm → “+”).',
+  text: 'b) $e_1$ là nguồn một chiều: $e_1 = 10$ V; $j_4 = 2i_3$; $R_1 = 2\\,\\Omega$; $R_2 = 5\\,\\Omega$; $R_3 = 9\\,\\Omega$; $L_1 = 0{,}2$ H; $L_2 = 0{,}15$ H; $M = 0{,}1$ H; $C = 0{,}15\\,\\mu$F. Tính dòng $i_1$ và công suất tác dụng của nguồn $e_1$.',
+  dc_reduce: true,
+  nodes: {
+    a: { bus: [[0, 0.2], [0, 1.6]], dot: [[0, 1.6]], lbl: [0, 1.6, 'a', 'w'] }, b: { bus: [[3.6, 1.6]], dot: [[3.6, 1.6]], lbl: [3.6, 1.6, 'b', 'n'] },
+    c: { bus: [[6, 0.2], [6, 1.6]], dot: [[6, 1.6]], lbl: [6, 1.6, 'c', 'e'] }, d: { bus: [[0, 4], [6, 4]], dot: [[3.6, 4]], lbl: [3.6, 4, 'd', 's'] },
+  },
+  ground: 'd',
+  branches: [
+    { id: 'e', n: ['d', 'a'], p: [[0, 4], [0, 1.6]], els: [{ k: 'E', n: 'E1', dir: 1, lbl: 'l' }] },
+    { id: '2', n: ['a', 'c'], p: [[0, 0.2], [6, 0.2]], els: [{ k: 'L', n: 'L2', t: 0.35, dot: 's' }, { k: 'R', n: 'R2', t: 0.7 }], ia: { seg: 0, t: 0.92 } },
+    { id: '1', n: ['a', 'b'], p: [[0, 1.6], [3.6, 1.6]], els: [{ k: 'L', n: 'L1', t: 0.35, dot: 's', lbl: 'd' }, { k: 'R', n: 'R1', t: 0.75, lbl: 'd' }], ia: { seg: 0, t: 0.1 } },
+    { id: 'j', n: ['b', 'c'], p: [[3.6, 1.6], [6, 1.6]], els: [{ k: 'Jd', n: 'J4', g: 'k', ctrl: { k: 'I', br: '3' } }] },
+    { id: '3', n: ['b', 'd'], p: [[3.6, 1.6], [3.6, 4]], els: [{ k: 'R', n: 'R3' }] },
+    { id: 'C', n: ['c', 'd'], p: [[6, 1.6], [6, 4]], els: [{ k: 'C', n: 'C1' }] },
+  ],
+  couplings: [{ a: 'L1', b: 'L2', M: 'M', q: [0.9, 0.9], lp: [1.4, 0.95] }],
+  loops: [{ id: 'a', br: [['e', 1], ['1', 1], ['3', 1]], c: [1.8, 2.8] }],
+  xa: [{ j: 'j', id: 'b', br: [['j', 1], ['2', -1], ['1', 1]], c: [3, 0.9], r: 0.25 }],
+  params: { E1: { v: 10 }, R1: { v: 2 }, R2: { v: 5 }, R3: { v: 9 }, L1: { L: 0.2 }, L2: { L: 0.15 }, M: { M: 0.1 }, C1: { C: 0.15e-6 }, k: { v: 2, tex: '2' } },
+});
+P.push({
+  id: 'gk7', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 05/12/2025 · Đề 01 · Câu 2: tìm Z₆ để P max (mạch cầu)',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 05/12/2025, Đề 01, Câu 2 (4 điểm) – số liệu đề gốc. Các tab giải toàn mạch giả thiết Z₆ = 10 Ω (đáp án ở tab Thévenin không phụ thuộc Z₆). Chiều İ₂ chọn b → c.',
+  text: 'Cho $\\dot E_6 = 15\\angle 30^\\circ$ V; $Z_1 = 10\\,\\Omega$; $Z_2 = 30\\,\\Omega$; $Z_3 = 10\\,\\Omega$; $Z_4 = 10 + j20\\,\\Omega$; $Z_5 = j20\\,\\Omega$. Tìm $Z_6$ để công suất tác dụng trên nó đạt cực đại và giá trị công suất cực đại đó. (Cầu không cân bằng, không ghép nối tiếp/song song được → dùng hở mạch + ngắn mạch.)',
+  ac: true,
+  nodes: {
+    a: { bus: [[0, 0], [5, 0]], dot: [[1, 0]], lbl: [1, 0, 'a', 'n'] }, b: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'b', 'w'] },
+    c: { bus: [[2, 2]], dot: [[2, 2]], lbl: [2, 2, 'c', 'e'] }, d: { bus: [[0, 4], [5, 4]], dot: [[1, 4]], lbl: [1, 4, 'd', 's'] },
+    y: { bus: [[5, 2.4]], dot: [[5, 2.4]], lbl: [5, 2.4, 'y', 'e'] },
+  },
+  ground: 'd',
+  branches: [
+    { id: '1', n: ['a', 'b'], p: [[0, 0], [0, 2]], els: [{ k: 'Z', n: 'Z1', lbl: 'l' }] },
+    { id: '3', n: ['a', 'c'], p: [[1, 0], [2, 0], [2, 2]], els: [{ k: 'Z', n: 'Z3', seg: 1 }] },
+    { id: '2', n: ['b', 'c'], p: [[0, 2], [2, 2]], els: [{ k: 'Z', n: 'Z2', lbl: 'd' }] },
+    { id: '4', n: ['b', 'd'], p: [[0, 2], [0, 4]], els: [{ k: 'Z', n: 'Z4', lbl: 'l' }] },
+    { id: '5', n: ['c', 'd'], p: [[2, 2], [2, 4], [1, 4]], els: [{ k: 'Z', n: 'Z5', seg: 0 }] },
+    { id: 'E', n: ['y', 'a'], p: [[5, 2.4], [5, 0]], els: [{ k: 'E', n: 'E6', dir: 1 }] },
+    { id: '6', n: ['d', 'y'], p: [[5, 4], [5, 2.4]], els: [{ k: 'Z', n: 'Z6' }] },
+  ],
+  loops: [{ id: 'a', br: [['6', 1], ['E', 1], ['1', 1], ['4', 1]], c: [3.6, 2] }, { id: 'b', br: [['1', 1], ['2', 1], ['3', -1]], c: [1, 1.1], r: 0.25 }, { id: 'c', br: [['2', 1], ['5', 1], ['4', -1]], c: [1, 3], r: 0.25 }],
+  params: { E6: { m: 15, ph: 30 }, Z1: { z: [10, 0] }, Z2: { z: [30, 0] }, Z3: { z: [10, 0] }, Z4: { z: [10, 20] }, Z5: { z: [0, 20] }, Z6: { z: [10, 0] } },
+  thev: { a: 'y', b: 'd', remove: '6', ask: 'maxP' },
+});
+P.push({
+  id: 'gk8', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 02 · Câu 1: hỗ cảm + Ė₂ = α·U̇₃, P nguồn phụ thuộc',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 02, Câu 1 (4,5 điểm) – số liệu đề gốc.',
+  text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $\\dot E_2 = \\alpha\\cdot\\dot U_3$; $\\alpha = 0{,}2$; $Z_{L1} = j1\\,\\Omega$; $Z_{L2} = j2\\,\\Omega$; $Z_M = j0{,}5\\,\\Omega$; $\\dot J_3 = 3\\angle 30^\\circ$ A; $Z_3 = 3 - j3\\,\\Omega$. <b>Tính công suất phát của nguồn phụ thuộc</b> $\\dot E_2$ (tab Công suất). $\\dot U_3$: điện áp từ đầu trái sang đầu phải nguồn $\\dot J_3$.',
+  ac: true,
+  nodes: { p: { bus: [[0, 0]], dot: [], lbl: [0, 0, 'p', 'nw'] }, m: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'm', 'w'] }, r: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'r', 'e'] } },
+  ground: 'r',
+  branches: [
+    { id: 'J', n: ['r', 'p'], p: [[6, 2], [6, 0], [0, 0]], els: [{ k: 'J', n: 'J3', seg: 1 }] },
+    { id: '3', n: ['p', 'm'], p: [[0, 0], [0, 2]], els: [{ k: 'Z', n: 'Z3', lbl: 'l' }], ia: { seg: 0, t: 0.15 } },
+    { id: 'E', n: ['m', 'r'], p: [[0, 2], [6, 2]], els: [{ k: 'Ed', n: 'E2', g: 'alpha', dir: -1, t: 0.35, ctrl: { k: 'V', name: '3', a: 'p', b: 'r', path: [['3', 1], ['1', 1]] } }, { k: 'L', n: 'L2', t: 0.75, dot: 's' }], ia: { seg: 0, t: 0.1 } },
+    { id: '1', n: ['m', 'r'], p: [[0, 2], [0, 4], [6, 4], [6, 2]], els: [{ k: 'L', n: 'L1', seg: 0, dot: 'e', lbl: 'l' }, { k: 'E', n: 'E1', dir: 1, seg: 1, lbl: 'd' }], ia: { seg: 2, t: 0.5 } },
+  ],
+  couplings: [{ a: 'L1', b: 'L2', M: 'M', q: [2.6, 3.4], lp: [2.7, 3.45] }],
+  uarrows: [{ a: [1.6, 0.55], b: [4.4, 0.55], t: 'U3', l: [3, 0.9] }],
+  loops: [{ id: 'a', br: [['E', 1], ['1', -1]], c: [3, 3] }],
+  xa: [{ j: 'J', id: 'b', br: [['J', 1], ['3', 1], ['1', 1]], c: [3, 1.2], r: 0.3 }],
+  params: { E1: { m: 10, ph: 10 }, alpha: { v: 0.2 }, L1: { z: [0, 1] }, L2: { z: [0, 2] }, M: { z: [0, 0.5] }, J3: { m: 3, ph: 30 }, Z3: { z: [3, -3] } },
+});
+P.push({
+  id: 'gk9', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 02 · Câu 2: J̇₂ = α·U̇₁, tìm Z₃ hòa hợp, Pmax',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 02, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω (đáp án ở tab Thévenin không phụ thuộc Z₃).',
+  text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $Z_1 = 1 + j1\\,\\Omega$; $\\dot J_2 = \\alpha\\cdot\\dot U_1$; $\\alpha = 0{,}2$; $Z_2 = 2 - j2\\,\\Omega$; $\\dot E_3 = 30\\angle 30^\\circ$ V. a) Tính $Z_3$ để công suất truyền đến trở kháng này là lớn nhất. b) Tính công suất đó. ($\\dot U_1$: điện áp trên $Z_1$ theo mũi tên từ dưới lên.)',
+  ac: true,
+  nodes: { m: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'm', 'w'] }, x: { bus: [[0, 0.9]], dot: [[0, 0.9]], lbl: [0, 0.9, 'x', 'w'] }, r: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'r', 'e'] } },
+  ground: 'r',
+  branches: [
+    { id: '3', n: ['m', 'x'], p: [[0, 2], [0, 0.9]], els: [{ k: 'Z', n: 'Z3', lbl: 'l' }] },
+    { id: 'T', n: ['x', 'r'], p: [[0, 0.9], [0, 0], [6, 0], [6, 2]], els: [{ k: 'E', n: 'E3', dir: -1, seg: 1 }], ia: { seg: 2, t: 0.5 } },
+    { id: 'J', n: ['m', 'r'], p: [[0, 2], [6, 2]], els: [{ k: 'Jd', n: 'J2', g: 'alpha', t: 0.35, ctrl: { k: 'U', el: 'Z1', name: '1' } }, { k: 'Z', n: 'Z2', t: 0.75 }] },
+    { id: '1', n: ['r', 'm'], p: [[6, 2], [6, 4], [0, 4], [0, 2]], els: [{ k: 'E', n: 'E1', dir: -1, seg: 1, lbl: 'd' }, { k: 'Z', n: 'Z1', seg: 2, lbl: 'l' }], ia: { seg: 0, t: 0.5 } },
+  ],
+  uarrows: [{ a: [0.45, 3.6], b: [0.45, 2.35], t: 'U1', l: [0.75, 3.1] }],
+  loops: [{ id: 'a', br: [['1', 1], ['3', 1], ['T', 1]], c: [3, 1] }],
+  xa: [{ j: 'J', id: 'b', br: [['J', 1], ['1', 1]], c: [3, 3] }],
+  params: { E1: { m: 10, ph: 10 }, Z1: { z: [1, 1] }, alpha: { v: 0.2 }, Z2: { z: [2, -2] }, E3: { m: 30, ph: 30 }, Z3: { z: [2, 0] } },
+  thev: { a: 'm', b: 'x', remove: '3', ask: 'maxP',
+    open: { loops: [], xa: [{ j: 'J', id: 'a', br: [['J', 1], ['1', 1]] }] },
+    short: { loops: [{ id: 'a', br: [['1', 1], ['sc', 1], ['T', 1]] }], xa: [{ j: 'J', id: 'b', br: [['J', 1], ['1', 1]] }] } },
+});
+
+const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk5', 'gk2', 'gk3', 'gk4', 'gk8', 'gk9', 'gk6', 'gk7', 'gk1'];
 P.sort((x, y) => ORDER.indexOf(x.id) - ORDER.indexOf(y.id));
 G.PROBLEMS = P;
 })(typeof window !== 'undefined' ? window : globalThis);

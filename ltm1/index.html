@@ -108,6 +108,7 @@ body.embed header{padding:6px 10px;gap:8px}
 body.embed #tools{gap:6px;margin-left:0}
 body.embed #tools button{padding:4px 9px;font-size:13px}
 body.embed #tools label{font-size:13px}
+.gkb{background:#ffb300;color:#3e2723;border-radius:4px;padding:0 5px;font-size:11px;margin-right:2px}
 </style></head><body>
 <header><button id="menu">☰</button><h1>Ôn thi giữa kỳ LTM1</h1><span class="sub">Chương 1 → 6 · dòng nhánh · dòng vòng · thế nút · Thévenin · xếp chồng · hỗ cảm</span>
 <div id="tools"><label><input type="checkbox" id="self"> Chế độ tự luyện</label><button id="rand">🎲 Đổi số liệu</button><button id="reset">↺ Số liệu gốc</button><button id="prt">🖨 In bài</button><span id="rnote"></span></div></header>
@@ -276,7 +277,7 @@ function prep(circ) {
     }
     b.isJ = b.els.some(e => e.k === 'J' || e.k === 'Jd');
     b.isC = circ.dc_reduce && b.els.some(e => e.k === 'C');
-    if (b.isJ && b.els.length !== 1) throw new Error('Nhánh nguồn dòng ' + b.id + ' chỉ được chứa nguồn dòng');
+    if (b.isJ) { b.jel = b.els.find(e => e.k === 'J' || e.k === 'Jd'); if (b.els.some(e => e !== b.jel && !['R', 'L', 'C', 'Z'].includes(e.k))) throw new Error('Nhánh nguồn dòng ' + b.id + ' chỉ được chứa nguồn dòng (và phần tử thụ động nối tiếp)'); }
     b.passive = b.els.filter(e => ['R', 'L', 'C', 'Z'].includes(e.k));
     b.srcs = b.els.filter(e => e.k === 'E' || e.k === 'Ed');
     brs.push(b);
@@ -311,7 +312,7 @@ function prep(circ) {
   const ctx = { circ, ac, w, S, els, brs, active, cps, nodes, comps, groundOf, isGround, nComp, notes, dotX };
   ctx.br = id => { const b = brs.find(x => x.id === id); if (!b) throw new Error('Không có nhánh ' + id); return b; };
   ctx.Itex = id => dotX('I') + '_{' + id + '}';
-  ctx.Jbr = b => b.els[0];
+  ctx.Jbr = b => b.jel;
   ctx.utex = e => dotX('U') + '_{' + e.n + '}';
   return ctx;
 }
@@ -412,7 +413,7 @@ function brCurLF(ctx, id, mode) {
   const b = ctx.br(id);
   if (b.isC) return LF.k([]);
   if (b.isJ) {
-    const e = b.els[0];
+    const e = b.jel;
     if (e.k === 'J') return LF.k(X.s(e.sym));
     return ctrlLF(ctx, e.ctrl, mode).mul(X.s(e.g));
   }
@@ -422,6 +423,13 @@ function ctrlLF(ctx, ctrl, mode) {
   const sg = ctrl.s || 1;
   if (ctrl.k === 'I') return brCurLF(ctx, ctrl.br, mode).mul(X.n(sg));
   if (ctrl.k === 'U') return elemVoltLF(ctx, ctrl.el, mode).mul(X.n(sg));
+  if (ctrl.k === 'V') { // điện áp giữa 2 nút theo đường đi (không qua nguồn dòng / nguồn phụ thuộc)
+    let l = new LF();
+    for (const [id, s] of ctrl.path) { const b = ctx.br(id);
+      for (const e of b.passive) l = l.add(elemVoltLF(ctx, e.n, mode).mul(X.n(s)));
+      for (const e of b.srcs) l = l.add(srcLF(ctx, e, mode).mul(X.n(-s * e.dir))); }
+    return l.mul(X.n(sg));
+  }
   throw new Error('ctrl?');
 }
 // điện áp trên phần tử thụ động (theo chiều dòng nhánh)
@@ -453,7 +461,7 @@ function elemVoltTerms(ctx, name) {
   for (const c of ctx.cps) { if (c.a === name) r.push({ sym: c.sym, sign: c.sign, br: c.brB, cp: c }); if (c.b === name) r.push({ sym: c.sym, sign: c.sign, br: c.brA, cp: c }); }
   return r;
 }
-function curNameTex(ctx, id) { const b = ctx.br(id); if (b.isJ && b.els[0].k === 'J') return symTex(ctx, b.els[0].sym); return ctx.Itex(id); }
+function curNameTex(ctx, id) { const b = ctx.br(id); if (b.isJ && b.jel.k === 'J') return symTex(ctx, b.jel.sym); return ctx.Itex(id); }
 
 /* ---------- K1 / K2 ---------- */
 function k1Nodes(ctx) {
@@ -574,7 +582,7 @@ function methodMesh(ctx, spec) {
   for (const b of ctx.active) if (b.isJ) { const L = xaL.find(x => x.j === b.id); const l = bExpr[b.id]; if (l.t.size !== 1 || !l.t.has('M:' + L.id)) throw new Error('Nhánh nguồn dòng ' + b.id + ' bị vòng khác đi qua'); }
   // xả values in terms of branch currents
   const xaVal = {};
-  for (const L of xaL) { const e = ctx.br(L.j).els[0]; xaVal[L.id] = e.k === 'J' ? LF.k(X.s(e.sym)) : null; }
+  for (const L of xaL) { const e = ctx.br(L.j).jel; xaVal[L.id] = e.k === 'J' ? LF.k(X.s(e.sym)) : null; }
   const toMesh = (lfBr) => { // replace I:id by bExpr
     let l = new LF(); l.c = lfBr.c.slice();
     for (const [u, co] of lfBr.t) { const id = u.split(':')[1]; l = l.add(bExpr[id].mul(co)); }
@@ -584,7 +592,7 @@ function methodMesh(ctx, spec) {
   const extra = []; const unk = loops.map(L => 'M:' + L.id);
   const depInfo = [];
   for (const L of xaL) {
-    const e = ctx.br(L.j).els[0]; if (e.k === 'J') continue;
+    const e = ctx.br(L.j).jel; if (e.k === 'J') continue;
     // control expressed via branch currents of non-J branches (ctrl of J branch itself excluded)
     const cl = ctrlLFbr(ctx, e.ctrl).mul(X.s(e.g)); // in I: unknowns and J consts
     const lm = toMesh(cl);
@@ -680,7 +688,7 @@ function methodNode(ctx) {
     if (memo[id]) return memo[id];
     const b = ctx.br(id);
     if (b.isC) return LF.k([]);
-    if (b.isJ) { const e = b.els[0]; memo[id] = e.k === 'J' ? LF.k(X.s(e.sym)) : ctrlNode(e.ctrl).mul(X.s(e.g)); return memo[id]; }
+    if (b.isJ) { const e = b.jel; memo[id] = e.k === 'J' ? LF.k(X.s(e.sym)) : ctrlNode(e.ctrl).mul(X.s(e.g)); return memo[id]; }
     if (!b.passive.length) return null; // pure
     let l = Vlf[b.n[0]].sub(Vlf[b.n[1]]);
     for (const s of b.srcs) l = l.add((s.k === 'E' ? LF.k(X.s(s.sym)) : ctrlNode(s.ctrl).mul(X.s(s.g))).mul(X.n(s.dir)));
@@ -689,6 +697,8 @@ function methodNode(ctx) {
   const ctrlNode = (ctrl) => {
     const sg = ctrl.s || 1;
     if (ctrl.k === 'I') { const l = brNodeLF(ctrl.br); if (!l) throw new Error('Điều khiển bởi dòng nhánh nguồn áp thuần'); return l.mul(X.n(sg)); }
+    if (ctrl.k === 'V') return Vlf[ctrl.a].sub(Vlf[ctrl.b]).mul(X.n(sg));
+    if (ctx.cps.length) throw new Error('hỗ cảm');
     const { el, br } = ctx.els[ctrl.el]; return brNodeLF(br.id).mul(X.s(el.sym)).mul(X.n(sg));
   };
   for (const b of ctx.active) { const l = brNodeLF(b.id); if (l) brI[b.id] = l; }
@@ -756,6 +766,7 @@ function potentials(ctx, I) {
 function ctrlNum(ctx, ctrl, I) {
   const sg = ctrl.s || 1;
   if (ctrl.k === 'I') return cscale(I[ctrl.br], sg);
+  if (ctrl.k === 'V') { let u = cx(0); for (const [id, s] of ctrl.path) { const b = ctx.br(id); for (const e of b.passive) u = cadd(u, cscale(elemVoltNum(ctx, e.n, I), s)); for (const e of b.srcs) u = csub(u, cscale(srcNum(ctx, e, I), s * e.dir)); } return cscale(u, sg); }
   return cscale(elemVoltNum(ctx, ctrl.el, I), sg);
 }
 function srcNum(ctx, e, I) { if (e.k === 'E' || e.k === 'J') return ctx.S[e.sym].val; return cmul(ctx.S[e.g].val, ctrlNum(ctx, e.ctrl, I)); }
@@ -781,7 +792,7 @@ function powerTable(ctx, I) {
         const Ev = srcNum(ctx, e, I); const S = cmul(cscale(Ev, e.dir), cconj(I[b.id]));
         rows.push({ e, b, kind: 'phat', U: Ev, I: cscale(I[b.id], e.dir), S }); Sphat = cadd(Sphat, S);
       } else if (e.k === 'J' || e.k === 'Jd') {
-        const U = csub(V[b.n[1]], V[b.n[0]]); const Jv = I[b.id]; const S = cmul(U, cconj(Jv));
+        let U = csub(V[b.n[1]], V[b.n[0]]); for (const pe of b.passive) U = cadd(U, elemVoltNum(ctx, pe.n, I)); const Jv = I[b.id]; const S = cmul(U, cconj(Jv));
         rows.push({ e, b, kind: 'phat', U, I: Jv, S, Unode: [b.n[1], b.n[0]] }); Sphat = cadd(Sphat, S);
       }
     }
@@ -972,7 +983,7 @@ function drawCircuit(circ, opt = {}) {
     }
   };
   for (const b of circ.branches) drawBranch(b, b._short ? 'sc' : 'w');
-  for (const b of (circ._offBr || [])) { const bb2 = { ...b, els: [] }; drawBranch(bb2, 'off'); const m = b.p[Math.floor(b.p.length / 2) - (b.p.length % 2 ? 0 : 1)], m2 = b.p[Math.ceil(b.p.length / 2) - (b.p.length % 2 ? 0 : 0)]; const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : b.p[1]; text(q[0] + 0.15, q[1], esc(b.els[0].n.replace(/^([A-Z])/, '$1') + ' = 0 (hở mạch)'), 'start', 'loff'); }
+  for (const b of (circ._offBr || [])) { const bb2 = { ...b, els: [] }; drawBranch(bb2, 'off'); const m = b.p[Math.floor(b.p.length / 2) - (b.p.length % 2 ? 0 : 1)], m2 = b.p[Math.ceil(b.p.length / 2) - (b.p.length % 2 ? 0 : 0)]; const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : b.p[1]; text(q[0] + 0.15, q[1], esc((b.els.find(e => e.k === 'J') || b.els[0]).n + ' = 0 (hở mạch)'), 'start', 'loff'); }
   for (const b of circ.branches) if (b._offE) { const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2]; const allx = circ.branches.flatMap(x => x.p.map(pp => pp[0])); const midx = (Math.min(...allx) + Math.max(...allx)) / 2; const rt = q[0] > midx; text(q[0] + (rt ? -0.12 : 0.12), q[1], esc(b._offE.join(', ') + ' = 0 (nối tắt)'), rt ? 'end' : 'start', 'loff'); }
   for (const b of (circ._openBr || [])) { const q = b.p.length === 2 ? [(b.p[0][0] + b.p[1][0]) / 2, (b.p[0][1] + b.p[1][1]) / 2] : b.p[1]; text(q[0], q[1] - 0.12, 'hở mạch (bỏ ' + esc((b.els[0] || {}).n || '') + ')', 'middle', 'loff'); }
   // node dots & labels
@@ -1030,7 +1041,7 @@ function drawCircuit(circ, opt = {}) {
 function ctrlStr(e, ac) {
   const g = { alpha: 'α', beta: 'β', mu: 'μ', gamma: 'γ' }[e.g] || e.g;
   const c = e.ctrl; let x;
-  if (c.k === 'I') x = (ac ? 'İ' : 'I') + c.br; else x = (ac ? 'U̇' : 'U') + c.el;
+  if (c.k === 'I') x = (ac ? 'İ' : 'I') + c.br; else if (c.k === 'V') x = (ac ? 'U̇' : 'U') + c.name; else x = (ac ? 'U̇' : 'U') + c.el;
   return esc(`= ${(c.s || 1) < 0 ? '−' : ''}${g}·${x}`);
 }
 G.drawCircuit = drawCircuit;
@@ -1070,6 +1081,7 @@ P.push({
   thev: { a: 'a', b: 'b', remove: '3', load: 'R3', zt: { s: [{ p: ['R1', 'R2'] }, 'R5'] }, ask: 'current',
     open: { loops: [{ id: 'a', br: [['1', 1], ['2', 1]] }], xa: [{ j: '4', id: 'b', br: [['4', 1], ['5', 1]] }] } },
   superpos: { target: '3' },
+  tn: { target: '3', load: ['R3'], sides: [{ name: 'trái', tag: 'L', lo: 'c', hi: 'a', steps: [{ t: 'start', e: 'E1', s: 1, z: ['R1'] }, { t: 'par', z: ['R2'] }] }, { name: 'phải', tag: 'R', lo: 'c', hi: 'b', steps: [{ t: 'start', j: 'J4', s: 1, z: ['R5'] }] }] },
 });
 
 P.push({
@@ -1388,14 +1400,63 @@ P.push({
     short: { loops: [{ id: 'a', br: [['1', 1], ['E', 1], ['3', -1]] }, { id: 'b', br: [['4', 1], ['5', -1], ['E', -1]] }, { id: 'c', br: [['3', 1], ['5', 1], ['sc', -1]] }], xa: [{ j: '7', id: 'd', br: [['7', 1], ['sc', 1]] }] } },
 });
 
-const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4'];
+/* ===== ĐỀ GIỮA KỲ ===== */
+P.push({
+  id: 'gk1', ch: 'Chương 1–2 · Mạch DC', gk: true, title: 'GK 2025.2 – Đề 01 – Câu 2: Thévenin, R₅ nhận công suất max',
+  src: 'Đề thi giữa kỳ LTM1 2025.2, Đề 01, Câu 2 (3 điểm) – số liệu đề gốc. Các tab giải toàn mạch giả thiết thêm R₅ = 10 Ω để luyện phương pháp.',
+  text: 'Cho $R_1 = 5\\,\\Omega$, $R_2 = 20\\,\\Omega$, $R_3 = 15\\,\\Omega$, $E_1 = 30$ V, $E_3 = 20$ V, $J_4 = 2$ A. a) Dùng mô hình Thévenin tính $R_5$ để nó nhận công suất lớn nhất. b) Tính công suất lớn nhất đó.',
+  nodes: {
+    a: { bus: [[2.2, 0]], dot: [[2.2, 0]], lbl: [2.2, 0, 'a', 'n'] },
+    b: { bus: [[5.4, 0], [6.8, 0]], dot: [[5.4, 0]], lbl: [5.4, 0, 'b', 'n'] },
+    c: { bus: [[0, 2.6], [6.8, 2.6]], dot: [[2.2, 2.6], [5.4, 2.6]], lbl: [2.2, 2.6, 'c', 's'] },
+  },
+  ground: 'c',
+  branches: [
+    { id: '1', n: ['c', 'a'], p: [[0, 2.6], [0, 0], [2.2, 0]], els: [{ k: 'E', n: 'E1', dir: 1, seg: 0 }, { k: 'R', n: 'R1', seg: 1 }], ia: { seg: 0, t: 0.15 } },
+    { id: '2', n: ['c', 'a'], p: [[2.2, 2.6], [2.2, 0]], els: [{ k: 'R', n: 'R2' }], ia: { seg: 0, t: 0.15 } },
+    { id: '3', n: ['a', 'b'], p: [[2.2, 0], [5.4, 0]], els: [{ k: 'R', n: 'R3', t: 0.3 }, { k: 'E', n: 'E3', dir: 1, t: 0.72 }], ia: { seg: 0, t: 0.92 } },
+    { id: '4', n: ['c', 'b'], p: [[5.4, 2.6], [5.4, 0]], els: [{ k: 'J', n: 'J4' }] },
+    { id: '5', n: ['b', 'c'], p: [[6.8, 0], [6.8, 2.6]], els: [{ k: 'R', n: 'R5' }] },
+  ],
+  loops: [{ id: 'a', br: [['1', 1], ['2', -1]], c: [1.1, 1.3] }, { id: 'b', br: [['2', 1], ['3', 1], ['5', 1]], c: [3.8, 1.3] }],
+  xa: [{ j: '4', id: 'c', br: [['4', 1], ['5', 1]], c: [6.1, 1.7], r: 0.28 }],
+  params: { R1: { v: 5 }, R2: { v: 20 }, R3: { v: 15 }, E1: { v: 30 }, E3: { v: 20 }, J4: { v: 2 }, R5: { v: 10 } },
+  thev: { a: 'b', b: 'c', remove: '5', ask: 'maxP', zt: { s: [{ p: ['R1', 'R2'] }, 'R3'] } },
+  tn: { target: '5', load: ['R5'], sides: [{ name: 'trái', tag: 'L', lo: 'c', hi: 'a', steps: [{ t: 'start', e: 'E1', s: 1, z: ['R1'] }, { t: 'par', z: ['R2'] }, { t: 'ser', z: ['R3'], e: 'E3', s: 1, hi: 'b' }, { t: 'par', j: 'J4', s: 1 }] }] },
+});
+P.push({
+  id: 'gk2', ch: 'Chương 3–5 · Mạch AC', gk: true, title: 'GK 2025.1 – Đề 1 (20/11/2025) – Câu 2: dòng I₂, I₄, I₅',
+  src: 'Đề thi giữa kỳ LTM1 2025.1, Đề 1, ngày 20/11/2025, Câu 2 (5,5 điểm) – số liệu đề gốc',
+  text: 'Cho $Z_2 = 40 + j40\\,\\Omega$, $Z_3 = 20 + j20\\,\\Omega$, $Z_4 = Z_5 = 10 + j50\\,\\Omega$, $\\dot J = 0{,}5\\angle 0^\\circ$ A, $\\dot E_1 = 50\\angle 60^\\circ$ V, $\\dot E_5 = 20\\angle 30^\\circ$ V. Tính trị hiệu dụng của các dòng $I_2$, $I_4$, $I_5$.',
+  ac: true,
+  nodes: {
+    a: { bus: [[0, 0.9], [2, 0.9]], dot: [[2, 0.9]], lbl: [2, 0.9, 'a', 'nw'] },
+    b: { bus: [[4, 0.9]], dot: [[4, 0.9]], lbl: [4, 0.9, 'b', 'ne'] },
+    c: { bus: [[0, 3.2], [6.2, 3.2]], dot: [[2, 3.2], [4, 3.2]], lbl: [3, 3.2, 'c', 's'] },
+  },
+  ground: 'c', nodeRep: ['b'],
+  branches: [
+    { id: '1', n: ['c', 'a'], p: [[0, 3.2], [0, 0.9]], els: [{ k: 'E', n: 'E1', dir: 1 }] },
+    { id: '2', n: ['a', 'c'], p: [[2, 0.9], [2, 3.2]], els: [{ k: 'Z', n: 'Z2' }], ia: { seg: 0, t: 0.85 } },
+    { id: '3', n: ['a', 'b'], p: [[2, 0.9], [4, 0.9]], els: [{ k: 'Z', n: 'Z3', lbl: 'd' }] },
+    { id: '6', n: ['a', 'b'], p: [[2, 0.9], [2, 0], [4, 0], [4, 0.9]], els: [{ k: 'J', n: 'J', seg: 1 }] },
+    { id: '4', n: ['b', 'c'], p: [[4, 0.9], [4, 3.2]], els: [{ k: 'Z', n: 'Z4' }], ia: { seg: 0, t: 0.85 } },
+    { id: '5', n: ['c', 'b'], p: [[6.2, 3.2], [6.2, 0.9], [4, 0.9]], els: [{ k: 'E', n: 'E5', dir: 1, seg: 0 }, { k: 'Z', n: 'Z5', seg: 1, lbl: 'd' }], ia: { seg: 1, t: 0.12 } },
+  ],
+  loops: [{ id: 'a', br: [['1', 1], ['2', 1]], c: [1, 2] }, { id: 'b', br: [['3', 1], ['4', 1], ['2', -1]], c: [3, 2] }, { id: 'c', br: [['5', 1], ['4', 1]], c: [5.1, 2] }],
+  xa: [{ j: '6', id: 'd', br: [['6', 1], ['3', -1]], c: [3, 0.45], r: 0.22 }],
+  params: { Z2: { z: [40, 40] }, Z3: { z: [20, 20] }, Z4: { z: [10, 50] }, Z5: { z: [10, 50] }, J: { m: 0.5, ph: 0 }, E1: { m: 50, ph: 60 }, E5: { m: 20, ph: 30 } },
+  tn: { target: '4', load: ['Z4'], sides: [{ name: 'nguồn', tag: 'T', lo: 'c', hi: 'a', steps: [{ t: 'start', e: 'E1', s: 1, z: [] }, { t: 'par', z: ['Z2'] }, { t: 'ser', z: ['Z3'], j: 'J', s: 1, hi: 'b' }, { t: 'par', z: ['Z5'], e: 'E5', s: 1 }] }] },
+});
+
+const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'gk1', 'dc5', 'dc6', 'ac1', 'ac2', 'gk2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4'];
 P.sort((x, y) => ORDER.indexOf(x.id) - ORDER.indexOf(y.id));
 G.PROBLEMS = P;
 })(typeof window !== 'undefined' ? window : globalThis);
 </script><script>/* ============ SINH LỜI GIẢI (HTML + LaTeX) ============ */
 (function (G) {
 const L = G.LTM;
-const { X, LF, cx, cadd, csub, cmul, cdiv, cabs, carg, cconj, fnum, fang, falg, fpol, fval, fco, evalX, texX } = L;
+const { X, LF, cx, cadd, csub, cmul, cdiv, cabs, carg, cconj, cscale, fnum, fang, falg, fpol, fval, fco, evalX, texX } = L;
 const M = t => `$${t}$`;            // inline math
 const D = t => `$$${t}$$`;          // display math
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -1501,7 +1562,7 @@ function dataTex(ctx) {
 function depTex(ctx) {
   const r = [];
   for (const b of ctx.active) for (const e of b.els) if (e.k === 'Ed' || e.k === 'Jd') {
-    const c = e.ctrl; const ctl = c.k === 'I' ? L.curNameTex(ctx, c.br) : ctx.utex(ctx.els[c.el].el);
+    const c = e.ctrl; const ctl = c.k === 'I' ? L.curNameTex(ctx, c.br) : c.k === 'V' ? ctx.dotX('U') + '_{' + c.name + '}' : ctx.utex(ctx.els[c.el].el);
     r.push(`${nm(ctx, e.sym)} = ${(c.s || 1) < 0 ? '-' : ''}${ctx.S[e.g].tex}\\cdot ${ctl}`);
   }
   return r;
@@ -1535,7 +1596,7 @@ function renderStructure(ctx) {
   const nJ = act.filter(b => b.isJ).length;
   const nb = act.length; const nn = nodes.length; const nc = ctx.nComp;
   const k1 = nn - nc, k2 = nb - nJ - k1;
-  let rows = act.map(b => `<tr><td>${b.id}</td><td>${b.n[0]} → ${b.n[1]}</td><td>${M(brElsTex(ctx, b))}</td><td>${b.isJ ? M(L.curNameTex(ctx, b.id)) + ' (đã biết' + (b.els[0].k === 'Jd' ? ', phụ thuộc' : '') + ')' : M(curTex(ctx, b.id)) + ' (ẩn)'}</td></tr>`).join('');
+  let rows = act.map(b => `<tr><td>${b.id}</td><td>${b.n[0]} → ${b.n[1]}</td><td>${M(brElsTex(ctx, b))}</td><td>${b.isJ ? M(L.curNameTex(ctx, b.id)) + ' (đã biết' + (b.jel.k === 'Jd' ? ', phụ thuộc' : '') + ')' : M(curTex(ctx, b.id)) + ' (ẩn)'}</td></tr>`).join('');
   let body = `<table class="tb"><tr><th>Nhánh</th><th>Nối từ nút → nút (chiều dòng)</th><th>Phần tử trên nhánh</th><th>Dòng nhánh</th></tr>${rows}</table>`;
   body += `<p>Các nút: ${nodes.map(n => '<b>' + n + '</b>').join(', ')}${nc > 1 ? ` (mạch gồm ${nc} phần tách rời, chỉ liên hệ qua hỗ cảm)` : ''}.</p>`;
   body += `<ul><li>Số nhánh ${M('m = ' + nb)}, số nút ${M('n = ' + nn)}, số nhánh nguồn dòng ${M('n_J = ' + nJ)}.</li>`;
@@ -1616,7 +1677,7 @@ function renderVoltages(ctx, I) {
   const jb = ctx.active.filter(b => b.isJ);
   if (jb.length) {
     body += '<p>Điện áp trên nguồn dòng tìm qua điện thế các nút (đi từ nút gốc theo các nhánh đã biết dòng):</p>' + D(L.aligned(Object.keys(Vn).map(n => `${ctx.dotX('V')}_{${n}} &= ${V(ctx, Vn[n])}\\,\\text{V}`)));
-    body += D(L.aligned(jb.map(b => `${ctx.dotX('U')}_{${b.els[0].n}} &= ${ctx.dotX('V')}_{${b.n[1]}} - ${ctx.dotX('V')}_{${b.n[0]}} = ${V(ctx, csub(Vn[b.n[1]], Vn[b.n[0]]))}\\,\\text{V}\\quad(\\text{chiều từ đuôi đến đầu mũi tên nguồn})`)));
+    body += D(L.aligned(jb.map(b => `${ctx.dotX('U')}_{${b.jel.n}} &= ${ctx.dotX('V')}_{${b.n[1]}} - ${ctx.dotX('V')}_{${b.n[0]}}${b.passive.map(pe => ' + ' + ctx.utex(pe)).join('')} = ${V(ctx, b.passive.reduce((u, pe) => cadd(u, L.elemVoltNum(ctx, pe.n, I)), csub(Vn[b.n[1]], Vn[b.n[0]])))}\\,\\text{V}\\quad(\\text{chiều từ đuôi đến đầu mũi tên nguồn})`)));
   }
   return step('Tính điện áp trên các phần tử', body);
 }
@@ -1637,7 +1698,7 @@ function renderMesh(ctx, R) {
   b1 += mm.loops.map(Lp => `<li>${M(L.utexOf(ctx, 'M:' + Lp.id))} chạy trong vòng <b>${loopName(ctx, Lp)}</b>: ${M(loopPath(ctx, Lp))}</li>`).join('') + '</ul>';
   if (mm.xaL.length) {
     b1 += `<p>Mạch có ${mm.xaL.length} nguồn dòng → ${mm.xaL.length} dòng vòng “xả” (đã biết, không làm tăng số ẩn):</p><ul>`;
-    b1 += mm.xaL.map(Lp => { const e = ctx.br(Lp.j).els[0]; return `<li>${M(L.utexOf(ctx, 'M:' + Lp.id) + ' = ' + nm(ctx, e.sym))} khép kín theo vòng <b>${loopName(ctx, Lp)}</b>: ${M(loopPath(ctx, Lp))}</li>`; }).join('') + '</ul>';
+    b1 += mm.xaL.map(Lp => { const e = ctx.br(Lp.j).jel; return `<li>${M(L.utexOf(ctx, 'M:' + Lp.id) + ' = ' + nm(ctx, e.sym))} khép kín theo vòng <b>${loopName(ctx, Lp)}</b>: ${M(loopPath(ctx, Lp))}</li>`; }).join('') + '</ul>';
     b1 += tip('Vòng xả bắt buộc đi qua đúng 1 nguồn dòng (theo chiều nguồn) và không đi qua nguồn dòng khác.');
   }
   h += step('Chọn các dòng vòng', b1);
@@ -1753,7 +1814,7 @@ function solveCompact(ctx, prefer) {
   }
   const mm = L.methodMesh(ctx);
   const allL = [...mm.loops, ...mm.xaL];
-  html += `<p>Giải bằng <b>dòng vòng</b>${na && prefer !== 'mesh' ? ' (' + na + ')' : ''}: ` + mm.loops.map(Lp => M(L.utexOf(ctx, 'M:' + Lp.id)) + ' – vòng ' + loopName(ctx, Lp) + ' ' + M(loopPath(ctx, Lp))).join('; ') + (mm.xaL.length ? '; xả: ' + mm.xaL.map(Lp => M(L.utexOf(ctx, 'M:' + Lp.id) + ' = ' + nm(ctx, ctx.br(Lp.j).els[0].sym)) + ' qua vòng ' + loopName(ctx, Lp)).join('; ') : '') + '.</p>';
+  html += `<p>Giải bằng <b>dòng vòng</b>${na && prefer !== 'mesh' ? ' (' + na + ')' : ''}: ` + mm.loops.map(Lp => M(L.utexOf(ctx, 'M:' + Lp.id)) + ' – vòng ' + loopName(ctx, Lp) + ' ' + M(loopPath(ctx, Lp))).join('; ') + (mm.xaL.length ? '; xả: ' + mm.xaL.map(Lp => M(L.utexOf(ctx, 'M:' + Lp.id) + ' = ' + nm(ctx, ctx.br(Lp.j).jel.sym)) + ' qua vòng ' + loopName(ctx, Lp)).join('; ') : '') + '.</p>';
   html += D(L.aligned(ctx.active.map(b => `${curTex(ctx, b.id)} &= ${L.lfTex(ctx, mm.bExpr[b.id])}`)));
   if (mm.depInfo.length) html += '<p>' + M(mm.depInfo.map(d => L.utexOf(ctx, 'M:' + d.L.id) + ' = ' + L.lfTex(ctx, d.cl) + ' = ' + L.lfTex(ctx, d.lm)).join(';\\ ')) + '</p>';
   if (mm.unk.length) { html += sysSym(ctx, mm.eqs, mm.unk) + '<p>Thay số:</p>' + sysNum(ctx, mm.eqs, mm.unk) + solList(ctx, mm.sol, mm.unk, unitI) + verifyEqs(ctx, mm.eqs, mm.unk, mm.sol); }
@@ -1878,6 +1939,61 @@ function treeFormula(ctx, t) {
   return k.join(t.s ? ' + ' : ' \\parallel ');
 }
 
+
+/* ===== THÉVENIN ↔ NORTON LIÊN TIẾP ===== */
+function renderTN(ctx, R) {
+  STEP = 0; const T = ctx.circ.tn; const ac = ctx.ac; const Ed = ctx.dotX('E'), Jd = ctx.dotX('J');
+  const zsum = zs => zs.reduce((a, n) => cadd(a, ctx.S[ctx.els[n].el.sym].val), cx(0));
+  const ztex = zs => zs.map(n => nm(ctx, ctx.els[n].el.sym)).join(' + ');
+  const Zf = z => Valg(ctx, z, '\\,\\Omega');
+  const sides = T.sides.map(sd => {
+    sd = { ...sd }; let st = null, k = 0, html = ''; const lab = () => '_{' + sd.tag + k + '}';
+    const toN = () => { const J = cdiv(st.E, st.Z); html += `<p>Đổi <b>Thévenin → Norton</b>: ${M(Jd + lab() + ' = \\frac{' + Ed + lab() + '}{Z' + lab() + '} = \\frac{' + Valg(ctx, st.E) + '}{' + Valg(ctx, st.Z) + '} = ' + V(ctx, J, ac ? '' : '\\,\\text{A}'))} (nguồn dòng song song ${M('Z' + lab())}, tổng trở giữ nguyên).</p>`; st = { N: true, J, Z: st.Z }; };
+    const toT = () => { const E = cmul(st.J, st.Z); html += `<p>Đổi <b>Norton → Thévenin</b>: ${M(Ed + lab() + ' = ' + Jd + lab() + '\\cdot Z' + lab() + ' = ' + par(ctx, st.J) + '\\cdot ' + parZ(ctx, st.Z) + ' = ' + V(ctx, E, ac ? '' : '\\,\\text{V}'))} (nguồn áp nối tiếp ${M('Z' + lab())}).</p>`; st = { N: false, E, Z: st.Z }; };
+    for (const o of sd.steps) {
+      if (o.t === 'start') { k++; const z = zsum(o.z || []);
+        if (o.e) { const E = cscale(ctx.S[o.e].val, o.s); st = { N: false, E, Z: z }; html += `<p>Bắt đầu từ nhánh có nguồn áp ${M(nm(ctx, o.e))} nối tiếp ${M(ztex(o.z) || '0')}: ${M(Ed + lab() + ' = ' + (o.s < 0 ? '-' : '') + nm(ctx, o.e) + ' = ' + V(ctx, E) + ',\; Z' + lab() + ' = ' + Zf(z))} (dạng Thévenin, cực ${sd.hi}, gốc ${sd.lo}).</p>`; }
+        else { const J = cscale(ctx.S[o.j].val, o.s); st = { N: true, J, Z: z }; html += `<p>Bắt đầu từ nguồn dòng ${M(nm(ctx, o.j))} song song ${M(ztex(o.z))}: ${M(Jd + lab() + ' = ' + V(ctx, J) + ',\; Z' + lab() + ' = ' + Zf(z))} (dạng Norton).</p>`; }
+      } else if (o.t === 'par') {
+        const zb = o.z && o.z.length ? zsum(o.z) : null;
+        if (!st.N && cabs(st.Z) < 1e-12) { html += note(`${M(ztex(o.z))} mắc song song với nguồn áp lý tưởng ${M(Ed + lab())} (nội trở 0) → <b>không ảnh hưởng</b> phần mạch còn lại, bỏ qua.`); continue; }
+        if (!st.N) toN();
+        let Jb = cx(0), jt = '0';
+        if (o.e) { Jb = cscale(cdiv(ctx.S[o.e].val, zb), o.s); jt = (o.s < 0 ? '-' : '') + '\\frac{' + nm(ctx, o.e) + '}{' + ztex(o.z) + '}'; html += `<p>Nhánh ${M(nm(ctx, o.e) + ' + ' + ztex(o.z))} cũng đổi sang Norton: ${M(jt + ' = ' + V(ctx, Jb))}.</p>`; }
+        if (o.j) { Jb = cadd(Jb, cscale(ctx.S[o.j].val, o.s)); jt = (o.s < 0 ? '-' : '') + nm(ctx, o.j); }
+        const J0 = st.J, Z0 = st.Z; k++;
+        const Z = zb ? cdiv(cmul(Z0, zb), cadd(Z0, zb)) : Z0, J = cadd(J0, Jb);
+        html += `<p>Ghép song song với ${M(o.z && o.z.length ? ztex(o.z) : nm(ctx, o.j))}: nguồn dòng cộng, tổng trở song song:</p>` + D(L.aligned([Jd + lab() + ' &= ' + Jd + '_{' + sd.tag + (k - 1) + '} + ' + jt + ' = ' + V(ctx, J), 'Z' + lab() + ' &= ' + (zb ? 'Z_{' + sd.tag + (k - 1) + '} \\parallel (' + ztex(o.z) + ') = ' + Zf(Z) : 'Z_{' + sd.tag + (k - 1) + '} = ' + Zf(Z) + '\;(\\text{nguồn dòng có } Z=\\infty)')]));
+        st = { N: true, J, Z };
+      } else if (o.t === 'ser') {
+        if (st.N) toT();
+        let Eb = cx(0), et = '';
+        const zb = zsum(o.z || []);
+        if (o.e) { Eb = cscale(ctx.S[o.e].val, o.s); et = (o.s < 0 ? ' - ' : ' + ') + nm(ctx, o.e); }
+        if (o.j) { Eb = cadd(Eb, cscale(cmul(ctx.S[o.j].val, zb), o.s)); et += (o.s < 0 ? ' - ' : ' + ') + nm(ctx, o.j) + '\\cdot (' + ztex(o.z) + ')'; html += `<p>Khối ${M(nm(ctx, o.j) + '\\parallel ' + ztex(o.z))} đổi sang Thévenin (nguồn áp ${M(nm(ctx, o.j) + '\\cdot ' + ztex(o.z))} nối tiếp ${M(ztex(o.z))}).</p>`; }
+        const E0 = st.E, Z0 = st.Z; k++;
+        const E = cadd(E0, Eb), Z = cadd(Z0, zb);
+        html += `<p>Nối tiếp thêm ${M((ztex(o.z) || '') + (o.e ? (o.z && o.z.length ? ',\\ ' : '') + nm(ctx, o.e) : ''))} → cực mới là <b>${o.hi}</b>: nguồn áp cộng đại số, tổng trở cộng:</p>` + D(L.aligned([Ed + lab() + ' &= ' + Ed + '_{' + sd.tag + (k - 1) + '}' + et + ' = ' + V(ctx, E), 'Z' + lab() + ' &= Z_{' + sd.tag + (k - 1) + '} + ' + (ztex(o.z) || '0') + ' = ' + Zf(Z)]));
+        sd.hi = o.hi; st = { N: false, E, Z };
+      }
+    }
+    if (st.N) toT();
+    st.tex = '_{' + sd.tag + k + '}';
+    return { sd, st, html };
+  });
+  let h = step('Ý tưởng', '<p>Thay từng phần mạch bằng nguồn tương đương rồi <b>đổi qua lại</b> giữa hai dạng: nguồn áp ' + M('E') + ' nối tiếp ' + M('Z') + ' ⇄ nguồn dòng ' + M('J = E/Z') + ' song song ' + M('Z') + '. Hai nguồn dòng song song thì cộng; hai nguồn áp nối tiếp thì cộng; tổng trở nối tiếp cộng, song song tính ' + M('\\parallel') + '. Cứ thế “nuốt” dần các nhánh cho tới khi chỉ còn tải.</p>' + tip('Chiều quy ước: ' + M('E') + ' hướng từ cực gốc lên cực ra (cực ra có điện thế cao hơn khi hở mạch); ' + M('J') + ' bơm dòng vào cực ra. Nguồn ngược chiều thì mang dấu “−”.'));
+  sides.forEach(x => { h += step('Rút gọn phía ' + x.sd.name + ' (nhìn từ ' + x.sd.hi + '–' + x.sd.lo + ')', x.html + D(Ed + x.st.tex + ' = ' + V(ctx, x.st.E, ac ? '' : '\\,\\text{V}') + ',\\quad Z' + x.st.tex + ' = ' + Zf(x.st.Z))); });
+  const zl = zsum(T.load), A = sides[0].st, B = sides[1] ? sides[1].st : { E: cx(0), Z: cx(0), tex: '' };
+  const Il = cdiv(csub(A.E, B.E), cadd(cadd(A.Z, zl), B.Z));
+  const f = sides[1] ? `\\frac{${Ed}${A.tex} - ${Ed}${B.tex}}{Z${A.tex} + ${ztex(T.load)} + Z${B.tex}}` : `\\frac{${Ed}${A.tex}}{Z${A.tex} + ${ztex(T.load)}}`;
+  const Ib = cscale(Il, T.dir || 1);
+  let b = '<p>Mạch còn lại là một vòng duy nhất: ' + (sides[1] ? 'hai nguồn Thévenin hai phía' : 'nguồn Thévenin') + ' nối với tải ' + M(ztex(T.load)) + ':</p>' + D(ctx.dotX('I') + '_t = ' + f + ' = ' + V(ctx, Il, '\\,\\text{A}'));
+  b += `<p>Theo chiều dòng nhánh ${T.target}: ${M(curTex(ctx, T.target) + ' = ' + ((T.dir || 1) < 0 ? '-' : '') + ctx.dotX('I') + '_t = ' + V(ctx, Ib, '\\,\\text{A}'))}.</p>`;
+  b += chk('so với phương pháp dòng nhánh: ' + M(curTex(ctx, T.target) + ' = ' + V(ctx, R.I[T.target])), cabs(csub(Ib, R.I[T.target])) < 1e-6 * Math.max(1, cabs(Ib)));
+  h += step('Nối tải và tính dòng', b);
+  return h;
+}
+
 /* ======================================================
    XẾP CHỒNG
 ======================================================*/
@@ -1991,6 +2107,7 @@ function renderProblem(circ) {
   tabs.push({ id: 'no', name: 'Điện thế nút', html: renderNode(ctx, R) });
   if (circ.equiv) tabs.push({ id: 'eq', name: 'Tổng trở tương đương', html: renderEquiv(ctx, R) });
   if (circ.thev) tabs.push({ id: 'th', name: circ.thev.ask === 'maxP' ? 'Thévenin & hòa hợp tải' : 'Thévenin – Norton', html: renderThevenin(ctx, R) });
+  if (circ.tn) tabs.push({ id: 'tn', name: 'Thévenin↔Norton liên tiếp', html: renderTN(ctx, R) });
   if (circ.superpos) tabs.push({ id: 'sp', name: 'Xếp chồng', html: renderSuperpos(ctx, R) });
   tabs.push({ id: 'pw', name: 'Công suất', html: renderPower(ctx, R) });
   if (circ.extra) tabs.push({ id: 'ex', name: circ.extra.name, html: circ.extra.render(ctx, R, { M, D, step: (t, b) => { return step(t, b); }, V, Valg, par, tip, chk, note, L, G }) });
@@ -2083,7 +2200,7 @@ function buildNav() {
   let ch = '';
   PROBLEMS.forEach((p, i) => {
     if (p.ch !== ch) { ch = p.ch; h += `<div class="navh">${ch}</div>`; }
-    h += `<a href="#${p.id}" class="navi" data-id="${p.id}"><span class="no">${i + 1}</span>${p.title}</a>`;
+    h += `<a href="#${p.id}" class="navi" data-id="${p.id}"><span class="no">${i + 1}</span>${p.gk ? '<b class="gkb">GK</b> ' : ''}${p.title}</a>`;
   });
   nav.innerHTML = h;
 }

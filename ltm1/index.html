@@ -1403,8 +1403,8 @@ P.push({
 
 /* ===== ĐỀ GIỮA KỲ ===== */
 P.push({
-  id: 'gk1', ch: 'Giữa kỳ', gk: true, title: 'GK 2025.2 – Đề 01 – Câu 2: Thévenin, R₅ nhận công suất max',
-  src: 'Đề thi giữa kỳ LTM1 2025.2, Đề 01, Câu 2 (3 điểm) – số liệu đề gốc. Các tab giải toàn mạch giả thiết thêm R₅ = 10 Ω để luyện phương pháp.',
+  id: 'gk1', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.2 · 05/04/2026 · Đề 01 · Câu 2: Thévenin, R₅ nhận P max',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.2, ngày thi 05/04/2026, Đề 01, Câu 2 (3 điểm) – số liệu đề gốc. Các tab giải toàn mạch giả thiết thêm R₅ = 10 Ω để luyện phương pháp.',
   text: 'Cho $R_1 = 5\\,\\Omega$, $R_2 = 20\\,\\Omega$, $R_3 = 15\\,\\Omega$, $E_1 = 30$ V, $E_3 = 20$ V, $J_4 = 2$ A. a) Dùng mô hình Thévenin tính $R_5$ để nó nhận công suất lớn nhất. b) Tính công suất lớn nhất đó.',
   nodes: {
     a: { bus: [[2.2, 0]], dot: [[2.2, 0]], lbl: [2.2, 0, 'a', 'n'] },
@@ -1426,8 +1426,8 @@ P.push({
   tn: { target: '5', load: ['R5'], sides: [{ name: 'trái', tag: 'L', lo: 'c', hi: 'a', steps: [{ t: 'start', e: 'E1', s: 1, z: ['R1'] }, { t: 'par', z: ['R2'] }, { t: 'ser', z: ['R3'], e: 'E3', s: 1, hi: 'b' }, { t: 'par', j: 'J4', s: 1 }] }] },
 });
 P.push({
-  id: 'gk2', ch: 'Giữa kỳ', gk: true, title: 'GK 2025.1 – Đề 1 (20/11/2025) – Câu 2: dòng I₂, I₄, I₅',
-  src: 'Đề thi giữa kỳ LTM1 2025.1, Đề 1, ngày 20/11/2025, Câu 2 (5,5 điểm) – số liệu đề gốc',
+  id: 'gk2', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 20/11/2025 · Đề 1 · Câu 2: dòng I₂, I₄, I₅',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 20/11/2025, Đề 1, Câu 2 (5,5 điểm) – số liệu đề gốc',
   text: 'Cho $Z_2 = 40 + j40\\,\\Omega$, $Z_3 = 20 + j20\\,\\Omega$, $Z_4 = Z_5 = 10 + j50\\,\\Omega$, $\\dot J = 0{,}5\\angle 0^\\circ$ A, $\\dot E_1 = 50\\angle 60^\\circ$ V, $\\dot E_5 = 20\\angle 30^\\circ$ V. Tính trị hiệu dụng của các dòng $I_2$, $I_4$, $I_5$.',
   ac: true,
   nodes: {
@@ -1451,8 +1451,8 @@ P.push({
 });
 
 P.push({
-  id: 'gk3', ch: 'Giữa kỳ', gk: true, title: 'GK 2025.1 – Đề 01 (27/11/2025) – Câu 1: hỗ cảm + J̇₃ = α·U̇₁, công suất nguồn dòng',
-  src: 'Đề thi giữa kỳ LTM1 2025.1, Đề 01, ngày 27/11/2025, Câu 1 (4,5 điểm) – số liệu đề gốc',
+  id: 'gk3', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 01 · Câu 1: hỗ cảm + J̇₃ = α·U̇₁, P nguồn dòng',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 01, Câu 1 (4,5 điểm) – số liệu đề gốc',
   text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $\\dot E_2 = 20\\angle 20^\\circ$ V; $Z_{L1} = j1\\,\\Omega$; $Z_{L2} = j2\\,\\Omega$; $Z_M = j0{,}5\\,\\Omega$; $\\dot J_3 = \\alpha\\cdot\\dot U_1$; $\\alpha = 0{,}3$; $Z_3 = 3 - j3\\,\\Omega$. <b>Tính công suất phát của nguồn dòng</b> (kết quả ở tab Công suất, dòng $\\dot J_3$). $\\dot U_1$ là điện áp trên $Z_{L1}$ theo chiều mũi tên (từ dưới lên).',
   ac: true,
   nodes: { m: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'm', 'w'] }, r: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'r', 'e'] } },
@@ -1470,8 +1470,8 @@ P.push({
   params: { E1: { m: 10, ph: 10 }, E2: { m: 20, ph: 20 }, L1: { z: [0, 1] }, L2: { z: [0, 2] }, M: { z: [0, 0.5] }, alpha: { v: 0.3 }, Z3: { z: [3, -3] } },
 });
 P.push({
-  id: 'gk4', ch: 'Giữa kỳ', gk: true, title: 'GK 2025.1 – Đề 01 (27/11/2025) – Câu 2: Ė₃ = α·U̇₂, tìm Z₃ hòa hợp, Pmax',
-  src: 'Đề thi giữa kỳ LTM1 2025.1, Đề 01, ngày 27/11/2025, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω để luyện phương pháp (đáp án câu a, b ở tab Thévenin không phụ thuộc Z₃).',
+  id: 'gk4', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 01 · Câu 2: Ė₃ = α·U̇₂, Z₃ hòa hợp, Pmax',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 01, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω để luyện phương pháp (đáp án câu a, b ở tab Thévenin không phụ thuộc Z₃).',
   text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $Z_1 = 1 + j1\\,\\Omega$; $\\dot J_2 = 2\\angle 20^\\circ$ A; $Z_2 = 2 - j2\\,\\Omega$; $\\dot E_3 = \\alpha\\cdot\\dot U_2$; $\\alpha = 0{,}3$. $\\dot U_2$ là điện áp từ đầu trái sang đầu phải của nguồn $\\dot J_2$ (theo mũi tên). a) Tính $Z_3$ để công suất truyền đến trở kháng này là lớn nhất. b) Tính công suất đó.',
   ac: true,
   nodes: {
@@ -1497,7 +1497,7 @@ P.push({
     short: { loops: [{ id: 'a', br: [['E', 1], ['sc', 1], ['1', -1]] }], xa: [{ j: 'J', id: 'b', br: [['J', 1], ['2', 1], ['1', 1]] }] } },
 });
 
-const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk3', 'gk4', 'gk1', 'gk2'];
+const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk2', 'gk3', 'gk4', 'gk1'];
 P.sort((x, y) => ORDER.indexOf(x.id) - ORDER.indexOf(y.id));
 G.PROBLEMS = P;
 })(typeof window !== 'undefined' ? window : globalThis);

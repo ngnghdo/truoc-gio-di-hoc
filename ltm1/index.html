@@ -111,6 +111,7 @@ body.embed #tools label{font-size:13px}
 .gkb{background:#ffb300;color:#3e2723;border-radius:4px;padding:0 5px;font-size:11px;margin-right:2px}
 body.navhide nav#nav{display:none}
 body.navhide main#main{max-width:1400px}
+.navx{width:100%;margin:0 0 6px;font-weight:600;color:var(--red);border-color:var(--red2)}
 </style></head><body>
 <header><button id="menu">☰</button><h1>Ôn thi giữa kỳ LTM1</h1><span class="sub">Chương 1 → 6 · dòng nhánh · dòng vòng · thế nút · Thévenin · xếp chồng · hỗ cảm</span>
 <div id="tools"><label><input type="checkbox" id="self"> Chế độ tự luyện</label><button id="rand">🎲 Đổi số liệu</button><button id="reset">↺ Số liệu gốc</button><button id="prt">🖨 In bài</button><span id="rnote"></span></div></header>
@@ -2368,7 +2369,8 @@ function buildNav() {
     if (p.ch !== ch) { ch = p.ch; h += `<div class="navh">${ch}</div>`; }
     h += `<a href="#${p.id}" class="navi" data-id="${p.id}"><span class="no">${i + 1}</span>${p.gk ? '<b class="gkb">GK</b> ' : ''}${p.title}</a>`;
   });
-  nav.innerHTML = h;
+  nav.innerHTML = '<button class="navx" id="navX" type="button">« Thu gọn danh sách</button>' + h;
+  document.getElementById('navX').onclick = () => $('#menu').click();
 }
 function show(id) {
   document.querySelectorAll('.navi').forEach(a => a.classList.toggle('on', a.dataset.id === id));

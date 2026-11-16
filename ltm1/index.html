@@ -1415,7 +1415,7 @@ P.push({
 
 /* ===== ĐỀ GIỮA KỲ ===== */
 P.push({
-  id: 'gk1', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.2 · 05/04/2026 · Đề 01 · Câu 2: Thévenin, R₅ nhận P max',
+  id: 'gk1', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.2 · 05/04/2026 · Đề 01 · Câu 2: Thévenin–Norton liên tiếp, R₅ nhận P max',
   src: 'Đề thi giữa kỳ LTM1 kỳ 2025.2, ngày thi 05/04/2026, Đề 01, Câu 2 (3 điểm) – số liệu đề gốc. Các tab giải toàn mạch giả thiết thêm R₅ = 10 Ω để luyện phương pháp.',
   text: 'Cho $R_1 = 5\\,\\Omega$, $R_2 = 20\\,\\Omega$, $R_3 = 15\\,\\Omega$, $E_1 = 30$ V, $E_3 = 20$ V, $J_4 = 2$ A. a) Dùng mô hình Thévenin tính $R_5$ để nó nhận công suất lớn nhất. b) Tính công suất lớn nhất đó.',
   nodes: {
@@ -1622,7 +1622,47 @@ P.push({
     short: { loops: [{ id: 'a', br: [['1', 1], ['sc', 1], ['T', 1]] }], xa: [{ j: 'J', id: 'b', br: [['J', 1], ['1', 1]] }] } },
 });
 
-const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk5', 'gk2', 'gk3', 'gk4', 'gk8', 'gk9'];
+{ // 05/12 Câu 1a: bản AC của gk6
+  const g = JSON.parse(JSON.stringify(P.find(x => x.id === 'gk6')));
+  g.id = 'gk6a'; g.ac = true; g.omega = 1000; g.timeGiven = false; delete g.dc_reduce;
+  g.title = 'Giữa kỳ 2025.1 · 05/12/2025 · Đề 01 · Câu 1a: hệ dòng nhánh AC có hỗ cảm';
+  g.src = 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 05/12/2025, Đề 01, Câu 1a. Đề chỉ yêu cầu lập hệ (không cho ω) → web lấy ω = 1000 rad/s, ė₁ = 10∠0° V để thay số minh họa. Đáp án: tab Dòng nhánh, bước 4 (hệ tổng quát).';
+  g.text = 'Cho mạch điện như Hình 1.<br>a) Giả sử $e_1$ là nguồn hình sin với tần số $\\omega$. Lập hệ phương trình dòng nhánh mô tả mạch?';
+  g.params.E1 = { m: 10, ph: 0 };
+  g.branches.find(b => b.id === '2').els[0].dot = 'e';
+  g.loops = [{ id: 'a', br: [['e', 1], ['1', 1], ['3', 1]], c: [1.8, 2.8] }, { id: 'b', br: [['e', 1], ['2', 1], ['C', 1]], c: [5.2, 3.3], r: 0.25 }];
+  g.xa = [{ j: 'j', id: 'c', br: [['j', 1], ['C', 1], ['3', -1]], c: [4.8, 2.2], r: 0.25 }];
+  P.push(g);
+}
+P.push({
+  id: 'gk10', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.2 · 22/05/2026 · Đề 01 · Câu 1: thế nút (đất c), siêu nút, R₄ nhận P max',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.2, ngày thi 22/05/2026, Đề 01, Câu 1 – số liệu đề gốc. Lưu ý: R₅ nối tiếp nguồn dòng J₅ không xuất hiện trong phương trình thế nút; L₂ ở DC là dây nối. Đáp án a: tab Điện thế nút; b: tab Thévenin.',
+  text: 'Cho mạch điện như Hình 1, với $J_1 = 1$ A; $E_4 = 4$ V; $J_5 = 5$ A; $E_8 = 8$ V; $R_2 = 1{,}2\\,\\Omega$; $L_2 = 2{,}2$ H; $R_3 = 3\\,\\Omega$; $R_4 = 4\\,\\Omega$; $R_5 = 5{,}6\\,\\Omega$; $R_6 = 6{,}5\\,\\Omega$; $R_7 = 7\\,\\Omega$.<br>a) Viết phương trình điện thế nút nếu chọn nút c làm đất.<br>b) Tìm $R_4$ sao cho công suất tiêu thụ trên nó là lớn nhất.',
+  dc_reduce: true, nodeRep: ['a'],
+  nodes: {
+    a: { bus: [[2, 1.2]], dot: [[2, 1.2]], lbl: [2, 1.2, 'a', 'nw'] }, b: { bus: [[6, 1.2]], dot: [[6, 1.2]], lbl: [6, 1.2, 'b', 'ne'] },
+    c: { bus: [[2, 5]], dot: [[2, 5]], lbl: [2, 5, 'c', 'sw'] }, d: { bus: [[6, 5]], dot: [[6, 5]], lbl: [6, 5, 'd', 'se'] },
+    x: { bus: [[2, 3]], dot: [], lbl: [2, 3, 'x', 'w'] },
+  },
+  ground: 'c',
+  branches: [
+    { id: 'J1', n: ['a', 'b'], p: [[2, 1.2], [2, 0], [6, 0], [6, 1.2]], els: [{ k: 'J', n: 'J1', seg: 1 }] },
+    { id: '2', n: ['a', 'b'], p: [[2, 1.2], [6, 1.2]], els: [{ k: 'L', n: 'L2', t: 0.33 }, { k: 'R', n: 'R2', t: 0.7 }], ia: { seg: 0, t: 0.1 } },
+    { id: '3', n: ['a', 'c'], p: [[2, 1.2], [0, 1.2], [0, 5], [2, 5]], els: [{ k: 'R', n: 'R3', seg: 1, lbl: 'l' }], ia: { seg: 1, t: 0.15 } },
+    { id: 'E4', n: ['x', 'a'], p: [[2, 3], [2, 1.2]], els: [{ k: 'E', n: 'E4', dir: 1 }] },
+    { id: '4', n: ['c', 'x'], p: [[2, 5], [2, 3]], els: [{ k: 'R', n: 'R4' }], ia: { seg: 0, t: 0.15 } },
+    { id: 'J5', n: ['d', 'b'], p: [[6, 5], [6, 1.2]], els: [{ k: 'R', n: 'R5', t: 0.3, lbl: 'l' }, { k: 'J', n: 'J5', t: 0.7 }] },
+    { id: '6', n: ['b', 'd'], p: [[6, 1.2], [8, 1.2], [8, 5], [6, 5]], els: [{ k: 'R', n: 'R6', seg: 1 }], ia: { seg: 1, t: 0.15 } },
+    { id: '7', n: ['d', 'c'], p: [[6, 5], [2, 5]], els: [{ k: 'R', n: 'R7', lbl: 'u' }], ia: { seg: 0, t: 0.88 } },
+    { id: '8', n: ['c', 'd'], p: [[2, 5], [2, 6.2], [6, 6.2], [6, 5]], els: [{ k: 'E', n: 'E8', dir: 1, seg: 1 }], ia: { seg: 0, t: 0.5 } },
+  ],
+  loops: [{ id: 'a', br: [['2', 1], ['6', 1], ['7', 1], ['3', -1]], c: [4, 3] }, { id: 'b', br: [['4', 1], ['E4', 1], ['3', 1]], c: [1, 3] }, { id: 'c', br: [['8', 1], ['7', 1]], c: [4, 5.6] }],
+  xa: [{ j: 'J1', id: 'd', br: [['J1', 1], ['2', -1]], c: [4, 0.6], r: 0.25 }, { j: 'J5', id: 'e', br: [['J5', 1], ['6', 1]], c: [7, 3] }],
+  params: { J1: { v: 1 }, E4: { v: 4 }, J5: { v: 5 }, E8: { v: 8 }, R2: { v: 1.2 }, L2: { L: 2.2 }, R3: { v: 3 }, R4: { v: 4 }, R5: { v: 5.6 }, R6: { v: 6.5 }, R7: { v: 7 } },
+  thev: { a: 'x', b: 'c', remove: '4', ask: 'maxP', zt: { p: ['R3', { s: ['R2', 'R6'] }] } },
+});
+
+const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk5', 'gk2', 'gk3', 'gk4', 'gk8', 'gk9', 'gk6a', 'gk10', 'gk1'];
 for (let i = P.length - 1; i >= 0; i--) if (!ORDER.includes(P[i].id)) P.splice(i, 1);
 P.sort((x, y) => ORDER.indexOf(x.id) - ORDER.indexOf(y.id));
 G.PROBLEMS = P;
@@ -2386,6 +2426,36 @@ G.RENDER = { renderProblem, solveAll, loopName, loopPath };
 <li><b>Chế độ tự luyện</b>: thu gọn mọi bước; tự làm trước rồi bấm từng bước để đối chiếu.</li>
 <li><b>Đổi số liệu</b>: sinh bộ số mới cho cùng sơ đồ để luyện thêm (lời giải tự tính lại toàn bộ); “Số liệu gốc” để quay lại.</li></ul></div>
 `;
+window.A4_HTML = String.raw`
+<h2 class="ptitle"><span class="no">Bài 25</span> Công thức cần ghi tờ A4 (Ch.1–6)</h2>
+<div class="card"><h3>1. Ảnh phức & phần tử</h3><ul>
+<li>$u = U_m\sin(\omega t+\varphi) \to \dot U = \frac{U_m}{\sqrt2}\angle\varphi$; ngược lại $i(t) = I\sqrt2\sin(\omega t+\theta)$.</li>
+<li>$Z_R = R$; $Z_L = j\omega L$; $Z_C = \frac{1}{j\omega C} = -\frac{j}{\omega C}$; $Z_M = j\omega M$. DC: $L$ → dây nối ($Z_L=0$), $C$ → hở ($Z_C=\infty$), $M$ không tác dụng.</li>
+<li>Kết quả: 4 chữ số sau dấu phẩy, góc 2 chữ số. Casio: MODE 2 (CMPLX), đổi $a+jb \leftrightarrow r\angle\varphi$ bằng OPTN.</li></ul></div>
+<div class="card"><h3>2. Kirchhoff – dấu</h3><ul>
+<li>Đếm: $(m - n_J)\,K = (n-1)\,K_1 + (m - n_J - n + 1)\,K_2$; vòng K2 <b>không đi qua nguồn dòng</b>.</li>
+<li>K1: $\sum I_{vào} = \sum I_{ra}$ (nguồn dòng / nguồn phụ thuộc ghi bằng chính giá trị nguồn).</li>
+<li>K2: đi theo chiều vòng, $\pm Z\dot I$ (“+” nếu dòng cùng chiều vòng); nguồn áp có mũi tên (− → +) <b>cùng chiều vòng</b> ghi “+” ở <b>vế phải</b>: $\sum \pm Z\dot I = \sum \pm \dot E$.</li>
+<li>Hỗ cảm: $\dot U_{L1} = Z_{L1}\dot I_1 \pm Z_M\dot I_2$; hai dòng <b>cùng vào</b> (hoặc cùng ra) đầu có dấu • → “+”, ngược lại “−”.</li></ul></div>
+<div class="card"><h3>3. Dòng vòng – thế nút</h3><ul>
+<li>Dòng vòng: số ẩn = số K2; mỗi nguồn dòng 1 vòng xả: $\dot I_x = \dot J$ (phụ thuộc: $\dot I_x = \alpha\cdot$biến điều khiển viết theo dòng vòng). Dòng nhánh = tổng đại số dòng vòng qua nhánh.</li>
+<li>Dạng chuẩn: $\big(\sum Z_{vòng}\big)\dot I_a - Z_{chung}\dot I_b = \sum \dot E_{vòng}$ (± theo chiều).</li>
+<li>Thế nút: $\dot I_{pq} = \dfrac{\dot V_p - \dot V_q \pm \dot E}{Z}$ (“+” khi mũi tên E cùng chiều p→q); nhánh nguồn dòng $\dot I = \dot J$.</li>
+<li>Dạng gọn: $\big(\sum Y\big)\dot V_a - Y_{ab}\dot V_b = \sum \frac{\dot E}{Z} + \sum \dot J_{vào}$.</li>
+<li><b>Bỏ qua</b>: $Z$ nối tiếp nguồn dòng (không vào phương trình thế nút); $Z$ song song nguồn áp lý tưởng (không ảnh hưởng phần còn lại). Siêu nút: $\dot V_a - \dot V_c = \dot E$, viết K1 cho cả cụm.</li></ul></div>
+<div class="card"><h3>4. Tổng trở – biến đổi</h3><ul>
+<li>Nối tiếp cộng; song song $Z_1\parallel Z_2 = \frac{Z_1Z_2}{Z_1+Z_2}$; chia dòng $\dot I_1 = \frac{Z_2}{Z_1+Z_2}\dot I$; chia áp $\dot U_1 = \frac{Z_1}{Z_1+Z_2}\dot U$.</li>
+<li>Δ → Y: $R_a = \dfrac{Z_{ab}Z_{ca}}{Z_{ab}+Z_{bc}+Z_{ca}}$ (tích 2 cạnh kề a / tổng 3 cạnh). Y → Δ: $Z_{ab} = \dfrac{R_aR_b + R_bR_c + R_cR_a}{R_c}$.</li>
+<li>Thévenin ⇄ Norton: $\dot E$ nối tiếp $Z$ ⇄ $\dot J = \dot E/Z$ song song $Z$. Nguồn dòng song song: cộng; nguồn áp nối tiếp: cộng.</li></ul></div>
+<div class="card"><h3>5. Thévenin – Norton – hòa hợp tải</h3><ul>
+<li>$\dot E_{Th} = \dot U_{ab\text{-hở}}$; $\dot J_N = \dot I_{ab\text{-ngắn}}$; $Z_{ab} = \dot E_{Th}/\dot J_N$ (dùng khi có nguồn phụ thuộc / hỗ cảm) hoặc tắt nguồn rồi ghép.</li>
+<li>Tắt nguồn: $E$ → nối tắt ($Z=0$, $U=0$); $J$ → hở ($Z=\infty$, $I=0$). Hở mạch: $I=0$, $Z=\infty$; ngắn mạch: $U=0$, $Z=0$. Nguồn phụ thuộc <b>không</b> tắt.</li>
+<li>Dòng tải: $\dot I_t = \dfrac{\dot E_{Th}}{Z_{ab} + Z_t}$.</li>
+<li>Hòa hợp: AC $Z_t = Z_{ab}^{*}$ (<b>liên hợp</b>!), $P_{max} = \dfrac{|\dot E_{Th}|^2}{4\,\mathrm{Re}(Z_{ab})}$; DC $R_t = R_{ab}$, $P_{max} = \dfrac{E_{Th}^2}{4R_{ab}}$.</li></ul></div>
+<div class="card"><h3>6. Công suất</h3><ul>
+<li>$\tilde S = \dot U\cdot\dot I^* = P + jQ$. Tiêu thụ: $U$, $I$ cùng chiều. Phát: nguồn áp $\tilde S = \dot E\cdot\dot I^*$ ($I$ cùng chiều mũi tên E); nguồn dòng $\tilde S = \dot U_J\cdot\dot J^*$ ($U_J$ = áp từ đuôi đến đầu mũi tên J, cộng cả áp trên Z nối tiếp nếu có).</li>
+<li>$P = \mathrm{Re}(Z)|\dot I|^2$; $Q_L > 0$, $Q_C < 0$; $\sum\tilde S_{phát} = \sum\tilde S_{thu}$. Hỗ cảm: $P_{L1} = -P_{L2}$.</li></ul></div>
+`;
 </script><script>/* ============ GIAO DIỆN ============ */
 (function () {
 const $ = s => document.querySelector(s);
@@ -2402,12 +2472,14 @@ function buildNav() {
     if (p.ch !== ch) { ch = p.ch; h += `<div class="navh">${ch}</div>`; }
     h += `<a href="#${p.id}" class="navi" data-id="${p.id}"><span class="no">${i + 1}</span>${p.gk ? '<b class="gkb">GK</b> ' : ''}${p.title}</a>`;
   });
+  h += '<a href="#a4" class="navi" data-id="a4"><span class="no">' + (PROBLEMS.length + 1) + '</span>Công thức cần ghi tờ A4</a>';
   nav.innerHTML = '<button class="navx" id="navX" type="button">« Thu gọn danh sách</button>' + h;
   document.getElementById('navX').onclick = () => $('#menu').click();
 }
 function show(id) {
   document.querySelectorAll('.navi').forEach(a => a.classList.toggle('on', a.dataset.id === id));
   const main = $('#main');
+  if (id === 'a4') { main.innerHTML = A4_HTML; renderMath(main); cur = null; $('#tools').style.display = 'none'; window.scrollTo(0, 0); return; }
   if (id === 'theory' || !id) { main.innerHTML = THEORY_HTML; renderMath(main); cur = null; $('#tools').style.display = 'none'; window.scrollTo(0, 0); return; }
   const p = PROBLEMS.find(x => x.id === id); if (!p) return;
   cur = p; $('#tools').style.display = '';

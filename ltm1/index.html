@@ -1438,7 +1438,7 @@ P.push({
 P.push({
   id: 'gk2', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 20/11/2025 · Đề 1 · Câu 2: dòng I₂, I₄, I₅',
   src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 20/11/2025, Đề 1, Câu 2 (5,5 điểm) – số liệu đề gốc',
-  text: 'Cho $Z_2 = 40 + j40\\,\\Omega$, $Z_3 = 20 + j20\\,\\Omega$, $Z_4 = Z_5 = 10 + j50\\,\\Omega$, $\\dot J = 0{,}5\\angle 0^\\circ$ A, $\\dot E_1 = 50\\angle 60^\\circ$ V, $\\dot E_5 = 20\\angle 30^\\circ$ V. Tính trị hiệu dụng của các dòng $I_2$, $I_4$, $I_5$.',
+  text: 'Cho mạch điện như Hình 2, với $Z_2 = 40 + j40\\Omega$, $Z_3 = 20 + j20\\Omega$, $Z_4 = Z_5 = 10 + j50\\Omega$, $\\dot J = 0{,}5\\angle 0^0\\,A$, $\\dot E_1 = 50\\angle 60^0\\,V$, $\\dot E_5 = 20\\angle 30^0\\,V$. Tính trị hiệu dụng của các dòng $I_2$, $I_4$, và $I_5$ trong mạch?',
   ac: true,
   nodes: {
     a: { bus: [[0, 0.9], [2, 0.9]], dot: [[2, 0.9]], lbl: [2, 0.9, 'a', 'nw'] },
@@ -1462,8 +1462,8 @@ P.push({
 
 P.push({
   id: 'gk3', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 01 · Câu 1: hỗ cảm + J̇₃ = α·U̇₁, P nguồn dòng',
-  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 01, Câu 1 (4,5 điểm) – số liệu đề gốc',
-  text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $\\dot E_2 = 20\\angle 20^\\circ$ V; $Z_{L1} = j1\\,\\Omega$; $Z_{L2} = j2\\,\\Omega$; $Z_M = j0{,}5\\,\\Omega$; $\\dot J_3 = \\alpha\\cdot\\dot U_1$; $\\alpha = 0{,}3$; $Z_3 = 3 - j3\\,\\Omega$. <b>Tính công suất phát của nguồn dòng</b> (kết quả ở tab Công suất, dòng $\\dot J_3$). $\\dot U_1$ là điện áp trên $Z_{L1}$ theo chiều mũi tên (từ dưới lên).',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 01, Câu 1 (4,5 điểm) – số liệu đề gốc Đáp án: tab Công suất, dòng J̇₃.',
+  text: 'Cho mạch điện như Hình 1.<br>$\\dot E_1 = 10\\angle 10^\\circ\\text{V}$; $\\dot E_2 = 20\\angle 20^\\circ\\text{V}$; $Z_{L1} = j1\\,\\Omega$; $Z_{L2} = j2\\,\\Omega$; $Z_M = j0{,}5\\,\\Omega$; $\\dot J_3 = \\alpha\\cdot\\dot U_1$; $\\alpha = 0{,}3$; $Z_3 = 3 - j3\\,\\Omega$.<br>Tính công suất phát của nguồn dòng.',
   ac: true,
   nodes: { m: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'm', 'w'] }, r: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'r', 'e'] } },
   ground: 'r',
@@ -1481,8 +1481,8 @@ P.push({
 });
 P.push({
   id: 'gk4', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 01 · Câu 2: Ė₃ = α·U̇₂, Z₃ hòa hợp, Pmax',
-  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 01, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω để luyện phương pháp (đáp án câu a, b ở tab Thévenin không phụ thuộc Z₃).',
-  text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $Z_1 = 1 + j1\\,\\Omega$; $\\dot J_2 = 2\\angle 20^\\circ$ A; $Z_2 = 2 - j2\\,\\Omega$; $\\dot E_3 = \\alpha\\cdot\\dot U_2$; $\\alpha = 0{,}3$. $\\dot U_2$ là điện áp từ đầu trái sang đầu phải của nguồn $\\dot J_2$ (theo mũi tên). a) Tính $Z_3$ để công suất truyền đến trở kháng này là lớn nhất. b) Tính công suất đó.',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 01, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω để luyện phương pháp (đáp án câu a, b ở tab Thévenin không phụ thuộc Z₃). Đáp án: tab Thévenin & hòa hợp tải.',
+  text: 'Cho mạch điện như Hình 2.<br>$\\dot E_1 = 10\\angle 10^\\circ\\text{V}$; $Z_1 = 1 + j1\\,\\Omega$; $\\dot J_2 = 2\\angle 20^\\circ\\text{A}$; $Z_2 = 2 - j2\\,\\Omega$; $\\dot E_3 = \\alpha\\cdot\\dot U_2$; $\\alpha = 0{,}3$.<br>a) Tính $Z_3$ để công suất truyền đến trở kháng này là lớn nhất<br>b) Tính công suất đó',
   ac: true,
   nodes: {
     p: { bus: [[0, 0]], dot: [], lbl: [0, 0, 'p', 'nw'] },
@@ -1509,8 +1509,8 @@ P.push({
 
 P.push({
   id: 'gk5', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 20/11/2025 · Đề 1 · Câu 1: hệ dòng vòng, nguồn dòng phụ thuộc αİ₄',
-  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 20/11/2025, Đề 1, Câu 1 (3,5 điểm). Đề chỉ yêu cầu viết hệ (không cho số) → web tự cho số liệu minh họa để thay số và kiểm chứng.',
-  text: 'Viết hệ phương trình dòng vòng mô tả mạch và biểu diễn dòng điện trong các nhánh theo các dòng vòng đã chọn. (Xem tab <b>Dòng vòng</b> – bước 2 và 3 là đáp án; số liệu chỉ để minh họa.)',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 20/11/2025, Đề 1, Câu 1 (3,5 điểm). Đề chỉ yêu cầu viết hệ (không cho số) → web tự cho số liệu minh họa để thay số và kiểm chứng. Đáp án: tab Dòng vòng, bước 1–4.',
+  text: 'Cho mạch điện như Hình 1. Viết hệ phương trình dòng vòng mô tả mạch và biểu diễn dòng điện trong các nhánh theo các dòng vòng đã chọn?',
   ac: true,
   nodes: {
     A: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'A', 'w'] }, B: { bus: [[3, 0]], dot: [[3, 0]], lbl: [3, 0, 'B', 'n'] },
@@ -1581,8 +1581,8 @@ P.push({
 });
 P.push({
   id: 'gk8', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 02 · Câu 1: hỗ cảm + Ė₂ = α·U̇₃, P nguồn phụ thuộc',
-  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 02, Câu 1 (4,5 điểm) – số liệu đề gốc.',
-  text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $\\dot E_2 = \\alpha\\cdot\\dot U_3$; $\\alpha = 0{,}2$; $Z_{L1} = j1\\,\\Omega$; $Z_{L2} = j2\\,\\Omega$; $Z_M = j0{,}5\\,\\Omega$; $\\dot J_3 = 3\\angle 30^\\circ$ A; $Z_3 = 3 - j3\\,\\Omega$. <b>Tính công suất phát của nguồn phụ thuộc</b> $\\dot E_2$ (tab Công suất). $\\dot U_3$: điện áp từ đầu trái sang đầu phải nguồn $\\dot J_3$.',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 02, Câu 1 (4,5 điểm) – số liệu đề gốc. Đáp án: tab Công suất, dòng Ė₂.',
+  text: 'Cho mạch điện như Hình 1.<br>$\\dot E_1 = 10\\angle 10^\\circ\\text{V}$; $\\dot E_2 = \\alpha\\cdot\\dot U_3$; $\\alpha = 0{,}2$; $Z_{L1} = j1\\,\\Omega$; $Z_{L2} = j2\\,\\Omega$; $Z_M = j0{,}5\\,\\Omega$; $\\dot J_3 = 3\\angle 30^\\circ\\text{A}$; $Z_3 = 3 - j3\\,\\Omega$.<br>Tính công suất phát của nguồn phụ thuộc.',
   ac: true,
   nodes: { p: { bus: [[0, 0]], dot: [], lbl: [0, 0, 'p', 'nw'] }, m: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'm', 'w'] }, r: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'r', 'e'] } },
   ground: 'r',
@@ -1600,8 +1600,8 @@ P.push({
 });
 P.push({
   id: 'gk9', ch: 'Giữa kỳ', gk: true, title: 'Giữa kỳ 2025.1 · 27/11/2025 · Đề 02 · Câu 2: J̇₂ = α·U̇₁, tìm Z₃ hòa hợp, Pmax',
-  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 02, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω (đáp án ở tab Thévenin không phụ thuộc Z₃).',
-  text: 'Cho $\\dot E_1 = 10\\angle 10^\\circ$ V; $Z_1 = 1 + j1\\,\\Omega$; $\\dot J_2 = \\alpha\\cdot\\dot U_1$; $\\alpha = 0{,}2$; $Z_2 = 2 - j2\\,\\Omega$; $\\dot E_3 = 30\\angle 30^\\circ$ V. a) Tính $Z_3$ để công suất truyền đến trở kháng này là lớn nhất. b) Tính công suất đó. ($\\dot U_1$: điện áp trên $Z_1$ theo mũi tên từ dưới lên.)',
+  src: 'Đề thi giữa kỳ LTM1 kỳ 2025.1, ngày thi 27/11/2025, Đề 02, Câu 2 (4,5 điểm) – số liệu đề gốc. Đề không cho Z₃; các tab giải toàn mạch giả thiết Z₃ = 2 Ω (đáp án ở tab Thévenin không phụ thuộc Z₃). Đáp án: tab Thévenin & hòa hợp tải.',
+  text: 'Cho mạch điện như Hình 2.<br>$\\dot E_1 = 10\\angle 10^\\circ\\text{V}$; $Z_1 = 1 + j1\\,\\Omega$; $\\dot J_2 = \\alpha\\cdot\\dot U_1$; $\\alpha = 0{,}2$; $Z_2 = 2 - j2\\,\\Omega$; $\\dot E_3 = 30\\angle 30^\\circ\\text{V}$.<br>a) Tính $Z_3$ để công suất truyền đến trở kháng này là lớn nhất<br>b) Tính công suất đó',
   ac: true,
   nodes: { m: { bus: [[0, 2]], dot: [[0, 2]], lbl: [0, 2, 'm', 'w'] }, x: { bus: [[0, 0.9]], dot: [[0, 0.9]], lbl: [0, 0.9, 'x', 'w'] }, r: { bus: [[6, 2]], dot: [[6, 2]], lbl: [6, 2, 'r', 'e'] } },
   ground: 'r',

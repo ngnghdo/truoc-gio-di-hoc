@@ -465,7 +465,7 @@ function elemVoltTerms(ctx, name) {
   for (const c of ctx.cps) { if (c.a === name) r.push({ sym: c.sym, sign: c.sign, br: c.brB, cp: c }); if (c.b === name) r.push({ sym: c.sym, sign: c.sign, br: c.brA, cp: c }); }
   return r;
 }
-function curNameTex(ctx, id) { const b = ctx.br(id); if (b.isJ && b.jel.k === 'J') return symTex(ctx, b.jel.sym); return ctx.Itex(id); }
+function curNameTex(ctx, id) { const b = ctx.br(id); if (b.isJ) return symTex(ctx, b.jel.sym); return ctx.Itex(id); }
 
 /* ---------- K1 / K2 ---------- */
 function k1Nodes(ctx) {
@@ -1523,13 +1523,13 @@ P.push({
     { id: '3', n: ['E', 'B'], p: [[3, 2], [3, 0]], els: [{ k: 'E', n: 'E3', dir: 1, lbl: 'l' }] },
     { id: '4', n: ['C', 'B'], p: [[6, 2], [6, 0], [3, 0]], els: [{ k: 'Z', n: 'Z4', seg: 1 }], ia: { seg: 0, t: 0.5 } },
     { id: '6', n: ['A', 'E'], p: [[0, 2], [3, 2]], els: [{ k: 'Z', n: 'Z6', lbl: 'd' }], ia: { seg: 0, t: 0.15 } },
-    { id: 'd', n: ['E', 'C'], p: [[3, 2], [6, 2]], els: [{ k: 'Jd', n: 'J8', g: 'alpha', ctrl: { k: 'I', br: '4' } }] },
+    { id: '8', n: ['E', 'C'], p: [[3, 2], [6, 2]], els: [{ k: 'Jd', n: 'J8', g: 'alpha', ctrl: { k: 'I', br: '4' } }] },
     { id: '1', n: ['D', 'E'], p: [[3, 4], [3, 2]], els: [{ k: 'E', n: 'E1', dir: 1, lbl: 'r' }] },
     { id: '2', n: ['D', 'C'], p: [[3, 4], [6, 4], [6, 2]], els: [{ k: 'E', n: 'E2', dir: 1, seg: 0, lbl: 'd' }, { k: 'Z', n: 'Z2', seg: 1 }], ia: { seg: 1, t: 0.15 } },
     { id: '7', n: ['D', 'A'], p: [[3, 4], [0, 4], [0, 2]], els: [{ k: 'J', n: 'J7', seg: 0, lbl: 'd' }, { k: 'Z', n: 'Z7', seg: 1, lbl: 'l' }] },
   ],
   loops: [{ id: 'a', br: [['5', 1], ['3', -1], ['6', -1]], c: [1.5, 1] }, { id: 'b', br: [['3', 1], ['4', -1], ['2', -1], ['1', 1]], c: [4.5, 1] }],
-  xa: [{ j: '7', id: 'c', br: [['7', 1], ['6', 1], ['1', -1]], c: [1.5, 3] }, { j: 'd', id: 'd', br: [['d', 1], ['2', -1], ['1', 1]], c: [4.5, 3] }],
+  xa: [{ j: '7', id: 'c', br: [['7', 1], ['6', 1], ['1', -1]], c: [1.5, 3] }, { j: '8', id: 'd', br: [['8', 1], ['2', -1], ['1', 1]], c: [4.5, 3] }],
   params: { E1: { m: 10, ph: 0 }, E2: { m: 5, ph: 30 }, E3: { m: 8, ph: -45 }, J7: { m: 1, ph: 0 }, Z2: { z: [2, 3] }, Z4: { z: [4, -2] }, Z5: { z: [3, 4] }, Z6: { z: [5, 0] }, Z7: { z: [2, 0] }, alpha: { v: 0.5 } },
 });
 P.push({
@@ -1866,6 +1866,15 @@ function renderMesh(ctx, R) {
   const mm = R.mesh; let h = '';
   const allL = [...mm.loops, ...mm.xaL];
   h += `<div class="fig">${G.drawCircuit(ctx.circ, { values: false, loops: allL })}<div class="cap">Dòng vòng ẩn (hồng) chạy theo chiều các vòng đã viết K2; dòng vòng “xả” (cam, nét đứt) khép qua nguồn dòng.</div></div>`;
+  // Bước 0: hệ Kirchhoff đầy đủ làm cơ sở
+  {
+    const bm = R.branch; const nJ = ctx.active.filter(b => b.isJ).length; const nb = ctx.active.length;
+    let b0 = `<p class="kk">${M(`${nb - nJ}\\,\\text{K} = ${bm.eqK1.length}\\,\\text{K1} + ${bm.eqK2.length}\\,\\text{K2}`)}</p>`;
+    b0 += '<p><b>K1</b> tại các nút (dòng vào = dòng ra):</p><ul>' + bm.eqK1.map(e => `<li>Nút <b>${e.n}</b>: ${M(e.names)}</li>`).join('') + '</ul>';
+    b0 += '<p><b>K2</b> cho các vòng <b>không chứa nguồn dòng</b> (điện áp phần tử → định luật Ôm):</p><ul>' + bm.eqK2.map(e => `<li>Vòng <b>${loopName(ctx, e.l)}</b>: ${M(e.volt)} ${M('\\;\\Rightarrow\\; ' + L.eqTex(ctx, L.ordLF(e.lf, bm.unk)))}</li>`).join('') + '</ul>';
+    b0 += tip('Phương pháp dòng vòng chính là hệ Kirchhoff này: mỗi vòng K2 gán một dòng vòng ẩn; các phương trình K1 sẽ <b>tự thỏa mãn</b> khi biểu diễn dòng nhánh theo dòng vòng (kiểm tra ở bước 3), nên chỉ còn phải giải các phương trình K2.');
+    h += step('Hệ phương trình Kirchhoff (K1 + K2) – cơ sở của dòng vòng', b0);
+  }
   let b1 = `<p>Mạch có ${mm.loops.length} phương trình K2 → <b>${mm.loops.length} dòng vòng ẩn</b>:</p><ul>`;
   b1 += mm.loops.map(Lp => `<li>${M(L.utexOf(ctx, 'M:' + Lp.id))} chạy trong vòng <b>${loopName(ctx, Lp)}</b>: ${M(loopPath(ctx, Lp))}</li>`).join('') + '</ul>';
   if (mm.xaL.length) {
@@ -1879,6 +1888,10 @@ function renderMesh(ctx, R) {
   let b2 = '<p>Dòng mỗi nhánh = tổng đại số các dòng vòng chạy qua nhánh đó (dòng vòng cùng chiều dòng nhánh lấy “+”, ngược chiều lấy “−”):</p>' + D(L.aligned(lines));
   if (mm.depInfo.length) {
     b2 += '<p>Nguồn dòng phụ thuộc: biểu diễn dòng xả theo dòng vòng ẩn:</p><ul>' + mm.depInfo.map(d => `<li>${M(L.utexOf(ctx, 'M:' + d.L.id) + ' = ' + nm(ctx, d.e.sym) + ' = ' + L.lfTex(ctx, d.cl) + ' = ' + L.lfTex(ctx, d.lm))}${d.keep ? ' (chứa chính dòng xả → giữ làm ẩn, thêm 1 phương trình ràng buộc)' : ''}</li>`).join('') + '</ul>';
+  }
+  {
+    const bm = R.branch; const sumT = bs => { let l = new LF(); for (const b of bs) l = l.add(mm.bExpr[b.id]); return l; };
+    b2 += '<p><b>Kiểm tra bằng K1</b>: thay các biểu thức trên vào từng phương trình K1 – hai vế luôn bằng nhau (vì vậy không cần viết K1 nữa):</p><ul>' + bm.eqK1.map(e => { const { ins, outs } = L.k1Info(ctx, e.n); const A = sumT(ins), B = sumT(outs); const ok = B.sub(A).t.size === 0; return `<li>Nút <b>${e.n}</b>: ${M(e.names)} ${M('\\;\\Rightarrow\\; ' + ins.map(b => '(' + L.lfTex(ctx, mm.bExpr[b.id]) + ')').join(' + ') + ' = ' + outs.map(b => '(' + L.lfTex(ctx, mm.bExpr[b.id]) + ')').join(' + '))} ⇒ ${M(L.lfTex(ctx, A) + ' = ' + L.lfTex(ctx, B))} ${ok ? '✓' : '✗'}</li>`; }).join('') + '</ul>';
   }
   h += step('Biểu diễn dòng nhánh theo dòng vòng', b2);
   // substitution

@@ -1611,7 +1611,8 @@ P.push({
     short: { loops: [{ id: 'a', br: [['1', 1], ['sc', 1], ['T', 1]] }], xa: [{ j: 'J', id: 'b', br: [['J', 1], ['1', 1]] }] } },
 });
 
-const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk5', 'gk2', 'gk3', 'gk4', 'gk8', 'gk9', 'gk6', 'gk7', 'gk1'];
+const ORDER = ['dc1', 'dc2', 'dc3', 'dc4', 'dc5', 'dc6', 'ac1', 'ac2', 'ac3', 'ac4', 'ac5', 'm1', 'm2', 'm3', 'm4', 'gk5', 'gk2', 'gk3', 'gk4', 'gk8', 'gk9'];
+for (let i = P.length - 1; i >= 0; i--) if (!ORDER.includes(P[i].id)) P.splice(i, 1);
 P.sort((x, y) => ORDER.indexOf(x.id) - ORDER.indexOf(y.id));
 G.PROBLEMS = P;
 })(typeof window !== 'undefined' ? window : globalThis);

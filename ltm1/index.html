@@ -112,6 +112,8 @@ body.embed #tools label{font-size:13px}
 body.navhide nav#nav{display:none}
 body.navhide main#main{max-width:1400px}
 .navx{width:100%;margin:0 0 6px;font-weight:600;color:var(--red);border-color:var(--red2)}
+.ans{border:2px solid var(--red);border-radius:10px;padding:4px 12px;background:#fff}
+details.step.key>summary{background:#ffe9e9}
 </style></head><body>
 <header><button id="menu">☰</button><h1>Ôn thi giữa kỳ LTM1</h1><span class="sub">Chương 1 → 6 · dòng nhánh · dòng vòng · thế nút · Thévenin · xếp chồng · hỗ cảm</span>
 <div id="tools"><label><input type="checkbox" id="self"> Chế độ tự luyện</label><button id="rand">🎲 Đổi số liệu</button><button id="reset">↺ Số liệu gốc</button><button id="prt">🖨 In bài</button><span id="rnote"></span></div></header>
@@ -1528,8 +1530,8 @@ P.push({
     { id: '2', n: ['D', 'C'], p: [[3, 4], [6, 4], [6, 2]], els: [{ k: 'E', n: 'E2', dir: 1, seg: 0, lbl: 'd' }, { k: 'Z', n: 'Z2', seg: 1 }], ia: { seg: 1, t: 0.15 } },
     { id: '7', n: ['D', 'A'], p: [[3, 4], [0, 4], [0, 2]], els: [{ k: 'J', n: 'J7', seg: 0, lbl: 'd' }, { k: 'Z', n: 'Z7', seg: 1, lbl: 'l' }] },
   ],
-  loops: [{ id: 'a', br: [['5', 1], ['3', -1], ['6', -1]], c: [1.5, 1] }, { id: 'b', br: [['3', 1], ['4', -1], ['2', -1], ['1', 1]], c: [4.5, 1] }],
-  xa: [{ j: '7', id: 'c', br: [['7', 1], ['6', 1], ['1', -1]], c: [1.5, 3] }, { j: '8', id: 'd', br: [['8', 1], ['2', -1], ['1', 1]], c: [4.5, 3] }],
+  loops: [{ id: 'a', br: [['5', 1], ['3', -1], ['6', -1]], c: [1.5, 1] }, { id: 'b', br: [['4', 1], ['3', -1], ['1', -1], ['2', 1]], c: [4.5, 2.9] }],
+  xa: [{ j: '8', id: 'c', br: [['8', 1], ['4', 1], ['3', -1]], c: [4.5, 1] }, { j: '7', id: 'd', br: [['7', 1], ['6', 1], ['1', -1]], c: [1.5, 3] }],
   params: { E1: { m: 10, ph: 0 }, E2: { m: 5, ph: 30 }, E3: { m: 8, ph: -45 }, J7: { m: 1, ph: 0 }, Z2: { z: [2, 3] }, Z4: { z: [4, -2] }, Z5: { z: [3, 4] }, Z6: { z: [5, 0] }, Z7: { z: [2, 0] }, alpha: { v: 0.5 } },
 });
 P.push({
@@ -1894,6 +1896,19 @@ function renderMesh(ctx, R) {
     b2 += '<p><b>Kiểm tra bằng K1</b>: thay các biểu thức trên vào từng phương trình K1 – hai vế luôn bằng nhau (vì vậy không cần viết K1 nữa):</p><ul>' + bm.eqK1.map(e => { const { ins, outs } = L.k1Info(ctx, e.n); const A = sumT(ins), B = sumT(outs); const ok = B.sub(A).t.size === 0; return `<li>Nút <b>${e.n}</b>: ${M(e.names)} ${M('\\;\\Rightarrow\\; ' + ins.map(b => '(' + L.lfTex(ctx, mm.bExpr[b.id]) + ')').join(' + ') + ' = ' + outs.map(b => '(' + L.lfTex(ctx, mm.bExpr[b.id]) + ')').join(' + '))} ⇒ ${M(L.lfTex(ctx, A) + ' = ' + L.lfTex(ctx, B))} ${ok ? '✓' : '✗'}</li>`; }).join('') + '</ul>';
   }
   h += step('Biểu diễn dòng nhánh theo dòng vòng', b2);
+  {
+    const ord = [...mm.loops, ...mm.xaL].map(Lp => 'M:' + Lp.id);
+    const lines = mm.eqK2.map(e => L.eqTex(ctx, L.ordLF(e.raw, ord)));
+    for (const Lp of mm.xaL) {
+      const e = ctx.br(Lp.j).jel; const lhs = L.utexOf(ctx, 'M:' + Lp.id);
+      if (e.k === 'J') lines.push(lhs + ' = ' + nm(ctx, e.sym));
+      else { const inner = mm.toMesh(L.brCurLF(ctx, Lp.j, 'br').mul(X.s(e.g, -1))); lines.push(lhs + ' = ' + nm(ctx, e.sym) + ' = ' + ctx.S[e.g].tex + '\\cdot\\left(' + L.lfTex(ctx, inner) + '\\right)'); }
+    }
+    let bA = '<p>Thay biểu diễn dòng nhánh vào các phương trình K2 (giữ nguyên các dòng vòng xả), cộng thêm một phương trình cho mỗi dòng vòng xả. Đây là <b>hệ phương trình dòng vòng mô tả mạch</b> – ' + lines.length + ' phương trình, ' + lines.length + ' ẩn ' + M(ord.map(u => L.utexOf(ctx, u)).join(',\\ ')) + ':</p>';
+    bA += '<div class="ans">' + D('\\begin{cases} ' + lines.map((l, i) => l + '\\quad(' + (i + 1) + ')').join(' \\\\[4pt] ') + ' \\end{cases}') + '</div>';
+    bA += tip('Hai phương trình đầu là K2 của các vòng không chứa nguồn dòng; các phương trình sau cho biết dòng vòng xả bằng giá trị nguồn dòng (nguồn phụ thuộc thì biểu diễn biến điều khiển qua các dòng vòng). Đây là đáp án dạng “viết hệ phương trình”. Các bước dưới là thế xả vào để giải ra số.');
+    h += step('Hệ phương trình dòng vòng mô tả mạch (đáp án)', bA, 'key');
+  }
   // substitution
   let b3 = '<p>Từ phương trình K2 dạng dòng nhánh (như phương pháp dòng nhánh), thay các biểu thức trên:</p>';
   mm.eqK2.forEach(e => {

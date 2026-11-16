@@ -74,7 +74,7 @@ svg .term{fill:#fff;stroke:#0277bd;stroke-width:2.4}
 svg .dotc{fill:#111}
 svg .mut{stroke:#1565c0;stroke-width:1.6;fill:none}
 svg .gnd line{stroke:#222;stroke-width:2}
-svg .loop{stroke:#c2185b;stroke-width:1.8;fill:none}
+svg .loop{stroke:#c2185b;stroke-width:1.6;fill:none;opacity:.85}
 svg .loop.xa{stroke:#ef6c00;stroke-dasharray:5 3}
 svg text{font-family:"DejaVu Sans","Segoe UI",Arial,sans-serif}
 svg .lb{font-size:19px;font-style:italic;fill:#111}
@@ -1026,18 +1026,23 @@ function drawCircuit(circ, opt = {}) {
     text(lp[0], lp[1] + 0.05, ac ? '<tspan>Z</tspan><tspan dy="4" font-size="0.72em">' + esc(c.M) + '</tspan>' : esc(c.M), 'middle', 'lm');
   }
   // loops
-  if (opt.loops) for (const Lp of opt.loops) {
-    if (!Lp.c) continue;
-    const poly = []; for (const [id, s] of Lp.br) { const b = circ.branches.find(x => x.id === id) || (circ._allBr || []).find(x => x.id === id); if (!b) continue; const p = s > 0 ? b.p : b.p.slice().reverse(); poly.push(...p.slice(0, -1)); }
-    const cw = polyArea(poly) > 0; // y xuống: >0 là cùng chiều kim đồng hồ
-    const r = (Lp.r || 0.34) * U, cx0 = X(Lp.c[0]), cy0 = Y(Lp.c[1]);
-    const a0 = -60, a1 = 230; const pt = a => [cx0 + r * Math.cos(a * Math.PI / 180), cy0 + r * Math.sin(a * Math.PI / 180)];
-    const [sx, sy] = pt(cw ? a0 : a1), [ex, ey] = pt(cw ? a1 : a0);
-    const sweep = cw ? 1 : 0;
-    top.push(`<path d="M ${f2(sx)} ${f2(sy)} A ${r} ${r} 0 1 ${sweep} ${f2(ex)} ${f2(ey)}" class="loop${Lp.xa ? ' xa' : ''}" marker-end="url(#la${Lp.xa ? 'x' : ''})"/>`);
+  if (opt.loops) opt.loops.forEach((Lp, li) => {
+    const poly = []; for (const [id, s] of Lp.br) { const b = circ.branches.find(x => x.id === id) || (circ._allBr || []).find(x => x.id === id); if (!b) continue; const p = s > 0 ? b.p : b.p.slice().reverse(); for (const q of p) { const l = poly[poly.length - 1]; if (!l || Math.hypot(l[0] - q[0], l[1] - q[1]) > 1e-9) poly.push(q); } }
+    if (poly.length > 1 && Math.hypot(poly[0][0] - poly[poly.length - 1][0], poly[0][1] - poly[poly.length - 1][1]) < 1e-9) poly.pop();
+    if (poly.length < 3) return;
+    const xs = poly.map(p => p[0]), ys = poly.map(p => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const cxm = (x0 + x1) / 2, cym = (y0 + y1) / 2, dd = 0.2 + 0.09 * (li % 3);
+    const kx = (x1 - x0) > 2 * dd + 0.2 ? (x1 - x0 - 2 * dd) / (x1 - x0) : 0.6, ky = (y1 - y0) > 2 * dd + 0.2 ? (y1 - y0 - 2 * dd) / (y1 - y0) : 0.6;
+    const pp = poly.map(p => [cxm + (p[0] - cxm) * kx, cym + (p[1] - cym) * ky]);
+    const cls = 'loop' + (Lp.xa ? ' xa' : '');
+    top.push(`<path d="M ${pp.map(p => X(p[0]) + ' ' + Y(p[1])).join(' L ')} Z" class="${cls}"/>`);
+    const col = Lp.xa ? '#ef6c00' : '#c2185b';
+    for (let i = 0; i < pp.length; i++) { const p = pp[i], q = pp[(i + 1) % pp.length]; const L2 = Math.hypot(q[0] - p[0], q[1] - p[1]); if (L2 < 0.5) continue; const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, an = Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI; top.push(`<g transform="translate(${X(mx)},${Y(my)}) rotate(${f2(an)})"><polygon points="7,0 -5,-5 -5,5" fill="${col}"/></g>`); }
+    const lc = Lp.c || [cxm, cym];
     const lab = `<tspan>${ac ? 'İ' : 'I'}</tspan><tspan dy="4" font-size="0.72em">${esc(Lp.id)}</tspan>`;
-    labels.push(`<text x="${cx0}" y="${cy0 + 5}" text-anchor="middle" class="ll${Lp.xa ? ' xa' : ''}">${lab}</text>`);
-  }
+    labels.push(`<text x="${X(lc[0])}" y="${Y(lc[1]) + 6}" text-anchor="middle" class="ll${Lp.xa ? ' xa' : ''}">${lab}</text>`);
+  });
   const pad = 0.15;
   const W = (bb.x1 - bb.x0 + 2 * pad) * U, H = (bb.y1 - bb.y0 + 2 * pad) * U;
   const vb = `${f2((bb.x0 - pad) * U)} ${f2((bb.y0 - pad) * U)} ${f2(W)} ${f2(H)}`;

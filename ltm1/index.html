@@ -11,7 +11,7 @@ header .sub{color:var(--mut);font-size:13px}
 #tools label{font-size:14px;cursor:pointer;user-select:none}
 button{font:inherit;font-size:14px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 11px;cursor:pointer}
 button:hover{border-color:var(--red2);color:var(--red)}
-#menu{display:none}
+#menu{display:inline-block}
 #rnote{color:#e65100;font-size:13px}
 .wrap{display:flex;align-items:flex-start}
 nav#nav{width:290px;flex:none;position:sticky;top:58px;height:calc(100vh - 58px);overflow:auto;background:#fff;border-right:1px solid var(--line);padding:10px 8px 40px}
@@ -77,16 +77,16 @@ svg .gnd line{stroke:#222;stroke-width:2}
 svg .loop{stroke:#c2185b;stroke-width:1.8;fill:none}
 svg .loop.xa{stroke:#ef6c00;stroke-dasharray:5 3}
 svg text{font-family:"DejaVu Sans","Segoe UI",Arial,sans-serif}
-svg .lb{font-size:15px;font-style:italic;fill:#111}
-svg .lv{font-size:12px;fill:#555}
-svg .lv2{font-size:13px;fill:#333;font-style:normal}
-svg .li{font-size:14px;font-style:italic;fill:#d32f2f}
-svg .ln{font-size:15px;font-weight:700;fill:#0d47a1}
-svg .lm{font-size:13px;font-style:italic;fill:#1565c0}
-svg .ll{font-size:14px;font-style:italic;font-weight:700;fill:#c2185b}
+svg .lb{font-size:19px;font-style:italic;fill:#111}
+svg .lv{font-size:14px;fill:#555}
+svg .lv2{font-size:16px;fill:#333;font-style:normal}
+svg .li{font-size:18px;font-style:italic;fill:#d32f2f}
+svg .ln{font-size:19px;font-weight:700;fill:#0d47a1}
+svg .lm{font-size:17px;font-style:italic;fill:#1565c0}
+svg .ll{font-size:18px;font-style:italic;font-weight:700;fill:#c2185b}
 svg .ll.xa{fill:#ef6c00}
-svg .loff{font-size:12px;fill:#888}
-svg .lvn{font-size:12px;fill:#0d47a1}
+svg .loff{font-size:14px;fill:#888}
+svg .lvn{font-size:14px;fill:#0d47a1}
 @media (max-width:900px){
   #menu{display:inline-block}
   header{position:static}
@@ -109,6 +109,8 @@ body.embed #tools{gap:6px;margin-left:0}
 body.embed #tools button{padding:4px 9px;font-size:13px}
 body.embed #tools label{font-size:13px}
 .gkb{background:#ffb300;color:#3e2723;border-radius:4px;padding:0 5px;font-size:11px;margin-right:2px}
+body.navhide nav#nav{display:none}
+body.navhide main#main{max-width:1400px}
 </style></head><body>
 <header><button id="menu">☰</button><h1>Ôn thi giữa kỳ LTM1</h1><span class="sub">Chương 1 → 6 · dòng nhánh · dòng vòng · thế nút · Thévenin · xếp chồng · hỗ cảm</span>
 <div id="tools"><label><input type="checkbox" id="self"> Chế độ tự luyện</label><button id="rand">🎲 Đổi số liệu</button><button id="reset">↺ Số liệu gốc</button><button id="prt">🖨 In bài</button><span id="rnote"></span></div></header>
@@ -914,7 +916,7 @@ function drawCircuit(circ, opt = {}) {
   const bb = { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 };
   const ext = (x, y, m = 0) => { bb.x0 = Math.min(bb.x0, x - m); bb.y0 = Math.min(bb.y0, y - m); bb.x1 = Math.max(bb.x1, x + m); bb.y1 = Math.max(bb.y1, y + m); };
   const X = v => f2(v * U), Y = v => f2(v * U);
-  const text = (x, y, inner, anchor = 'middle', cls = 'lb') => { labels.push(`<text x="${X(x)}" y="${Y(y)}" text-anchor="${anchor}" class="${cls}">${inner}</text>`); ext(x, y, 0.35); };
+  const text = (x, y, inner, anchor = 'middle', cls = 'lb') => { labels.push(`<text x="${X(x)}" y="${Y(y)}" text-anchor="${anchor}" class="${cls}">${inner}</text>`); const wd = Math.min(1.4, 0.12 + inner.replace(/<[^>]+>/g, '').length * 0.1); ext(x, y, 0.35); if (anchor === 'start') ext(x + wd, y); else if (anchor === 'end') ext(x - wd, y); else { ext(x + wd / 2, y); ext(x - wd / 2, y); } };
   const elPos = {};
   // nodes bus
   for (const n in circ.nodes) {
@@ -945,13 +947,14 @@ function drawCircuit(circ, opt = {}) {
         // label
         let side = it.e.lbl || (horiz ? 'u' : 'r');
         const off = (it.e.k === 'E' || it.e.k === 'J' || it.e.k.endsWith('d')) ? 0.36 : 0.3;
+        const v0 = opt.values !== false ? valTxt(circ, it.e) : '';
         let lx = cx, ly = cy, anc = 'middle';
-        if (side === 'u') ly = cy - off - 0.04; else if (side === 'd') ly = cy + off + 0.16; else if (side === 'r') { lx = cx + off; anc = 'start'; ly = cy + 0.02; } else { lx = cx - off; anc = 'end'; ly = cy + 0.02; }
+        if (side === 'u') ly = cy - off - (v0 ? 0.2 : 0.04); else if (side === 'd') ly = cy + off + 0.16; else if (side === 'r') { lx = cx + off; anc = 'start'; ly = cy + 0.02; } else { lx = cx - off; anc = 'end'; ly = cy + 0.02; }
         const v = opt.values !== false ? valTxt(circ, it.e) : '';
         const lab = it.e.k === 'L' && ac ? lblSvg(it.e.n, ac, 'L') : lblSvg(it.e.n, ac, it.e.k);
         const dep = it.e.k === 'Jd' || it.e.k === 'Ed';
         text(lx, ly, lab + (dep ? `<tspan class="lv2" dx="3">${ctrlStr(it.e, ac)}</tspan>` : ''), anc, 'lb');
-        if (v) text(lx, ly + 0.2, esc(v), anc, 'lv');
+        if (v) text(lx, ly + (side === 'u' ? 0.21 : 0.25), esc(v), anc, 'lv');
         // coupling dot
         if (it.e.dot) {
           const ex = it.e.dot === 's' ? -it.len / 2 + 0.04 : it.len / 2 - 0.04;
@@ -2427,7 +2430,8 @@ window.addEventListener('DOMContentLoaded', () => {
   $('#self').onchange = e => { selfMode = e.target.checked; applySelf(); };
   $('#rand').onclick = randomize; $('#reset').onclick = resetP;
   $('#prt').onclick = () => { document.querySelectorAll('.pane').forEach(p => p.style.display = 'block'); document.querySelectorAll('details').forEach(d => d.open = true); try { window.print(); } catch (e) { } selTab(curTab); };
-  $('#menu').onclick = () => document.body.classList.toggle('navopen');
+  try { if (localStorage.getItem('ltm1_navhide') === '1') document.body.classList.add('navhide'); } catch (e) { }
+  $('#menu').onclick = () => { if (window.innerWidth <= 900) { document.body.classList.toggle('navopen'); return; } const h = document.body.classList.toggle('navhide'); try { localStorage.setItem('ltm1_navhide', h ? '1' : '0'); } catch (e) { } };
   const EMB = /embed/.test(location.search);
   if (EMB && !location.hash) { try { const l = localStorage.getItem('ltm1_last'); if (l) history.replaceState(null, '', '#' + l); } catch (e) { } }
   const go = () => { const id = location.hash.slice(1) || 'theory'; if (EMB) { try { localStorage.setItem('ltm1_last', id); } catch (e) { } } show(id); $('#rnote').textContent = ''; document.body.classList.remove('navopen'); window.scrollTo(0, 0); };

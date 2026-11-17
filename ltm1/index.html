@@ -2130,6 +2130,23 @@ function renderThevenin(ctx, R) {
   b3b += D(`${ctx.dotX('J')}_N = ${ctx.dotX('I')}_{${a}${b}\\text{-ngắn}} = ${V(ctx, IN, '\\,\\text{A}')}`) + (degen ? note('Dòng ngắn mạch bằng 0 (và điện áp hở mạch bằng 0, ví dụ cầu cân bằng) → không suy ra được Z bằng tỉ số E/J; phải dùng cách tắt nguồn hoặc lắp nguồn ngoài.') : D(`Z_{${a}${b}} = \\frac{${ctx.dotX('E')}_{Th}}{${ctx.dotX('J')}_N} = \\frac{${Valg(ctx, Eth)}}{${Valg(ctx, IN)}} = ${Valg(ctx, Zsc, '\\,\\Omega')}`));
   if (Zt) { b3 += '<h5>Cách 2 (kiểm chứng): dùng dòng ngắn mạch Norton</h5>' + b3b + (degen ? '' : chk(`hai cách cho cùng ${M('Z_{' + a + b + '} = ' + Valg(ctx, Zt))}`, cabs(csub(Zt, Zsc)) < 1e-6 * cabs(Zt))); }
   else { b3 += (hasDep || hasM ? note('Mạch có ' + (hasDep ? 'nguồn phụ thuộc' : '') + (hasDep && hasM ? ' và ' : '') + (hasM ? 'hỗ cảm' : '') + ' → không dùng công thức ghép nối tiếp/song song được (slide 5.1, 6.4). Dùng cách “mạch hở + mạch ngắn”: ' + M('Z_{ab} = \\frac{U_{ab\\text{-hở}}}{I_{ab\\text{-ngắn}}}') + '.') : '') + b3b; Zt = Zsc; }
+  // Cách 3: nguồn dòng ngoài J_ext (thế nút)
+  try {
+    const ec = L.deriveSuper(oc, '__none__'); ec._allBr = c.branches;
+    ec.params.Jext = ctx.ac ? { m: 1, ph: 0 } : { v: 1 };
+    const pth = loadBr ? (loadBr.n[0] === b ? loadBr.p.slice() : loadBr.p.slice().reverse()) : (th.scPath ? th.scPath.slice().reverse() : null);
+    if (pth && !L.nodeAllowed(L.prep(ec))) {
+      ec.branches.push({ id: 'ext', n: [b, a], p: pth, els: [{ k: 'J', n: 'Jext' }] });
+      ec.ground = b; ec._openBr = [];
+      const cE = L.prep(ec); const se = solveCompact(cE, 'node');
+      const Ze = csub(se.V[a], se.V[b]);
+      let b3c = `<p>Tắt các nguồn độc lập (giữ nguồn phụ thuộc):</p>` + srcOffList(ctxO, null) + `<p>Lắp nguồn dòng ngoài ${M(ctx.dotX('J') + '_{ext} = 1' + (ctx.ac ? '\\angle 0^\\circ' : '') + '\\,\\text{A}')} bơm dòng <b>vào nút ${a}</b>, ra khỏi nút ${b}; chọn <b>${b}</b> làm nút gốc (${M(Vt(b) + ' = 0')}). Giải thế nút tìm ${M(Vt(a))}:</p>`;
+      b3c += `<div class="fig">${G.drawCircuit(ec, { values: false, terminals: [a, b], ground: [b] })}<div class="cap">Mạch đã tắt nguồn độc lập + nguồn dòng ngoài ${M('J_{ext}')} ở cửa ${a}–${b}.</div></div>` + se.html;
+      b3c += D(`Z_{${a}${b}} = \\frac{${Vt(a)} - ${Vt(b)}}{${ctx.dotX('J')}_{ext}} = \\frac{${Valg(ctx, se.V[a])} - 0}{1} = ${Valg(ctx, Ze, '\\,\\Omega')}`);
+      b3c += chk(`trùng với ${M('Z_{' + a + b + '}')} tính ở trên`, Zt ? cabs(csub(Ze, Zt)) < 1e-6 * Math.max(1, cabs(Zt)) : true);
+      b3 += '<h5>Cách 3: lắp nguồn dòng ngoài J<sub>ext</sub> (dùng được khi có nguồn phụ thuộc)</h5>' + b3c;
+    }
+  } catch (e) { }
   h += step(`Tìm tổng trở tương đương ${M('Z_{' + a + b + '}')}`, b3);
   if (!Zt || !isFinite(Zt.re)) { h += step('Kết luận', note('Trường hợp suy biến: điện áp hở mạch và dòng ngắn mạch đều bằng 0 nên không xác định được ' + M('Z_{ab}') + ' bằng tỉ số; cửa ' + a + '–' + b + ' không cấp được công suất cho tải. Bấm “Đổi số liệu” để luyện bộ số khác.')); return h; }
   // B4 equivalent

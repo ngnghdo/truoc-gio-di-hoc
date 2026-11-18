@@ -15,6 +15,7 @@ jobs:
         with: { node-version: 20 }
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils pandoc catdoc tesseract-ocr tesseract-ocr-vie >/dev/null
       - run: npm i --no-save playwright@1.47.0 && npx playwright install --with-deps chromium
+      - run: git config user.name "vb-bot" && git config user.email "actions@users.noreply.github.com"
       - run: node scripts/vb-fulltext.mjs
         env: { ONLY: "${{ github.event.inputs.only }}", FORCE: "${{ github.event.inputs.force }}" }
       - run: |

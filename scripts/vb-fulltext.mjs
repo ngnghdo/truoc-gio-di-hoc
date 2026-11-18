@@ -64,6 +64,7 @@ for(const it of LIST){
     rec.ok=true; rec.n=paras.join("\n").length;
   }catch(e){ if(e) rec.err=rec.err||String(e).slice(0,150); }
   IDX[id]=rec; fs.writeFileSync("vb/index.json",JSON.stringify(IDX,null,1));
+  try{ execSync(`git add vb && git commit -q -m "Toàn văn: ${it.so}" && (git push -q || (git pull -q --rebase && git push -q))`,{stdio:"inherit"}); }catch(e){}
   console.log(id,rec.ok?("OK "+rec.n):("FAIL "+rec.err));
 }
 await b.close();

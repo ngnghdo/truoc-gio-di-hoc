@@ -455,5 +455,15 @@
   ],
   "ocr": true,
   "n": 40087
+ },
+ "204-2025-qh15": {
+  "so": "204/2025/QH15",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=214209&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/6/204-qh15.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 1455
  }
 }

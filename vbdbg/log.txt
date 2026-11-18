@@ -1,3 +1,82 @@
-99/2025/TT-BTC :: []
-254/2026/NĐ-CP :: []
-108/2025/QH15 :: []
+XHR POST https://analytics.google.com/g/collect?v=2&tid=G-4YC72F91YS&gtm=45je6bh0v9114025758za208zd9114025758xf1&_p=1795031736253&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=EAAAAGA&are=1&cid=822564053.1795031737&frm=0&ir=1&pscdl=noapi&rcb=13&sr=1280x720&uaa=x86&uab=64&uafvl=HeadlessChrome%3B129.0.6668.29%7CNot%253DA%253FBrand%3B8.0.0.0%7CChromium%3B129.0.6668.29&uam=&uamb=0&uap=Linux&uapv=7.0.0&uaw=0&ul=vi-vn&gaf=2&_s=1&tag_exp=115938465~115938468~118897920~118897930~120213116~120385423~120469145~120469153~121246026~121246034~123785233&sid=1795031736&sct=1&seg=0&dl=https%3A%2F%2Fvanban.chinhphu.vn%2F%3Fpageid%3D473%26q%3D99%252F2025%252FTT-BTC&dt=Trang%20t%C3%ACm%20ki%E1%BA%BFm&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=3306
+POST:
+BODY:
+
+XHR GET https://baochinhphu.vn/embed-topic.htm
+POST:
+BODY:
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/tong-bi-thu-chu-tich-nuoc-to-lam-tham-du-tuan-le-cap-cao-apec-lam-viec-song-phuong-tai-trung-quoc-301.htm" title="T&#x1ED5;ng B&#xED; th&#x1B0;, Ch&#x1EE7; t&#x1ECB;ch n&#x1B0;&#x1EDB;c T&#xF4; L&#xE2;m tham d&#x1EF1; Tu&#x1EA7;n l&#x1EC5; C&#x1EA5;p cao APEC, l&#xE0;m vi&#x1EC7;c song ph&#x1B0;&#x1A1;ng t&#x1EA1;i Trung Qu&#x1ED1;c" target="_blank" rel="nofollow" class="item">
+                T&#x1ED5;ng B&#xED; th&#x1B0;, Ch&#x1EE7; t&#x1ECB;ch n&#x1B0;&#x1EDB;c T&#xF4; L&#xE2;m tham d&#x1EF1; Tu&#x1EA7;n l&#x1EC5; C&#x1EA5;p cao APEC, l&#xE0;m vi&#x1EC7;c song ph&#x1B0;&#x1A1;ng t&#x1EA1;i Trung Qu&#x1ED1;c
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/thu-tuong-le-minh-hung-du-hoi-nghi-cap-cao-asean-49-tai-philippines-303.htm" title="Th&#x1EE7; t&#x1B0;&#x1EDB;ng L&#xEA; Minh H&#x1B0;ng d&#x1EF1; H&#x1ED9;i ngh&#x1ECB; C&#x1EA5;p cao ASEAN 49 t&#x1EA1;i Philippines" target="_blank" rel="nofollow" class="item">
+                Th&#x1EE7; t&#x1B0;&#x1EDB;ng L&#xEA; Minh H&#x1B0;ng d&#x1EF1; H&#x1ED9;i ngh&#x1ECB; C&#x1EA5;p cao ASEAN 49 t&#x1EA1;i Philippines
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/ngay-van-hoa-viet-nam-297.htm" title="Ng&#xE0;y V&#x103;n h&#xF3;a Vi&#x1EC7;t Nam" target="_blank" rel="nofollow" class="item">
+                Ng&#xE0;y V&#x103;n h&#xF3;a Vi&#x1EC7;t Nam
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/bao-ve-nen-tang-tu-tuong-cua-dang-trong-ky-nguyen-phat-trien-moi-290.htm" title="B&#x1EA3;o v&#x1EC7; n&#x1EC1;n t&#x1EA3;ng t&#x1B0; t&#x1B0;&#x1EDF;ng c&#x1EE7;a &#x110;&#x1EA3;ng trong k&#x1EF7; nguy&#xEA;n ph&#xE1;t tri&#x1EC3;n m&#x1EDB;i" target="_blank" rel="nofollow" class="item">
+                B&#x1EA3;o v&#x1EC7; n&#x1EC1;n t&#x1EA3;ng t&#x1B0; t&#x1B0;&#x1EDF;ng c&#x1EE7;a &#x110;&#x1EA3;ng trong k&#x1EF7; nguy&#xEA;n ph&#xE1;t tri&#x1EC3;n m&#x1EDB;i
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/chien-dich-500-ngay-dem-tim-kiem-quy-tap-va-xac-dinh-danh-tinh-hai-cot-liet-si-291.htm" title="Chi&#x1EBF;n d&#x1ECB;ch 500 ng&#xE0;y &#x111;&#xEA;m t&#xEC;m ki&#x1EBF;m, quy t&#x1EAD;p v&#xE0; x&#xE1;c &#x111;&#x1ECB;nh danh t&#xED;nh h&#xE0;i c&#x1ED1;t li&#x1EC7;t s&#x129;" target="_blank" rel="nofollow" class="item">
+                Chi&#x1EBF;n d&#x1ECB;ch 500 ng&#xE0;y &#x111;&#xEA;m t&#xEC;m ki&#x1EBF;m, quy t&#x1EAD;p v&#xE0; x&#xE1;c &#x111;&#x1ECB;nh danh t&#xED;nh h&#xE0;i c&#x1ED1;t li&#x1EC7;t s&#x129;
+            </a>
+        </div>
+
+
+
+
+XHR POST https://f-emc.ngsp.gov.vn/tracking
+POST:action_name=Trang%20t%C3%ACm%20ki%E1%BA%BFm&idsite=1914&rec=1&r=679110&h=19&m=55&s=37&url=https%3A%2F%2Fvanban.chinhphu.vn%2F%3Fpageid%3D473%26q%3D99%2F2025%2FTT-BTC&_id=fc1c43ec10eff5e5&_idts=1795031738&_idvc=1&_idn=0&_refts=0&_viewts=1795031738&send_image=0&cookie=1&res=1280x720&gt_ms=435&pv_id=he91ZC&meta=[{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"og:title","content":"Trang tìm kiếm"},{"name":"og:description","content":"Trang tìm kiếm"},{"name":"og:type","co
+BODY:
+
+XHR POST https://timkiem.chinhphu.vn/Home/search
+POST:keyword=99%2F2025%2FTT-BTC&cate_id=0&lang=vi&page=1&page_size=15
+BODY:{"keyword":"99/2025/TT-BTC","start":0,"error":"Unable to connect to the remote server","query_time":0,"page":0,"page_size":15,"total":0,"data":null,"count":0}
+
+LINKS [{"h":"https://vanban.chinhphu.vn/","t":"Trang chủ"},{"h":"https://vanban.chinhphu.vn/gioi-thieu-69424","t":""},{"h":"https://vanban.chinhphu.vn/lien-he","t":""},{"h":"https://vanban.chinhphu.vn/so-do-cong","t":""}]
+XHR POST https://f-emc.ngsp.gov.vn/tracking
+POST:action_name=Ngh%E1%BB%8B%20%C4%91%E1%BB%8Bnh%20s%E1%BB%91%20399%2F2026%2FN%C4%90-CP%20c%E1%BB%A7a%20Ch%C3%ADnh%20ph%E1%BB%A7%3A%20Quy%20%C4%91%E1%BB%8Bnh%20m%E1%BB%A9c%20l%C6%B0%C6%A1ng%20t%E1%BB%91i%20thi%E1%BB%83u%20%C4%91%E1%BB%91i%20v%E1%BB%9Bi%20ng%C6%B0%E1%BB%9Di%20lao%20%C4%91%E1%BB%99ng%20l%C3%A0m%20vi%E1%BB%87c%20theo%20h%E1%BB%A3p%20%C4%91%E1%BB%93ng%20lao%20%C4%91%E1%BB%99ng&idsite=1914&rec=1&r=288427&h=19&m=55&s=52&url=https%3A%2F%2Fvanban.chinhphu.vn%2F%3Fpageid%3D27160%26docid%3D22
+BODY:
+
+XHR GET https://baochinhphu.vn/embed-topic.htm
+POST:
+BODY:
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/tong-bi-thu-chu-tich-nuoc-to-lam-tham-du-tuan-le-cap-cao-apec-lam-viec-song-phuong-tai-trung-quoc-301.htm" title="T&#x1ED5;ng B&#xED; th&#x1B0;, Ch&#x1EE7; t&#x1ECB;ch n&#x1B0;&#x1EDB;c T&#xF4; L&#xE2;m tham d&#x1EF1; Tu&#x1EA7;n l&#x1EC5; C&#x1EA5;p cao APEC, l&#xE0;m vi&#x1EC7;c song ph&#x1B0;&#x1A1;ng t&#x1EA1;i Trung Qu&#x1ED1;c" target="_blank" rel="nofollow" class="item">
+                T&#x1ED5;ng B&#xED; th&#x1B0;, Ch&#x1EE7; t&#x1ECB;ch n&#x1B0;&#x1EDB;c T&#xF4; L&#xE2;m tham d&#x1EF1; Tu&#x1EA7;n l&#x1EC5; C&#x1EA5;p cao APEC, l&#xE0;m vi&#x1EC7;c song ph&#x1B0;&#x1A1;ng t&#x1EA1;i Trung Qu&#x1ED1;c
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/thu-tuong-le-minh-hung-du-hoi-nghi-cap-cao-asean-49-tai-philippines-303.htm" title="Th&#x1EE7; t&#x1B0;&#x1EDB;ng L&#xEA; Minh H&#x1B0;ng d&#x1EF1; H&#x1ED9;i ngh&#x1ECB; C&#x1EA5;p cao ASEAN 49 t&#x1EA1;i Philippines" target="_blank" rel="nofollow" class="item">
+                Th&#x1EE7; t&#x1B0;&#x1EDB;ng L&#xEA; Minh H&#x1B0;ng d&#x1EF1; H&#x1ED9;i ngh&#x1ECB; C&#x1EA5;p cao ASEAN 49 t&#x1EA1;i Philippines
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/ngay-van-hoa-viet-nam-297.htm" title="Ng&#xE0;y V&#x103;n h&#xF3;a Vi&#x1EC7;t Nam" target="_blank" rel="nofollow" class="item">
+                Ng&#xE0;y V&#x103;n h&#xF3;a Vi&#x1EC7;t Nam
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/bao-ve-nen-tang-tu-tuong-cua-dang-trong-ky-nguyen-phat-trien-moi-290.htm" title="B&#x1EA3;o v&#x1EC7; n&#x1EC1;n t&#x1EA3;ng t&#x1B0; t&#x1B0;&#x1EDF;ng c&#x1EE7;a &#x110;&#x1EA3;ng trong k&#x1EF7; nguy&#xEA;n ph&#xE1;t tri&#x1EC3;n m&#x1EDB;i" target="_blank" rel="nofollow" class="item">
+                B&#x1EA3;o v&#x1EC7; n&#x1EC1;n t&#x1EA3;ng t&#x1B0; t&#x1B0;&#x1EDF;ng c&#x1EE7;a &#x110;&#x1EA3;ng trong k&#x1EF7; nguy&#xEA;n ph&#xE1;t tri&#x1EC3;n m&#x1EDB;i
+            </a>
+        </div>
+        <div class="swiper-slide">
+            <a href="https://baochinhphu.vn/chu-de/chien-dich-500-ngay-dem-tim-kiem-quy-tap-va-xac-dinh-danh-tinh-hai-cot-liet-si-291.htm" title="Chi&#x1EBF;n d&#x1ECB;ch 500 ng&#xE0;y &#x111;&#xEA;m t&#xEC;m ki&#x1EBF;m, quy t&#x1EAD;p v&#xE0; x&#xE1;c &#x111;&#x1ECB;nh danh t&#xED;nh h&#xE0;i c&#x1ED1;t li&#x1EC7;t s&#x129;" target="_blank" rel="nofollow" class="item">
+                Chi&#x1EBF;n d&#x1ECB;ch 500 ng&#xE0;y &#x111;&#xEA;m t&#xEC;m ki&#x1EBF;m, quy t&#x1EAD;p v&#xE0; x&#xE1;c &#x111;&#x1ECB;nh danh t&#xED;nh h&#xE0;i c&#x1ED1;t li&#x1EC7;t s&#x129;
+            </a>
+        </div>
+
+
+
+
+ATT ["https://baochinhphu.vn/chu-de/tong-bi-thu-chu-tich-nuoc-to-lam-tham-du-tuan-le-cap-cao-apec-lam-viec-song-phuong-tai-trung-quoc-301.htm | Tổng Bí thư, Chủ tịch nước Tô Lâm tham dự Tuần lễ Cấp cao APEC, làm việc song phương tại Trung Quốc","https://baochinhphu.vn/chu-de/thu-tuong-le-minh-hung-du-hoi-nghi-cap-cao-asean-49-tai-philippines-303.htm | Thủ tướng Lê Minh Hưng dự Hội nghị Cấp cao ASEAN 49 tại Philippines","https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/399_2026_nd-cp_02112026_6-signed.signed.pdf | 399_2026_nd-cp_02112026_6-signed.signed.pdf","https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/399_2026_nd-cp_02112026_7-signed.pdf | 399_2026_nd-cp_02112026_7-signed.pdf"]

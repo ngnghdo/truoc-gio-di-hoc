@@ -182,5 +182,15 @@
   "so": "108/2025/QH15",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "140-2026-nd-cp": {
+  "so": "140/2026/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=217863&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/4/140-ndcp.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 33645
  }
 }

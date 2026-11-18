@@ -514,5 +514,15 @@
   ],
   "ocr": true,
   "n": 189772
+ },
+ "14-2008-qh12": {
+  "so": "14/2008/QH12",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=70678&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2008/07/72737_l14qh.pdf"
+  ],
+  "ocr": true,
+  "n": 17647
  }
 }

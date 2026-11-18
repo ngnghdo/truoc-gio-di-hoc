@@ -664,5 +664,15 @@
    "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/399_2026_nd-cp_02112026_7-signed.pdf"
   ],
   "n": 28397
+ },
+ "293-2025-nd-cp": {
+  "so": "293/2025/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=215832&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/11/293-cp.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 29412
  }
 }

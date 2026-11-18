@@ -24,5 +24,15 @@
   "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=186679&classid=1",
   "files": [],
   "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ },
+ "200-2014-tt-btc": {
+  "so": "200/2014/TT-BTC",
+  "ok": false,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=178998&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2015/02/200-tt-btc.pdf"
+  ],
+  "ocr": true,
+  "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
  }
 }

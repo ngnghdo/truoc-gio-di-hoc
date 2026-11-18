@@ -1,0 +1,11 @@
+{
+ "46-2025-tt-btc": {
+  "so": "46/2025/TT-BTC",
+  "ok": false,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=214192&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/6/46-btc.pdf"
+  ],
+  "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ }
+}

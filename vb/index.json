@@ -137,5 +137,15 @@
   ],
   "ocr": true,
   "n": 181571
+ },
+ "20-2026-tt-btc": {
+  "so": "20/2026/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=217191&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/3/20-btc.pdf"
+  ],
+  "ocr": true,
+  "n": 54629
  }
 }

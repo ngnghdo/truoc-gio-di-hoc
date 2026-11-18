@@ -390,5 +390,15 @@
   ],
   "ocr": true,
   "n": 141113
+ },
+ "32-2025-tt-btc": {
+  "so": "32/2025/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=213855&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/6/32-btc.pdf"
+  ],
+  "ocr": true,
+  "n": 70547
  }
 }

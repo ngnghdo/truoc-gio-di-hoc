@@ -494,5 +494,15 @@
   ],
   "ocr": true,
   "n": 23125
+ },
+ "96-2015-tt-btc": {
+  "so": "96/2015/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=180650&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2015/07/96.signed_01.pdf"
+  ],
+  "ocr": true,
+  "n": 106871
  }
 }

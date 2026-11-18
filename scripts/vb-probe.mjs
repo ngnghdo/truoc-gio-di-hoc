@@ -1,25 +1,21 @@
 import { chromium } from "playwright";
 import fs from "node:fs";
 fs.rmSync("vbdbg",{recursive:true,force:true}); fs.mkdirSync("vbdbg",{recursive:true});
-const b = await chromium.launch({args:["--disable-blink-features=AutomationControlled"]});
-const ctx = await b.newContext({ locale:"vi-VN", userAgent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36", viewport:{width:1280,height:900} });
-await ctx.addInitScript(()=>{ Object.defineProperty(navigator,'webdriver',{get:()=>undefined}); });
-const pg = await ctx.newPage();
+const b = await chromium.launch();
+const pg = await (await b.newContext({locale:"vi-VN"})).newPage();
 const log=[];
-async function save(name,url,wait=6000){
-  try{ const r=await pg.goto(url,{waitUntil:"domcontentloaded",timeout:60000}); await pg.waitForTimeout(wait);
-    const h=await pg.content(); fs.writeFileSync("vbdbg/"+name+".html",h.slice(0,600000)); const l=`${name} ${r&&r.status()} ${h.length} ${await pg.title()} ${pg.url()}`; console.log(l); log.push(l); return h; }catch(e){ const l=name+" ERR "+String(e).slice(0,150); console.log(l); log.push(l); return ""; }
+for (const k of ["99/2025/TT-BTC","254/2026/NĐ-CP","108/2025/QH15"]) {
+  const u="https://vanban.chinhphu.vn/?pageid=473&q="+encodeURIComponent(k);
+  await pg.goto(u,{waitUntil:"domcontentloaded",timeout:60000}); await pg.waitForTimeout(3000);
+  const links=await pg.$$eval("a",as=>as.map(a=>({h:a.href,t:a.textContent.replace(/\s+/g," ").trim()})).filter(x=>/docid=/.test(x.h)));
+  log.push(k+" :: "+JSON.stringify(links.slice(0,6)));
+  fs.writeFileSync("vbdbg/s_"+k.replace(/\W/g,"_")+".html",(await pg.content()).slice(0,300000));
+  const hit=links.find(x=>x.t.includes(k))||links[0];
+  if(hit){ await pg.goto(hit.h,{waitUntil:"domcontentloaded",timeout:60000}); await pg.waitForTimeout(3000);
+    const h=await pg.content(); fs.writeFileSync("vbdbg/d_"+k.replace(/\W/g,"_")+".html",h.slice(0,600000));
+    const att=await pg.$$eval("a",as=>as.map(a=>a.href).filter(h=>/\.(pdf|docx?|zip|rar)(\?|$)/i.test(h)||/datafiles|download|file/i.test(h)));
+    log.push("  doc "+hit.h+" len "+h.length+" att "+JSON.stringify(att.slice(0,10)));
+  }
 }
-const K="99/2025/TT-BTC", E=encodeURIComponent;
-await save("tvpl_search","https://thuvienphapluat.vn/page/tim-van-ban.aspx?keyword="+E(K),15000);
-await save("cp_search","https://vanban.chinhphu.vn/he-thong-van-ban?classid=1&mode=0&keyword="+E("99/2025"));
-await save("vbplco","https://vanbanphapluat.co/tim-kiem?kwd="+E(K));
-await save("thukyluat","https://thukyluat.vn/tim-kiem/?keyword="+E(K));
-await save("htpl","https://hethongphapluat.com/search?q="+E(K));
-await save("caselaw","https://caselaw.vn/tim-kiem?keyword="+E(K));
-await save("lawnet","https://lawnet.vn/tim-van-ban?keyword="+E(K));
-await save("luatvn2","https://luatvietnam.vn/tim-van-ban.html?Keywords="+E(K),15000);
-await save("vbpl2","https://vbpl.vn/TW/Pages/vbpq-timkiem.aspx?Keyword="+E(K));
-await save("ddg","https://html.duckduckgo.com/html/?q="+E("Thông tư 99/2025/TT-BTC toàn văn"));
-fs.writeFileSync("vbdbg/log.txt",log.join("\n"));
+fs.writeFileSync("vbdbg/log.txt",log.join("\n")); console.log(log.join("\n"));
 await b.close();

@@ -633,5 +633,16 @@
   ],
   "ocr": true,
   "n": 54747
+ },
+ "125-2020-nd-cp": {
+  "so": "125/2020/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=201364&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2020/10/125.signed.pdf",
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2021/01/29.signed_02.pdf"
+  ],
+  "ocr": true,
+  "n": 164312
  }
 }

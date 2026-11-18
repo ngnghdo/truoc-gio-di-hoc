@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: npm i --no-save playwright@1.47.0 && npx playwright install --with-deps chromium
+      - run: npm i --no-save playwright@1.47.0 && npx playwright install --with-deps chromium && sudo apt-get install -y poppler-utils >/dev/null
       - run: node scripts/vb-probe.mjs
       - run: |
           git config user.name "vb-bot"; git config user.email "actions@users.noreply.github.com"

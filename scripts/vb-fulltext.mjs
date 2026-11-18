@@ -20,7 +20,7 @@ function reflow(t){
     if(head(x)||/[.:;!?]$/.test(cur)||x===x.toUpperCase()&&x.length>3){ out.push(cur); cur=x; } else cur+=" "+x; }
   if(cur) out.push(cur); return out;
 }
-async function findDoc(q){
+async function findDoc(q){ console.log("tìm",q,new Date().toISOString());
   await pg.goto(LISTURL,{waitUntil:"domcontentloaded",timeout:60000});
   await pg.fill("#ctrl_191017_163_txtSearchKeyword",q);
   await Promise.all([pg.waitForLoadState("domcontentloaded").catch(()=>{}), pg.click("#ctrl_191017_163_btnSearch")]);
@@ -41,16 +41,16 @@ for(const it of LIST){
     rec.src=hit.h;
     await pg.goto(hit.h,{waitUntil:"domcontentloaded",timeout:60000}); await pg.waitForTimeout(1500);
     const att=[...new Set(await pg.$$eval("a",as=>as.map(a=>a.href).filter(h=>/datafiles\.chinhphu\.vn\/.*\.(pdf|docx?)$/i.test(h))))];
-    rec.files=att;
+    rec.files=att; console.log("  trang",hit.h,"tệp",att.length);
     let paras=[];
     for(const u of att.sort((a,b)=>(/\.docx?$/i.test(b)?1:0)-(/\.docx?$/i.test(a)?1:0))){
-      const f="/tmp/vbf/x"+(u.match(/\.\w+$/)[0].toLowerCase());
+      console.log("  tải",u); const f="/tmp/vbf/x"+(u.match(/\.\w+$/)[0].toLowerCase());
       try{ execSync(`curl -sL --max-time 120 -o ${f} "${u}"`);
         let txt="";
         if(f.endsWith(".pdf")){ txt=execSync(`pdftotext -enc UTF-8 ${f} -`,{maxBuffer:1<<28}).toString();
           const pages=+((execSync(`pdfinfo ${f}`).toString().match(/Pages:\s+(\d+)/)||[])[1]||1);
           if(txt.replace(/\s/g,"").length < pages*300){ // PDF scan → OCR tiếng Việt
-            execSync(`rm -rf /tmp/vbf/pg && mkdir -p /tmp/vbf/pg && pdftoppm -r 200 -gray -png ${f} /tmp/vbf/pg/p`);
+            console.log("  OCR",pages,"trang"); execSync(`rm -rf /tmp/vbf/pg && mkdir -p /tmp/vbf/pg && pdftoppm -r 200 -gray -png ${f} /tmp/vbf/pg/p`);
             execSync(`ls /tmp/vbf/pg/*.png | xargs -P 4 -I{} sh -c 'tesseract {} {} -l vie --psm 4 quiet'`,{maxBuffer:1<<26,timeout:3*3600*1000});
             const fs2=fs.readdirSync("/tmp/vbf/pg").filter(x=>x.endsWith(".txt")).sort((a,b)=>(+a.match(/(\d+)/)[1])-(+b.match(/(\d+)/)[1]));
             txt=fs2.map(x=>fs.readFileSync("/tmp/vbf/pg/"+x,"utf8")).join("\n\n"); rec.ocr=true; } }

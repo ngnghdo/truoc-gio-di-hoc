@@ -4,6 +4,7 @@ on:
     inputs:
       only: { description: "slug cần tải (cách nhau dấu phẩy), để trống = tất cả", required: false, default: "" }
       force: { description: "tải lại cả văn bản đã có (1/0)", required: false, default: "" }
+      limit: { description: "giới hạn giây", required: false, default: "19800" }
 permissions: { contents: write }
 jobs:
   run:
@@ -16,7 +17,7 @@ jobs:
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils pandoc catdoc tesseract-ocr tesseract-ocr-vie >/dev/null
       - run: npm i --no-save playwright@1.47.0 && npx playwright install --with-deps chromium
       - run: git config user.name "vb-bot" && git config user.email "actions@users.noreply.github.com"
-      - run: node scripts/vb-fulltext.mjs
+      - run: timeout ${{ github.event.inputs.limit || 19800 }} node scripts/vb-fulltext.mjs || true
         env: { ONLY: "${{ github.event.inputs.only }}", FORCE: "${{ github.event.inputs.force }}" }
       - run: |
           git config user.name "vb-bot"; git config user.email "actions@users.noreply.github.com"

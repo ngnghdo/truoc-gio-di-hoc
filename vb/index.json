@@ -88,5 +88,14 @@
   "so": "214/2012/TT-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "48-2024-qh15": {
+  "so": "48/2024/QH15",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=212476&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/01/luat48.pdf"
+  ],
+  "n": 44830
  }
 }

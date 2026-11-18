@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THHT – Thực hành Tín hiệu & Hệ thống (Matlab Bài 1–3)</title>
+<style>
+:root{--red:#b5121b;--bg:#f2f3f5;--tx:#1d1f23;--tx2:#5c6370;--ln:#e3e5e9;--cm:#3d7a4a;--cbg:#fbfbfc}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);background:var(--bg)}
+header{background:var(--red);color:#fff;padding:12px 14px 10px}
+header h1{margin:0;font-size:1.05rem}
+header .sub{font-size:.8rem;opacity:.9;margin-top:2px}
+body.embed header{display:none}
+.tabs{position:sticky;top:0;z-index:5;display:flex;gap:6px;padding:8px 10px;background:#fff;border-bottom:1px solid var(--ln)}
+.tabs button{flex:1;min-height:44px;border:1px solid var(--ln);background:var(--bg);border-radius:12px;font:inherit;font-weight:700;color:var(--tx);cursor:pointer;line-height:1.15;padding:4px 6px}
+.tabs button small{display:block;font-weight:400;font-size:.7rem;color:var(--tx2)}
+.tabs button[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.tabs button[aria-pressed=true] small{color:#fde3e4}
+main{max-width:1180px;margin:0 auto;padding:10px 10px 40px}
+.note{background:#fff;border:1px solid var(--ln);border-left:4px solid var(--red);border-radius:12px;padding:10px 12px;font-size:.85rem;color:var(--tx2)}
+.note b{color:var(--tx)}
+.pane[hidden]{display:none}
+h2{font-size:1.1rem;margin:16px 2px 6px;color:var(--red)}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.toc a{font-size:.8rem;text-decoration:none;color:var(--red);background:#fff;border:1px solid var(--ln);border-radius:999px;padding:4px 10px}
+section{background:#fff;border:1px solid var(--ln);border-radius:14px;margin:12px 0;overflow:hidden;scroll-margin-top:70px}
+h3{margin:0;padding:10px 12px 0;font-size:1rem}
+.de{margin:2px 12px 8px;font-size:.84rem;color:var(--tx2)}
+.bar{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#2b2f36;color:#cfd3da;font:12px ui-monospace,Consolas,monospace}
+.bar span{flex:1}
+.bar button{border:0;border-radius:8px;padding:6px 12px;font:600 12px system-ui,sans-serif;cursor:pointer;background:#fff;color:var(--tx)}
+.bar .cp{background:var(--red);color:#fff}
+.code{font:13px/1.45 ui-monospace,"Cascadia Mono",Consolas,Menlo,monospace;background:var(--cbg);padding:8px 0;overflow-x:auto}
+.ln{display:grid;grid-template-columns:var(--cw) 1fr;column-gap:10px;padding:1px 12px;white-space:pre}
+.ln:hover{background:#f1f3f6}
+.ln .c{white-space:pre}
+.ln .m{color:var(--cm);white-space:pre-wrap;word-break:break-word;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:12.5px}
+.ln.f,.ln.h{display:block;white-space:pre-wrap;margin-top:2px}
+.ln.h .m{color:var(--red);font-weight:700}
+.ln.e{height:.7em}
+.k{color:#7b2fbf;font-weight:700}
+.s{color:#a3521a;font-style:normal}
+@media (max-width:820px){
+  .code{font-size:12.5px}
+  .ln{display:block;white-space:normal;padding:3px 10px;border-bottom:1px dashed #eef0f3}
+  .ln .c{display:block;white-space:pre;overflow-x:auto}
+  .ln .m{display:block;padding-left:1.4em;font-size:12.5px;line-height:1.4}
+  .ln.f .m,.ln.h .m{padding-left:0}
+  .ln.e{border:0}
+}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1d1f23;color:#fff;padding:8px 14px;border-radius:10px;font-size:.85rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+</style></head>
+<body>
+<header><h1>THHT – Thực hành Tín hiệu & Hệ thống</h1><div class="sub">Matlab · Bài 1 → 3 · code đầy đủ, chú thích từng dòng</div></header>
+<nav class="tabs" id="tabs">
+<button type="button" data-t="b1">Bài 1<small>Tín hiệu liên tục</small></button>
+<button type="button" data-t="b2">Bài 2<small>Hàm tuyến tính</small></button>
+<button type="button" data-t="b3">Bài 3<small>Tích chập, Fourier, lọc</small></button>
+</nav>
+<main>
+<div class="note"><b>Cách chạy:</b> copy cả block vào 1 file <b>.m</b> mới (tên không dấu, không cách, không bắt đầu bằng số, KHÔNG trùng tên hàm bên trong, vd <code>bai1_1.m</code>) → Run. Hàm tự viết nằm ở cuối script → cần MATLAB R2016b trở lên. Trên điện thoại: dòng code ở trên, chú thích xanh ở dưới.</div>
+<div class="pane" data-t="b1"><h2>Bài 1. Tín hiệu liên tục</h2>
+<section id="b1_1">
+<h3 data-short="I. u(t), r(t)">I. Hàm bước nhảy u(t) & hàm dốc r(t)</h3><p class="de">Bài 1–2: viết ustep, uramp · Bài 3: vẽ 5u(t−2), 3r(t+5), 2r(t+2,5)−5r(t)+3r(t−2)+u(t−4), sin(t)[u(t+3)−u(t−3)] · Bài 4: dựng lại 2 hình mẫu.</p>
+<div class="bar"><span>bai1_1.m</span><button type="button" class="cp" data-s="b1_1">Copy</button><button type="button" class="dl" data-s="b1_1" data-f="bai1_1.m">Tải .m</button></div>
+<div class="code" style="--cw:72ch"><div class="ln h"><span class="m">%% ===== BÀI 1 – I. HÀM BƯỚC NHẢY u(t) VÀ HÀM DỐC r(t) (Bài 1 → Bài 4) =====</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% clc: xóa chữ trong Command Window | clear: xóa mọi biến cũ | close all: đóng mọi cửa sổ hình</span></div>
+<div class="ln"><span class="c">t = -10:0.01:10;</span><span class="m">% vector thời gian: bắt đầu -10, bước 0.01, kết thúc 10 → 2001 điểm; bước nhỏ nên đồ thị trông liên tục</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Bài 3: vẽ 4 tín hiệu dùng ustep, uramp (2 hàm tự viết ở CUỐI file) ----------</span></div>
+<div class="ln"><span class="c">y1 = 5*ustep(t - 2);</span><span class="m">% 5u(t-2): (t-2) dịch u(t) sang PHẢI 2 → nhảy tại t=2; nhân 5 → bậc cao 5</span></div>
+<div class="ln"><span class="c">y2 = 3*uramp(t + 5);</span><span class="m">% 3r(t+5): (t+5) dịch r(t) sang TRÁI 5 → bắt đầu dốc tại t=-5; nhân 3 → độ dốc 3</span></div>
+<div class="ln"><span class="c">y3 = 2*uramp(t + 2.5) - 5*uramp(t) + 3*uramp(t - 2) + ustep(t - 4);</span><span class="m">% cộng/trừ từng mảnh: mỗi r(t-a) đổi độ dốc tại t=a, u(t-4) nhảy +1 tại t=4</span></div>
+<div class="ln"><span class="c">y4 = sin(t) .* (ustep(t + 3) - ustep(t - 3));</span><span class="m">% u(t+3)-u(t-3) = &quot;cửa sổ&quot; bằng 1 trên [-3,3], 0 ngoài; .* nhân TỪNG PHẦN TỬ → chỉ giữ sin(t) trong [-3,3]</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - I - Bai 3&#x27;</i>);</span><span class="m">% mở cửa sổ hình mới, &#x27;Name&#x27; = tên hiện trên thanh tiêu đề cửa sổ</span></div>
+<div class="ln"><span class="c">subplot(2,2,1);</span><span class="m">% chia cửa sổ thành lưới 2 hàng × 2 cột, vẽ vào ô số 1 (đếm trái→phải, trên→dưới)</span></div>
+<div class="ln"><span class="c">plot(t, y1, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5);</span><span class="m">% vẽ y1 theo t; &#x27;LineWidth&#x27;,1.5 → nét dày 1.5 pt</span></div>
+<div class="ln"><span class="c">grid on; ylim([-1 6]);</span><span class="m">% grid on: bật lưới | ylim([a b]): cố định trục y từ a đến b cho dễ nhìn bước nhảy</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;5u(t-2)&#x27;</i>); xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;y(t)&#x27;</i>);</span><span class="m">% tiêu đề ô + nhãn trục x, trục y</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">subplot(2,2,2);</span><span class="m">% ô số 2 (hàng 1, cột 2)</span></div>
+<div class="ln"><span class="c">plot(t, y2, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); grid on;</span><span class="m">% vẽ y2, bật lưới</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;3r(t+5)&#x27;</i>); xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;y(t)&#x27;</i>);</span><span class="m">% tiêu đề + nhãn 2 trục</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">subplot(2,2,3);</span><span class="m">% ô số 3 (hàng 2, cột 1)</span></div>
+<div class="ln"><span class="c">plot(t, y3, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); grid on;</span><span class="m">% vẽ y3, bật lưới</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;2r(t+2.5) - 5r(t) + 3r(t-2) + u(t-4)&#x27;</i>); xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;y(t)&#x27;</i>);</span><span class="m">% tiêu đề ô 3 + nhãn trục</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">subplot(2,2,4);</span><span class="m">% ô số 4 (hàng 2, cột 2)</span></div>
+<div class="ln"><span class="c">plot(t, y4, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); grid on; ylim([-1.2 1.2]);</span><span class="m">% vẽ y4 | ylim: trục y từ -1.2 đến 1.2 (biên độ sin ≤ 1)</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;sin(t)[u(t+3) - u(t-3)]&#x27;</i>); xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;y(t)&#x27;</i>);</span><span class="m">% tiêu đề ô 4 + nhãn trục</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Bài 4: dựng lại 2 hình mẫu từ u(t), r(t) ----------</span></div>
+<div class="ln f"><span class="m">% Hình 1: tam giác đáy [-4,4], đỉnh cao 2 tại t=0 → dốc lên 2/4 = 0.5 rồi dốc xuống -0.5</span></div>
+<div class="ln"><span class="c">z1 = 0.5*uramp(t + 4) - uramp(t) + 0.5*uramp(t - 4);</span><span class="m">% tại -4: độ dốc 0→+0.5 | tại 0: +0.5→-0.5 (trừ 1·r) | tại 4: -0.5→0 (cộng 0.5·r)</span></div>
+<div class="ln f"><span class="m">% Hình 2: bậc cao 1 trên [-8,8] + tam giác đáy [-4,4] cao thêm 2 (đỉnh tổng = 3)</span></div>
+<div class="ln"><span class="c">z2 = ustep(t + 8) - ustep(t - 8) + z1;</span><span class="m">% u(t+8)-u(t-8): xung chữ nhật cao 1 trên [-8,8]; cộng z1 → đỉnh 1+2 = 3</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - I - Bai 4&#x27;</i>);</span><span class="m">% cửa sổ hình mới cho Bài 4</span></div>
+<div class="ln"><span class="c">subplot(2,1,1);</span><span class="m">% lưới 2 hàng × 1 cột, ô 1 (trên)</span></div>
+<div class="ln"><span class="c">plot(t, z1, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); grid on; axis([-10 10 -0.5 2]);</span><span class="m">% axis([xmin xmax ymin ymax]): đặt cả 2 trục giống hình mẫu</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;Hình 1: 0.5r(t+4) - r(t) + 0.5r(t-4)&#x27;</i>);</span><span class="m">% tiêu đề ô trên</span></div>
+<div class="ln"><span class="c">subplot(2,1,2);</span><span class="m">% ô 2 (dưới)</span></div>
+<div class="ln"><span class="c">plot(t, z2, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); grid on; axis([-10 10 0 3]);</span><span class="m">% vẽ z2 | trục giống hình mẫu 2: t ∈ [-10,10], y ∈ [0,3]</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;Hình 2: u(t+8) - u(t-8) + 0.5r(t+4) - r(t) + 0.5r(t-4)&#x27;</i>);</span><span class="m">% tiêu đề ô dưới</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Bài 1 + Bài 2: định nghĩa hàm (hàm cục bộ phải đặt CUỐI script, MATLAB R2016b trở lên) ----------</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> y = ustep(t)</span><span class="m">% khai báo hàm: tên ustep, đầu vào t (số hoặc vector), đầu ra y cùng kích thước với t</span></div>
+<div class="ln"><span class="c">    y = double(t &gt;= 0);</span><span class="m">% t&gt;=0 cho mảng logic (1 nếu đúng, 0 nếu sai); double() đổi sang kiểu số để nhân/cộng được</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc hàm ustep</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> y = uramp(t)</span><span class="m">% hàm dốc đơn vị: r(t) = t khi t ≥ 0, = 0 khi t &lt; 0</span></div>
+<div class="ln"><span class="c">    y = t .* (t &gt;= 0);</span><span class="m">% t .* (t&gt;=0): nhân từng phần tử t với 1 (t≥0) hoặc 0 (t&lt;0) → giữ t ở nửa dương, còn lại bằng 0</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc hàm uramp (cách khác tương đương: y = max(t, 0);)</span></div></div>
+</section>
+<section id="b1_2">
+<h3 data-short="II. Chẵn / lẻ">II. Phần chẵn, phần lẻ</h3><p class="de">Hàm evenodd + vẽ y(t)=2r(t+2,5)−5r(t)+3r(t−2)+u(t−4) cùng phần chẵn, phần lẻ trên 1 đồ thị.</p>
+<div class="bar"><span>bai1_2.m</span><button type="button" class="cp" data-s="b1_2">Copy</button><button type="button" class="dl" data-s="b1_2" data-f="bai1_2.m">Tải .m</button></div>
+<div class="code" style="--cw:72ch"><div class="ln h"><span class="m">%% ===== BÀI 1 – II. PHẦN CHẴN, PHẦN LẺ CỦA TÍN HIỆU =====</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% xóa màn hình lệnh, xóa biến, đóng hình cũ</span></div>
+<div class="ln"><span class="c">t = -10:0.01:10;</span><span class="m">% t PHẢI đối xứng quanh 0 (từ -a đến a, cùng bước) thì fliplr(y) mới đúng là y(-t)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">y = 2*uramp(t + 2.5) - 5*uramp(t) + 3*uramp(t - 2) + ustep(t - 4);</span><span class="m">% tín hiệu đề cho, dùng lại ustep/uramp ở cuối file</span></div>
+<div class="ln"><span class="c">[ye, yo] = evenodd(y);</span><span class="m">% gọi hàm evenodd: trả về 2 đầu ra cùng lúc → ye = phần chẵn, yo = phần lẻ</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - II&#x27;</i>);</span><span class="m">% cửa sổ hình mới</span></div>
+<div class="ln"><span class="c">plot(t, y,  <i class="s">&#x27;k-&#x27;</i>,  <i class="s">&#x27;LineWidth&#x27;</i>, 2);   hold on;</span><span class="m">% &#x27;k-&#x27;: màu đen (k), nét liền (-) | hold on: giữ hình để vẽ chồng đường sau</span></div>
+<div class="ln"><span class="c">plot(t, ye, <i class="s">&#x27;r--&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5);</span><span class="m">% &#x27;r--&#x27;: màu đỏ, nét đứt dài → phần chẵn</span></div>
+<div class="ln"><span class="c">plot(t, yo, <i class="s">&#x27;b-.&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5);  hold off;</span><span class="m">% &#x27;b-.&#x27;: màu xanh dương, nét gạch-chấm → phần lẻ | hold off: thôi vẽ chồng</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;Biên độ&#x27;</i>);</span><span class="m">% bật lưới + nhãn 2 trục</span></div>
+<div class="ln"><span class="c">legend(<i class="s">&#x27;y(t)&#x27;</i>, <i class="s">&#x27;y_e(t) – phần chẵn&#x27;</i>, <i class="s">&#x27;y_o(t) – phần lẻ&#x27;</i>, <i class="s">&#x27;Location&#x27;</i>, <i class="s">&#x27;best&#x27;</i>);</span><span class="m">% chú thích theo đúng thứ tự 3 lệnh plot; &#x27;best&#x27;: MATLAB tự chọn góc ít che đồ thị</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;y(t) = 2r(t+2.5) - 5r(t) + 3r(t-2) + u(t-4) và phần chẵn/lẻ&#x27;</i>);</span><span class="m">% tiêu đề hình</span></div>
+<div class="ln e"> </div>
+<div class="ln f"><span class="m">% Kiểm tra nhanh (không bắt buộc): ye + yo phải trả lại đúng y</span></div>
+<div class="ln"><span class="c">disp(max(abs(ye + yo - y)));</span><span class="m">% sai lệch lớn nhất giữa ye+yo và y; in ra 0 (hoặc ~1e-15) là đúng</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Các hàm (đặt cuối script) ----------</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> [ye, yo] = evenodd(y)</span><span class="m">% hàm 1 đầu vào (y), 2 đầu ra (ye, yo) — y là vector mẫu tín hiệu trên t đối xứng</span></div>
+<div class="ln"><span class="c">    yr = fliplr(y);</span><span class="m">% fliplr: lật vector trái↔phải → mẫu tại t thành mẫu tại -t, tức yr = y(-t)</span></div>
+<div class="ln"><span class="c">    ye = 0.5*(y + yr);</span><span class="m">% phần chẵn: ye(t) = [y(t) + y(-t)]/2 → thỏa ye(-t) = ye(t)</span></div>
+<div class="ln"><span class="c">    yo = 0.5*(y - yr);</span><span class="m">% phần lẻ:   yo(t) = [y(t) - y(-t)]/2 → thỏa yo(-t) = -yo(t)</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% (chú ý: trong PDF dấu trừ bị in thành &quot;–&quot; dài, gõ lại bằng &quot;-&quot; thường kẻo lỗi)</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> y = ustep(t)</span><span class="m">% u(t): 1 khi t ≥ 0, 0 khi t &lt; 0</span></div>
+<div class="ln"><span class="c">    y = double(t &gt;= 0);</span><span class="m">% so sánh → logic 0/1 → đổi sang số</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc hàm ustep</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> y = uramp(t)</span><span class="m">% r(t): t khi t ≥ 0, 0 khi t &lt; 0</span></div>
+<div class="ln"><span class="c">    y = t .* (t &gt;= 0);</span><span class="m">% nhân từng phần tử với mặt nạ 0/1</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc hàm uramp</span></div></div>
+</section>
+<section id="b1_3">
+<h3 data-short="III. Tuần hoàn">III. Tổng các tín hiệu tuần hoàn</h3><p class="de">Vẽ x₁, x₂ trên [−10, 10], xét tuần hoàn, tìm chu kỳ.</p>
+<div class="bar"><span>bai1_3.m</span><button type="button" class="cp" data-s="b1_3">Copy</button><button type="button" class="dl" data-s="b1_3" data-f="bai1_3.m">Tải .m</button></div>
+<div class="code" style="--cw:72ch"><div class="ln h"><span class="m">%% ===== BÀI 1 – III. TỔNG CÁC TÍN HIỆU TUẦN HOÀN =====</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln"><span class="c">t  = -10:0.001:10;</span><span class="m">% bước 0.001 (mịn hơn) vì cos(6πt) dao động nhanh, chu kỳ chỉ 1/3 s</span></div>
+<div class="ln"><span class="c">W0 = pi/10;</span><span class="m">% Ω0 = π/10 (rad/s)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">x1 = 1 + 1.5*cos(2*pi*W0*t) - 0.6*cos(4*W0*t);</span><span class="m">% a. x1(t): cos(...) nhận vector t → trả vector, cộng/nhân số áp cho mọi phần tử</span></div>
+<div class="ln"><span class="c">x2 = 1 + 1.5*cos(6*pi*t)    - 0.6*cos(4*W0*t);</span><span class="m">% b. x2(t)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - III - Tuan hoan&#x27;</i>);</span><span class="m">% mở cửa sổ hình mới, đặt tên</span></div>
+<div class="ln"><span class="c">subplot(2,1,1);</span><span class="m">% ô trên: x1</span></div>
+<div class="ln"><span class="c">plot(t, x1, <i class="s">&#x27;LineWidth&#x27;</i>, 1.2); grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;x_1(t)&#x27;</i>);</span><span class="m">% dấu _ trong nhãn → chữ số 1 viết chỉ số dưới</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;a. x_1(t) = 1 + 1.5cos(2\pi\Omega_0t) - 0.6cos(4\Omega_0t)&#x27;</i>);</span><span class="m">% \pi, \Omega: MATLAB hiển thị thành ký hiệu π, Ω</span></div>
+<div class="ln"><span class="c">subplot(2,1,2);</span><span class="m">% ô dưới: x2</span></div>
+<div class="ln"><span class="c">plot(t, x2, <i class="s">&#x27;LineWidth&#x27;</i>, 1.2); grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;x_2(t)&#x27;</i>);</span><span class="m">% vẽ x2, bật lưới, nhãn trục (x_2 → chỉ số dưới)</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;b. x_2(t) = 1 + 1.5cos(6\pit) - 0.6cos(4\Omega_0t)&#x27;</i>);</span><span class="m">% tiêu đề; \pi → π, \Omega_0 → Ω₀</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Tìm chu kỳ: tổng tuần hoàn ⇔ tỉ số các chu kỳ thành phần là số HỮU TỈ ----------</span></div>
+<div class="ln f"><span class="m">% Thành phần cos(w·t) có chu kỳ T = 2π/w</span></div>
+<div class="ln"><span class="c">T1a = 2*pi/(2*pi*W0);</span><span class="m">% x1, số hạng 1: w = 2πΩ0 = π²/5 → T = 10/π ≈ 3.18 s</span></div>
+<div class="ln"><span class="c">T2a = 2*pi/(4*W0);</span><span class="m">% x1, số hạng 2: w = 4Ω0 = 2π/5 → T = 5 s</span></div>
+<div class="ln"><span class="c">fprintf(<i class="s">&#x27;x1: T1 = %.4f, T2 = %.4f, T1/T2 = %.4f\n&#x27;</i>, T1a, T2a, T1a/T2a);</span><span class="m">% %.4f: in số thực 4 chữ số thập phân | \n: xuống dòng</span></div>
+<div class="ln f"><span class="m">% → T1/T2 = 2/π là số VÔ TỈ ⇒ x1(t) KHÔNG tuần hoàn (đồ thị không lặp lại đúng hình dạng)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">T1b = 2*pi/(6*pi);</span><span class="m">% x2, số hạng 1: w = 6π → T = 1/3 s</span></div>
+<div class="ln"><span class="c">T2b = 2*pi/(4*W0);</span><span class="m">% x2, số hạng 2: T = 5 s</span></div>
+<div class="ln"><span class="c">fprintf(<i class="s">&#x27;x2: T1 = %.4f, T2 = %.4f, T2/T1 = %.4f\n&#x27;</i>, T1b, T2b, T2b/T1b);</span><span class="m">% in 3 số: T1, T2 và tỉ số T2/T1 của x2</span></div>
+<div class="ln f"><span class="m">% → T2/T1 = 15 là số HỮU TỈ ⇒ x2(t) TUẦN HOÀN, chu kỳ T = BCNN(1/3, 5) = 5 s (= 15·T1 = 1·T2)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">hold on;</span><span class="m">% đang ở ô dưới (x2): vẽ thêm đường dọc đánh dấu các mốc cách nhau 1 chu kỳ</span></div>
+<div class="ln"><span class="c">xline([-10 -5 0 5 10], <i class="s">&#x27;r--&#x27;</i>);</span><span class="m">% xline: vẽ đường thẳng đứng tại các giá trị t đã cho (MATLAB R2018b+) → thấy đồ thị lặp lại sau mỗi 5 s</span></div>
+<div class="ln"><span class="c">hold off;</span><span class="m">% thôi vẽ chồng</span></div></div>
+</section>
+<section id="b1_4">
+<h3 data-short="III. Năng lượng">III. Năng lượng, công suất</h3><p class="de">x(t)=e^(−t)cos(2πt)u(t) trên [−10, 10], dùng biến tượng trưng (syms).</p>
+<div class="bar"><span>bai1_4.m</span><button type="button" class="cp" data-s="b1_4">Copy</button><button type="button" class="dl" data-s="b1_4" data-f="bai1_4.m">Tải .m</button></div>
+<div class="code" style="--cw:53ch"><div class="ln h"><span class="m">%% ===== BÀI 1 – III. NĂNG LƯỢNG, CÔNG SUẤT CỦA TÍN HIỆU (biến tượng trưng) =====</span></div>
+<div class="ln f"><span class="m">% x(t) = e^(-t)·cos(2πt)·u(t) trên đoạn -10 ≤ t ≤ 10  →  T = 20, [-T/2, T/2] = [-10, 10]</span></div>
+<div class="ln f"><span class="m">% E = ∫ |x(t)|² dt (từ -T/2 đến T/2)     P = E / T</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln"><span class="c">syms t real</span><span class="m">% khai báo t là biến TƯỢNG TRƯNG (không cần giá trị số); &#x27;real&#x27; → t là số thực, |x|² = x²</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">x = exp(-t)*cos(2*pi*t);</span><span class="m">% biểu thức tượng trưng phần t ≥ 0 của x(t) (dùng * thường vì đây là ký hiệu, không phải vector)</span></div>
+<div class="ln"><span class="c">T = 20;</span><span class="m">% độ dài đoạn xét: từ -10 đến 10</span></div>
+<div class="ln e"> </div>
+<div class="ln f"><span class="m">% u(t) = 0 khi t &lt; 0 ⇒ |x(t)|² = 0 trên [-10, 0) ⇒ cận dưới tích phân thực chất là 0</span></div>
+<div class="ln"><span class="c">E  = int(x^2, t, 0, T/2);</span><span class="m">% int(biểu thức, biến, cận dưới, cận trên): tích phân xác định ∫₀¹⁰ e^(-2t)cos²(2πt) dt</span></div>
+<div class="ln"><span class="c">E  = simplify(E);</span><span class="m">% rút gọn biểu thức kết quả cho gọn</span></div>
+<div class="ln"><span class="c">Ed = double(E);</span><span class="m">% double(): đổi kết quả tượng trưng (chứa π, exp) thành số thực để đọc giá trị</span></div>
+<div class="ln"><span class="c">P  = E / T;</span><span class="m">% công suất trung bình P = E/T (vẫn dạng tượng trưng)</span></div>
+<div class="ln"><span class="c">Pd = double(P);</span><span class="m">% đổi P sang số</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">disp(<i class="s">&#x27;Năng lượng E (dạng chính xác) =&#x27;</i>); pretty(E);</span><span class="m">% pretty: in biểu thức toán dạng &quot;2 chiều&quot; dễ đọc</span></div>
+<div class="ln"><span class="c">fprintf(<i class="s">&#x27;E ≈ %.6f\n&#x27;</i>, Ed);</span><span class="m">% in E dạng số, 6 chữ số thập phân (≈ 0.256176)</span></div>
+<div class="ln"><span class="c">fprintf(<i class="s">&#x27;P ≈ %.6f\n&#x27;</i>, Pd);</span><span class="m">% in P dạng số (≈ 0.012809)</span></div>
+<div class="ln e"> </div>
+<div class="ln f"><span class="m">% Vẽ x(t) đầy đủ trên [-10, 10]: nhân thêm hàm bước tượng trưng heaviside(t) (= u(t))</span></div>
+<div class="ln"><span class="c">xu = x*heaviside(t);</span><span class="m">% heaviside(t): 0 khi t &lt; 0, 1 khi t &gt; 0 → x(t) bằng 0 ở nửa âm như đề cho</span></div>
+<div class="ln"><span class="c">fplot(xu, [-10 10], <i class="s">&#x27;LineWidth&#x27;</i>, 1.3);</span><span class="m">% fplot: vẽ trực tiếp biểu thức tượng trưng trên khoảng [-10, 10] (ezplot là lệnh cũ)</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;x(t)&#x27;</i>);</span><span class="m">% bật lưới + nhãn 2 trục</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;x(t) = e^{-t}cos(2\pit)u(t)&#x27;</i>);</span><span class="m">% ^{...}: số mũ nhiều ký tự trong tiêu đề</span></div></div>
+</section>
+<section id="b1_5">
+<h3 data-short="IV. Dịch · co · đảo">IV. Dịch, co giãn, đảo</h3><p class="de">x(t)=e^(−|t|): x(t±2) · x(2t), x(0,5t) · x(−t).</p>
+<div class="bar"><span>bai1_5.m</span><button type="button" class="cp" data-s="b1_5">Copy</button><button type="button" class="dl" data-s="b1_5" data-f="bai1_5.m">Tải .m</button></div>
+<div class="code" style="--cw:65ch"><div class="ln h"><span class="m">%% ===== BÀI 1 – IV. PHÉP DỊCH, CO GIÃN, ĐẢO TÍN HIỆU  x(t) = e^(-|t|) =====</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln"><span class="c">t = -10:0.01:10;</span><span class="m">% trục thời gian chung</span></div>
+<div class="ln"><span class="c">x = @(t) exp(-abs(t));</span><span class="m">% HÀM ẨN DANH: @(t) = &quot;hàm theo biến t&quot;; gọi x(t-2), x(2*t)... như viết toán | abs: trị tuyệt đối</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Bài 1: dịch — x(t), x(t-2), x(t+2) ----------</span></div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - IV - Dich&#x27;</i>);</span><span class="m">% cửa sổ hình 1: phép dịch</span></div>
+<div class="ln"><span class="c">plot(t, x(t),     <i class="s">&#x27;k-&#x27;</i>,  <i class="s">&#x27;LineWidth&#x27;</i>, 2);   hold on;</span><span class="m">% gốc: đỉnh tại t = 0</span></div>
+<div class="ln"><span class="c">plot(t, x(t - 2), <i class="s">&#x27;r--&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5);</span><span class="m">% x(t-2): trễ → dịch sang PHẢI 2, đỉnh tại t = 2</span></div>
+<div class="ln"><span class="c">plot(t, x(t + 2), <i class="s">&#x27;b-.&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); hold off;</span><span class="m">% x(t+2): sớm → dịch sang TRÁI 2, đỉnh tại t = -2</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;Biên độ&#x27;</i>); title(<i class="s">&#x27;Phép dịch&#x27;</i>);</span><span class="m">% lưới, nhãn trục, tiêu đề</span></div>
+<div class="ln"><span class="c">legend(<i class="s">&#x27;x(t)&#x27;</i>, <i class="s">&#x27;x(t-2)&#x27;</i>, <i class="s">&#x27;x(t+2)&#x27;</i>);</span><span class="m">% chú thích theo thứ tự vẽ</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Bài 2: co giãn — x(t), x(2t), x(0.5t) ----------</span></div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - IV - Co gian&#x27;</i>);</span><span class="m">% cửa sổ hình 2: phép co giãn</span></div>
+<div class="ln"><span class="c">plot(t, x(t),       <i class="s">&#x27;k-&#x27;</i>,  <i class="s">&#x27;LineWidth&#x27;</i>, 2);   hold on;</span><span class="m">% gốc x(t): đen nét liền | hold on: giữ để vẽ chồng</span></div>
+<div class="ln"><span class="c">plot(t, x(2*t),     <i class="s">&#x27;r--&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5);</span><span class="m">% x(2t): hệ số &gt; 1 → NÉN theo trục t 2 lần (đồ thị hẹp lại)</span></div>
+<div class="ln"><span class="c">plot(t, x(0.5*t),   <i class="s">&#x27;b-.&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); hold off;</span><span class="m">% x(0.5t): hệ số &lt; 1 → GIÃN 2 lần (đồ thị rộng ra)</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;Biên độ&#x27;</i>); title(<i class="s">&#x27;Phép co giãn&#x27;</i>);</span><span class="m">% lưới, nhãn trục, tiêu đề</span></div>
+<div class="ln"><span class="c">legend(<i class="s">&#x27;x(t)&#x27;</i>, <i class="s">&#x27;x(2t)&#x27;</i>, <i class="s">&#x27;x(0.5t)&#x27;</i>);</span><span class="m">% chú thích 3 đường theo thứ tự vẽ</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- Bài 3: đảo — x(t), x(-t) ----------</span></div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 1 - IV - Dao&#x27;</i>);</span><span class="m">% cửa sổ hình 3: phép đảo</span></div>
+<div class="ln"><span class="c">plot(t, x(t),  <i class="s">&#x27;k-&#x27;</i>,  <i class="s">&#x27;LineWidth&#x27;</i>, 2);   hold on;</span><span class="m">% gốc x(t): đen nét liền, giữ hình</span></div>
+<div class="ln"><span class="c">plot(t, x(-t), <i class="s">&#x27;r--&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); hold off;</span><span class="m">% x(-t): lật đối xứng qua trục tung</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t&#x27;</i>); ylabel(<i class="s">&#x27;Biên độ&#x27;</i>); title(<i class="s">&#x27;Phép đảo&#x27;</i>);</span><span class="m">% lưới, nhãn trục, tiêu đề</span></div>
+<div class="ln"><span class="c">legend(<i class="s">&#x27;x(t)&#x27;</i>, <i class="s">&#x27;x(-t)&#x27;</i>);</span><span class="m">% chú thích 2 đường</span></div>
+<div class="ln f"><span class="m">% Nhận xét: e^(-|t|) là hàm CHẴN nên x(-t) trùng khít x(t) — 2 đường chồng lên nhau</span></div></div>
+</section></div>
+<div class="pane" data-t="b2"><h2>Bài 2. Hàm tuyến tính</h2>
+<section id="b2_1">
+<h3 data-short="1. Nốt nhạc">1. Tần số và nốt nhạc</h3><p class="de">Chơi + vẽ 1 nốt · chơi bản CCGGAAG--, FFEEDDC--.</p>
+<div class="bar"><span>bai2_1.m</span><button type="button" class="cp" data-s="b2_1">Copy</button><button type="button" class="dl" data-s="b2_1" data-f="bai2_1.m">Tải .m</button></div>
+<div class="code" style="--cw:71ch"><div class="ln h"><span class="m">%% ===== BÀI 2 – 1. TẦN SỐ VÀ NỐT NHẠC =====</span></div>
+<div class="ln f"><span class="m">% Mỗi nốt nhạc = 1 tín hiệu sin có tần số riêng. Bảng 1: C D E F G A B = 262 294 330 349 392 440 494 Hz</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- A. Chơi và vẽ 1 nốt (ví dụ trong tài liệu: nốt B, 494 Hz) ----------</span></div>
+<div class="ln"><span class="c">Fs  = 8000;</span><span class="m">% tần số lấy mẫu: 8000 mẫu mỗi giây (đủ cho âm &lt; 4000 Hz)</span></div>
+<div class="ln"><span class="c">T   = 2;</span><span class="m">% thời gian phát nốt: 2 giây</span></div>
+<div class="ln"><span class="c">t   = 0:1/Fs:T;</span><span class="m">% vector thời điểm lấy mẫu, cách nhau 1/Fs giây → 16001 phần tử</span></div>
+<div class="ln"><span class="c">Amp = 1;</span><span class="m">% biên độ (âm lượng); sound() chỉ nhận giá trị trong [-1, 1]</span></div>
+<div class="ln"><span class="c">ph  = 0;</span><span class="m">% pha ban đầu (rad)</span></div>
+<div class="ln"><span class="c">fb  = 494;</span><span class="m">% tần số nốt B</span></div>
+<div class="ln"><span class="c">x   = Amp*sin(2*pi*fb*t + ph);</span><span class="m">% sin(2π·f·t + φ) tính cho MỌI phần tử của t → vector mẫu âm thanh</span></div>
+<div class="ln f"><span class="m">% thử âm &quot;tắt dần&quot; như phím đàn: x = Amp*exp(-t).*sin(2*pi*fb*t + ph);   (.* vì nhân 2 vector từng phần tử)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 2 - 1 not B&#x27;</i>);</span><span class="m">% mở cửa sổ hình, đặt tên</span></div>
+<div class="ln"><span class="c">plot(t(1:300), x(1:300));</span><span class="m">% chỉ vẽ 300 mẫu đầu (≈ 0.0375 s ≈ 18 chu kỳ) — vẽ hết 16001 mẫu sẽ thành một vệt đặc</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t (s)&#x27;</i>); ylabel(<i class="s">&#x27;x(t)&#x27;</i>); title(<i class="s">&#x27;Nốt B – 494 Hz&#x27;</i>);</span><span class="m">% lưới, nhãn trục, tiêu đề</span></div>
+<div class="ln"><span class="c">sound(x, Fs);</span><span class="m">% phát vector x ra loa với tốc độ Fs mẫu/giây</span></div>
+<div class="ln"><span class="c">pause(T + 0.5);</span><span class="m">% sound() KHÔNG chờ phát xong → dừng chương trình T+0.5 s để nốt sau không đè lên</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- B. Chơi bản nhạc: CCGGAAG--, FFEEDDC-- ----------</span></div>
+<div class="ln"><span class="c">names = <i class="s">&#x27;CDEFGAB&#x27;</i>;</span><span class="m">% chuỗi tên nốt, vị trí k trong chuỗi ↔ tần số thứ k ở dòng dưới</span></div>
+<div class="ln"><span class="c">freqs = [262 294 330 349 392 440 494];</span><span class="m">% tần số (Hz) theo Bảng 1</span></div>
+<div class="ln"><span class="c">song  = <i class="s">&#x27;CCGGAAG--FFEEDDC--&#x27;</i>;</span><span class="m">% bản nhạc: chữ cái = 1 nốt dài 1 phách; mỗi &#x27;-&#x27; = ngân nốt TRƯỚC đó thêm 1 phách</span></div>
+<div class="ln"><span class="c">beat  = 0.4;</span><span class="m">% độ dài 1 phách (giây) — chỉnh số này để nhạc nhanh/chậm</span></div>
+<div class="ln"><span class="c">gap   = zeros(1, round(0.03*Fs));</span><span class="m">% khoảng lặng 0.03 s giữa 2 nốt (vector toàn số 0) để nghe tách bạch 2 nốt giống nhau</span></div>
+<div class="ln e"> </div>
+<div class="ln f"><span class="m">% B1. Đọc chuỗi bản nhạc → danh sách nốt + số phách của từng nốt</span></div>
+<div class="ln"><span class="c">noteList = <i class="s">&#x27;&#x27;</i>;</span><span class="m">% các nốt (chuỗi ký tự rỗng ban đầu)</span></div>
+<div class="ln"><span class="c">beats    = [];</span><span class="m">% số phách tương ứng (vector rỗng ban đầu)</span></div>
+<div class="ln"><span class="c"><b class="k">for</b> k = 1:length(song)</span><span class="m">% duyệt từng ký tự của chuỗi song</span></div>
+<div class="ln"><span class="c">    <b class="k">if</b> song(k) == <i class="s">&#x27;-&#x27;</i></span><span class="m">% gặp dấu &#x27;-&#x27;</span></div>
+<div class="ln"><span class="c">        beats(<b class="k">end</b>) = beats(<b class="k">end</b>) + 1;</span><span class="m">% end = phần tử cuối → nốt vừa thêm được ngân thêm 1 phách</span></div>
+<div class="ln"><span class="c">    <b class="k">else</b></span><span class="m">% gặp chữ cái (một nốt mới)</span></div>
+<div class="ln"><span class="c">        noteList(<b class="k">end</b>+1) = song(k);</span><span class="m">% end+1: thêm vào cuối chuỗi</span></div>
+<div class="ln"><span class="c">        beats(<b class="k">end</b>+1)    = 1;</span><span class="m">% nốt mới mặc định dài 1 phách</span></div>
+<div class="ln"><span class="c">    <b class="k">end</b></span><span class="m">% kết thúc if</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc vòng for đọc chuỗi</span></div>
+<div class="ln e"> </div>
+<div class="ln f"><span class="m">% B2. Tạo âm cho từng nốt rồi nối lại thành 1 vector dài</span></div>
+<div class="ln"><span class="c">y = [];</span><span class="m">% vector âm thanh của cả bài, ban đầu rỗng</span></div>
+<div class="ln"><span class="c"><b class="k">for</b> k = 1:length(noteList)</span><span class="m">% duyệt từng nốt</span></div>
+<div class="ln"><span class="c">    f  = freqs(names == noteList(k));</span><span class="m">% names==... cho mảng logic 1 ở đúng vị trí tên nốt → lấy ra tần số tương ứng</span></div>
+<div class="ln"><span class="c">    d  = beats(k)*beat;</span><span class="m">% thời lượng nốt = số phách × độ dài 1 phách</span></div>
+<div class="ln"><span class="c">    tn = 0:1/Fs:d;</span><span class="m">% trục thời gian riêng cho nốt này</span></div>
+<div class="ln"><span class="c">    xn = exp(-2*tn/d) .* sin(2*pi*f*tn);</span><span class="m">% sin tần số f, nhân bao hình e^(-2t/d) cho âm nhỏ dần (giống phím đàn); .* từng phần tử</span></div>
+<div class="ln"><span class="c">    y  = [y, xn, gap];</span><span class="m">% nối ngang: [cũ, nốt mới, lặng] → y dài dần</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc vòng for tạo âm</span></div>
+<div class="ln"><span class="c">y = 0.9*y/max(abs(y));</span><span class="m">% chuẩn hóa biên độ về tối đa 0.9 (trong [-1,1]) để sound() không bị méo/cắt</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">sound(y, Fs);</span><span class="m">% phát cả bài</span></div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 2 - Ban nhac&#x27;</i>);</span><span class="m">% cửa sổ hình cho cả bản nhạc</span></div>
+<div class="ln"><span class="c">plot((0:length(y)-1)/Fs, y);</span><span class="m">% trục thời gian = chỉ số mẫu (0,1,2,...) / Fs</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t (s)&#x27;</i>); ylabel(<i class="s">&#x27;y(t)&#x27;</i>); title([<i class="s">&#x27;Bản nhạc: &#x27;</i> song]);</span><span class="m">% [&#x27;a&#x27; b]: nối chuỗi để ghép tiêu đề</span></div></div>
+</section>
+<section id="b2_2">
+<h3 data-short="2. Trumpet">2. Chuỗi Fourier của kèn trumpet</h3><p class="de">(a) tổng hợp 9 số hạng, nghe · (b) vẽ 3 chu kỳ · (c) θₖ = 0, so sánh.</p>
+<div class="bar"><span>bai2_2.m</span><button type="button" class="cp" data-s="b2_2">Copy</button><button type="button" class="dl" data-s="b2_2" data-f="bai2_2.m">Tải .m</button></div>
+<div class="code" style="--cw:72ch"><div class="ln h"><span class="m">%% ===== BÀI 2 – 2. CHUỖI FOURIER CỦA KÈN TRUMPET (nốt B, 494 Hz) =====</span></div>
+<div class="ln f"><span class="m">% x(t) = Σ_{k=1..9} A_k·cos(2π·k·494·t − θ_k)   (A0 = 0: không có thành phần một chiều DC)</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- (a) Tổng hợp tín hiệu từ 9 số hạng và nghe ----------</span></div>
+<div class="ln"><span class="c">t = linspace(0, 1, 44100);</span><span class="m">% linspace(đầu, cuối, số điểm): 44100 điểm cách đều trong 1 s → 44100 mẫu/giây (như đề yêu cầu)</span></div>
+<div class="ln"><span class="c">F = 494;</span><span class="m">% tần số cơ bản (nốt B); họa âm thứ k có tần số k·F</span></div>
+<div class="ln"><span class="c">Fs = 44100;</span><span class="m">% tần số lấy mẫu tương ứng, dùng cho sound()</span></div>
+<div class="ln"><span class="c">A  = [0.1155 0.3417 0.1789 0.1232 0.0678 0.0473 0.0260 0.0065 0.0020];</span><span class="m">% biên độ A1..A9 (Bảng 2)</span></div>
+<div class="ln"><span class="c">th = [-2.1299 1.6727 -2.5454 0.6607 -2.0390 2.1597 -1.0467 1.8581 -2.3925];</span><span class="m">% pha θ1..θ9 (rad) (Bảng 2, giữ đúng dấu ±)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">x = zeros(size(t));</span><span class="m">% vector toàn 0 cùng kích thước t, dùng để cộng dồn</span></div>
+<div class="ln"><span class="c"><b class="k">for</b> k = 1:9</span><span class="m">% k = 1 (cơ bản), 2..9 (họa âm)</span></div>
+<div class="ln"><span class="c">    x = x + A(k)*cos(2*pi*k*F*t - th(k));</span><span class="m">% cộng thêm số hạng thứ k: biên độ A(k), tần số k·F, pha θ(k)</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc vòng for</span></div>
+<div class="ln f"><span class="m">% (cách viết gọn không cần vòng lặp: x = A*cos(2*pi*F*(1:9)&#x27;*t - th&#x27;); — (1:9)&#x27;*t tạo ma trận 9×44100, A (1×9) nhân ma trận → cộng 9 hàng)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">sound(x/max(abs(x)), Fs);</span><span class="m">% chuẩn hóa về [-1,1] rồi phát: nghe giống tiếng kèn hơn sin đơn</span></div>
+<div class="ln"><span class="c">pause(1.5);</span><span class="m">% chờ phát xong (1 s + dư) trước khi phát bản (c)</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- (b) Vẽ 3 chu kỳ: 3·T = 3/494 ≈ 6.1e-3 s (đề ghi ~4.5e-3 s; muốn đúng số đề thì thay 3/F bằng 4.5e-3) ----------</span></div>
+<div class="ln"><span class="c">idx = t &lt;= 3/F;</span><span class="m">% mảng logic: true tại các mẫu có t ≤ 3 chu kỳ → dùng làm &quot;bộ lọc chỉ số&quot;</span></div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 2 - Trumpet&#x27;</i>);</span><span class="m">% mở cửa sổ hình, đặt tên</span></div>
+<div class="ln"><span class="c">plot(t(idx)*1e3, x(idx), <i class="s">&#x27;b&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5);</span><span class="m">% t(idx): chỉ lấy mẫu thỏa điều kiện | *1e3: đổi giây → mili giây cho dễ đọc</span></div>
+<div class="ln"><span class="c">hold on;</span><span class="m">% giữ để vẽ chồng bản (c)</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- (c) Lặp lại với mọi θ_k = 0 ----------</span></div>
+<div class="ln"><span class="c">x0 = zeros(size(t));</span><span class="m">% tín hiệu mới, cộng dồn từ 0</span></div>
+<div class="ln"><span class="c"><b class="k">for</b> k = 1:9</span><span class="m">% lặp k = 1..9</span></div>
+<div class="ln"><span class="c">    x0 = x0 + A(k)*cos(2*pi*k*F*t);</span><span class="m">% giống trên nhưng bỏ pha (θ_k = 0)</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc vòng for</span></div>
+<div class="ln"><span class="c">sound(x0/max(abs(x0)), Fs);</span><span class="m">% nghe bản không pha để so sánh với (a)</span></div>
+<div class="ln"><span class="c">plot(t(idx)*1e3, x0(idx), <i class="s">&#x27;r--&#x27;</i>, <i class="s">&#x27;LineWidth&#x27;</i>, 1.5); hold off;</span><span class="m">% vẽ chồng, đỏ nét đứt</span></div>
+<div class="ln"><span class="c">grid on; xlabel(<i class="s">&#x27;t (ms)&#x27;</i>); ylabel(<i class="s">&#x27;x(t)&#x27;</i>);</span><span class="m">% lưới + nhãn trục (thời gian tính bằng ms)</span></div>
+<div class="ln"><span class="c">legend(<i class="s">&#x27;(a) có pha \theta_k&#x27;</i>, <i class="s">&#x27;(c) \theta_k = 0&#x27;</i>);</span><span class="m">% chú thích; \theta_k → θₖ</span></div>
+<div class="ln"><span class="c">title(<i class="s">&#x27;Trumpet – nốt B, 3 chu kỳ&#x27;</i>);</span><span class="m">% tiêu đề hình</span></div>
+<div class="ln f"><span class="m">% Trả lời (c): DẠNG SÓNG khác hẳn (đỉnh/đáy dời chỗ) nhưng ÂM NGHE gần như không đổi —</span></div>
+<div class="ln f"><span class="m">% tai người cảm nhận chủ yếu theo BIÊN ĐỘ các họa âm (phổ biên độ giống nhau), rất kém nhạy với pha.</span></div></div>
+</section></div>
+<div class="pane" data-t="b3"><h2>Bài 3. Tích chập, Fourier, lọc</h2>
+<section id="b3_1">
+<h3 data-short="I. Tích chập">I. Tích chập – lọc thông thấp lý tưởng</h3><p class="de">Lọc female_voice.wav qua bộ lọc thông thấp lý tưởng 1500 Hz bằng conv.</p>
+<div class="bar"><span>bai3_1.m</span><button type="button" class="cp" data-s="b3_1">Copy</button><button type="button" class="dl" data-s="b3_1" data-f="bai3_1.m">Tải .m</button></div>
+<div class="code" style="--cw:72ch"><div class="ln h"><span class="m">%% ===== BÀI 3 – I. TÍCH CHẬP: LỌC ÂM THANH BẰNG BỘ LỌC THÔNG THẤP LÝ TƯỞNG (fc = 1500 Hz) =====</span></div>
+<div class="ln f"><span class="m">% Cần file female_voice.wav nằm cùng thư mục với script (hoặc trong Current Folder của MATLAB)</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">[data, Fs] = audioread(<i class="s">&#x27;female_voice.wav&#x27;</i>);</span><span class="m">% đọc file wav: data = ma trận mẫu (mỗi cột 1 kênh), Fs = tần số lấy mẫu (Hz)</span></div>
+<div class="ln f">                                <span class="m">% (MATLAB cũ dùng [data, Fs, Nbits] = wavread(...); từ R2014 đổi thành audioread)</span></div>
+<div class="ln"><span class="c">data = data(:, 1).&#x27;;</span><span class="m">% data(:,1): lấy MỌI hàng của cột 1 (kênh trái) | .&#x27; : chuyển vị cột → hàng (vector ngang)</span></div>
+<div class="ln"><span class="c">Ts = 1/Fs;</span><span class="m">% chu kỳ lấy mẫu: khoảng thời gian giữa 2 mẫu liên tiếp (s)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">sound(data, Fs);</span><span class="m">% phát âm thanh gốc (bị nhiễu, &quot;rè&quot;)</span></div>
+<div class="ln"><span class="c">pause(length(data)/Fs + 0.5);</span><span class="m">% length(data)/Fs = thời lượng file (s) → chờ phát xong rồi mới phát bản đã lọc</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">t  = -0.05:Ts:0.05;</span><span class="m">% trục thời gian cho đáp ứng xung h(t), cùng bước Ts với tín hiệu</span></div>
+<div class="ln f">                                <span class="m">% (PDF dùng -10:Ts:10 → ~900 nghìn điểm, conv chạy RẤT lâu; sinc ngoài ±0.05 s đã gần 0 nên cắt ngắn</span></div>
+<div class="ln f">                                <span class="m">%  cho nhanh, kết quả nghe như nhau. Muốn đúng PDF thì đổi lại t = -10:Ts:10)</span></div>
+<div class="ln"><span class="c">wb = 1500*2*pi;</span><span class="m">% tần số cắt ωb = 2π·1500 (rad/s)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">ht = wb/(2*pi)*sinc(wb*t/(2*pi));</span><span class="m">% đáp ứng xung lọc thông thấp lý tưởng: h(t) = (ωb/2π)·sinc(ωb·t/2π)</span></div>
+<div class="ln f">                                <span class="m">% ↔ biến đổi Fourier H(ω) = rect(ω/2ωb): cho qua |f| &lt; 1500 Hz, chặn hết phần trên</span></div>
+<div class="ln f">                                <span class="m">% sinc(x) = sin(πx)/(πx) (MATLAB, cần Signal Processing Toolbox)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">y = conv(data, ht, <i class="s">&#x27;same&#x27;</i>);</span><span class="m">% TÍCH CHẬP y = data * h → tín hiệu ra của hệ LTI | &#x27;same&#x27;: giữ y dài bằng data (cắt phần đầu/cuối thừa)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">y = y/max(abs(y));</span><span class="m">% chuẩn hóa về [-1, 1]: chia cho giá trị tuyệt đối lớn nhất để sound() không bị cắt méo</span></div>
+<div class="ln"><span class="c">sound(y, Fs);</span><span class="m">% phát âm thanh đã lọc (bớt rè do nhiễu tần cao bị loại)</span></div>
+<div class="ln e"> </div>
+<div class="ln f"><span class="m">% Vẽ so sánh trước/sau (thêm cho dễ nhìn, không bắt buộc)</span></div>
+<div class="ln"><span class="c">tt = (0:length(data)-1)*Ts;</span><span class="m">% trục thời gian của file: chỉ số mẫu × Ts</span></div>
+<div class="ln"><span class="c">figure(<i class="s">&#x27;Name&#x27;</i>, <i class="s">&#x27;Bai 3 - I&#x27;</i>);</span><span class="m">% cửa sổ hình so sánh</span></div>
+<div class="ln"><span class="c">subplot(2,1,1); plot(tt, data); grid on; title(<i class="s">&#x27;Trước lọc&#x27;</i>); xlabel(<i class="s">&#x27;t (s)&#x27;</i>);</span><span class="m">% ô trên: tín hiệu gốc theo thời gian</span></div>
+<div class="ln"><span class="c">subplot(2,1,2); plot(tt, y, <i class="s">&#x27;r&#x27;</i>); grid on; title(<i class="s">&#x27;Sau lọc thông thấp 1500 Hz&#x27;</i>); xlabel(<i class="s">&#x27;t (s)&#x27;</i>);</span><span class="m">% ô dưới: tín hiệu đã lọc (màu đỏ)</span></div></div>
+</section>
+<section id="b3_2">
+<h3 data-short="II. Lọc điện tim">II. Fourier & lọc tín hiệu điện tim</h3><p class="de">main.m (3 hình + gợi ý Câu hỏi 1–3) kèm 2 hàm FourierTransform, IFourierTransform ở cuối.</p>
+<div class="bar"><span>bai3_2.m</span><button type="button" class="cp" data-s="b3_2">Copy</button><button type="button" class="dl" data-s="b3_2" data-f="bai3_2.m">Tải .m</button></div>
+<div class="code" style="--cw:66ch"><div class="ln h"><span class="m">%% ===== BÀI 3 – II. BIẾN ĐỔI FOURIER &amp; LỌC TÍN HIỆU ĐIỆN TIM (ECG) — main.m =====</span></div>
+<div class="ln f"><span class="m">% Cần file hum3hb.mat (PTN) cùng thư mục: chứa vector điện áp hb và bước lấy mẫu T = 0.002 s</span></div>
+<div class="ln f"><span class="m">% Hai hàm FourierTransform / IFourierTransform nằm CUỐI script này (nếu GV yêu cầu file riêng thì cắt mỗi hàm ra</span></div>
+<div class="ln f"><span class="m">% FourierTransform.m và IFourierTransform.m, tên file phải trùng tên hàm)</span></div>
+<div class="ln"><span class="c">clc; clear; close all;</span><span class="m">% dọn màn hình, biến, hình</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- 1. Tín hiệu điện tim và phổ biên độ ----------</span></div>
+<div class="ln"><span class="c">load hum3hb;</span><span class="m">% nạp mọi biến trong hum3hb.mat vào workspace → có hb (điện áp) và T (bước lấy mẫu)</span></div>
+<div class="ln"><span class="c">x  = hb;</span><span class="m">% đặt tên ngắn x cho tín hiệu</span></div>
+<div class="ln"><span class="c">tf = (size(x,2) - 1)*T;</span><span class="m">% size(x,2): số cột = số mẫu N → thời điểm mẫu cuối = (N-1)·T</span></div>
+<div class="ln"><span class="c">t  = 0:T:tf;</span><span class="m">% trục thời gian 0, T, 2T, ..., tf (đúng N phần tử, khớp với x)</span></div>
+<div class="ln"><span class="c">[f, Xf] = FourierTransform(t, hb);</span><span class="m">% gọi hàm tự viết: f = trục tần số (Hz), Xf = phổ X(f) (số phức)</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(1);</span><span class="m">% cửa sổ hình số 1</span></div>
+<div class="ln"><span class="c">subplot(2,1,1);</span><span class="m">% ô trên: tín hiệu theo thời gian</span></div>
+<div class="ln"><span class="c">plot(t, x, <i class="s">&#x27;linewidth&#x27;</i>, 1);</span><span class="m">% vẽ x(t), nét dày 1</span></div>
+<div class="ln"><span class="c">grid; axis([0 2.5 -0.5 1.5]);</span><span class="m">% grid (không đối số) = bật/tắt lưới | axis: t từ 0→2.5 s, biên độ -0.5→1.5</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;t (sec)&#x27;</i>); ylabel(<i class="s">&#x27;x(t)&#x27;</i>);</span><span class="m">% nhãn 2 trục</span></div>
+<div class="ln"><span class="c">subplot(2,1,2);</span><span class="m">% ô dưới: phổ biên độ</span></div>
+<div class="ln"><span class="c">plot(f, abs(Xf), <i class="s">&#x27;linewidth&#x27;</i>, 1);</span><span class="m">% abs(Xf): mô-đun số phức = phổ BIÊN ĐỘ |X(f)|</span></div>
+<div class="ln"><span class="c">grid; axis([-150 150 0 0.12]);</span><span class="m">% chỉ xem dải tần -150 → 150 Hz</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;f (Hz)&#x27;</i>); ylabel(<i class="s">&#x27;|X(f)|&#x27;</i>);</span><span class="m">% nhãn 2 trục</span></div>
+<div class="ln f"><span class="m">% Câu hỏi 1 (gợi ý): x(t) có dạng nhịp tim lặp lại (sóng P–QRS–T) nhưng bị &quot;răng cưa&quot; do nhiễu nhỏ chồng lên.</span></div>
+<div class="ln f"><span class="m">% Trên phổ: phần năng lượng chính tập trung ở TẦN THẤP quanh 0 Hz; ngoài ra có các thành phần/đỉnh lẻ ở TẦN CAO</span></div>
+<div class="ln f"><span class="m">% tách khỏi phần chính → đó là nhiễu tần số cao (vd nhiễu điện lưới) cần lọc bỏ.</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- 2. Đáp ứng xung, đáp ứng biên độ và pha của bộ lọc ----------</span></div>
+<div class="ln"><span class="c">h = (568*exp(-300*t) - 485*exp(-243*t).*cos(176*t) ...</span><span class="m">% h(t) của bộ lọc (t ≥ 0); ... = viết tiếp dòng dưới</span></div>
+<div class="ln"><span class="c">   + 668*exp(-243*t).*sin(176*t) - 83*exp(-93*t).*cos(285*t) ...</span><span class="m">% .* : nhân từng phần tử 2 vector cùng cỡ</span></div>
+<div class="ln"><span class="c">   - 255*exp(-93*t).*sin(285*t));</span><span class="m">% (dòng cuối của biểu thức h, đóng ngoặc)</span></div>
+<div class="ln"><span class="c">[f, Hf] = FourierTransform(t, h);</span><span class="m">% H(f) = biến đổi Fourier của h(t) = đáp ứng tần số của bộ lọc</span></div>
+<div class="ln e"> </div>
+<div class="ln"><span class="c">figure(2);</span><span class="m">% cửa sổ hình số 2</span></div>
+<div class="ln"><span class="c">subplot(2,2,[1 2]);</span><span class="m">% lưới 2×2, gộp ô 1 và 2 → 1 ô rộng cả hàng trên</span></div>
+<div class="ln"><span class="c">plot(t, h, <i class="s">&#x27;linewidth&#x27;</i>, 1); grid;</span><span class="m">% vẽ h(t), bật lưới</span></div>
+<div class="ln"><span class="c">axis([0 0.5 -50 150]);</span><span class="m">% h(t) tắt gần hết sau 0.5 s</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;t (sec)&#x27;</i>); ylabel(<i class="s">&#x27;h(t)&#x27;</i>);</span><span class="m">% nhãn 2 trục</span></div>
+<div class="ln"><span class="c">subplot(2,2,3);</span><span class="m">% ô dưới trái: đáp ứng biên độ</span></div>
+<div class="ln"><span class="c">plot(f, abs(Hf), <i class="s">&#x27;k&#x27;</i>, <i class="s">&#x27;linewidth&#x27;</i>, 1); grid;</span><span class="m">% &#x27;k&#x27;: màu đen</span></div>
+<div class="ln"><span class="c">axis([-150 150 0 1.2]);</span><span class="m">% f ∈ [-150,150] Hz, |H| ∈ [0, 1.2]</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;f (Hz)&#x27;</i>); ylabel(<i class="s">&#x27;|H(j2\pi f)|&#x27;</i>);</span><span class="m">% nhãn trục; \pi → π</span></div>
+<div class="ln"><span class="c">subplot(2,2,4);</span><span class="m">% ô dưới phải: đáp ứng pha</span></div>
+<div class="ln"><span class="c">angleH = unwrap(angle(Hf)) + 2*pi;</span><span class="m">% angle: góc pha (rad) trong (-π, π] | unwrap: bỏ các bước nhảy 2π cho đường pha liền mạch | +2π: dời lên cho dễ nhìn</span></div>
+<div class="ln"><span class="c">plot(f, angleH, <i class="s">&#x27;k&#x27;</i>, <i class="s">&#x27;linewidth&#x27;</i>, 1); grid;</span><span class="m">% vẽ pha, màu đen, bật lưới</span></div>
+<div class="ln"><span class="c">axis([-150 150 -10 10]);</span><span class="m">% f ∈ [-150,150] Hz, pha ∈ [-10,10] rad</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;f (Hz)&#x27;</i>); ylabel(<i class="s">&#x27;\angle H(f)&#x27;</i>);</span><span class="m">% \angle: ký hiệu góc ∠</span></div>
+<div class="ln f"><span class="m">% Câu hỏi 2 (gợi ý): |H| ≈ 1 ở tần thấp rồi giảm dần về 0 khi |f| tăng → bộ lọc THÔNG THẤP (Butterworth bậc 5:</span></div>
+<div class="ln f"><span class="m">% 5 cực -300, -243±176j, -93±285j đều có mô-đun ≈ 300 rad/s) → tần số cắt fc ≈ 300/(2π) ≈ 48 Hz,</span></div>
+<div class="ln f"><span class="m">% cho qua vùng |f| &lt; ~48 Hz, chặn tần cao.</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ---------- 3. Phổ và tín hiệu ra của bộ lọc ----------</span></div>
+<div class="ln"><span class="c">Yf = Xf.*Hf;</span><span class="m">% miền tần số: tích chập y = x*h ⇔ NHÂN phổ Y(f) = X(f)·H(f) (nhân từng phần tử)</span></div>
+<div class="ln"><span class="c">figure(3);</span><span class="m">% cửa sổ hình số 3</span></div>
+<div class="ln"><span class="c">subplot(2,1,1);</span><span class="m">% ô trên: phổ tín hiệu ra</span></div>
+<div class="ln"><span class="c">plot(f, abs(Yf), <i class="s">&#x27;r&#x27;</i>, <i class="s">&#x27;linewidth&#x27;</i>, 1); grid;</span><span class="m">% phổ biên độ tín hiệu ra, màu đỏ</span></div>
+<div class="ln"><span class="c">axis([-150 150 0 0.12]);</span><span class="m">% cùng thang với hình 1 để so sánh</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;f (Hz)&#x27;</i>); ylabel(<i class="s">&#x27;|Y(f)|&#x27;</i>);</span><span class="m">% nhãn 2 trục</span></div>
+<div class="ln"><span class="c">[t2, y] = IFourierTransform(f, Yf);</span><span class="m">% biến đổi Fourier NGƯỢC → tín hiệu ra y(t) theo thời gian</span></div>
+<div class="ln"><span class="c">subplot(2,1,2);</span><span class="m">% ô dưới: tín hiệu ra theo thời gian</span></div>
+<div class="ln"><span class="c">plot(t2, real(y), <i class="s">&#x27;r&#x27;</i>, <i class="s">&#x27;linewidth&#x27;</i>, 1); grid;</span><span class="m">% real(): bỏ phần ảo cực nhỏ (sai số tính toán) trước khi vẽ</span></div>
+<div class="ln"><span class="c">axis([0 2.5 -0.5 1.5]);</span><span class="m">% cùng thang với ô x(t) ở hình 1 để so sánh</span></div>
+<div class="ln"><span class="c">xlabel(<i class="s">&#x27;t (sec)&#x27;</i>); ylabel(<i class="s">&#x27;y(t)&#x27;</i>);</span><span class="m">% nhãn 2 trục</span></div>
+<div class="ln f"><span class="m">% Câu hỏi 3 (gợi ý): so với hình 1, phổ ra mất các thành phần tần cao; y(t) mượt, hết răng cưa nhưng vẫn giữ</span></div>
+<div class="ln f"><span class="m">% nguyên dạng P–QRS–T và nhịp tim → bộ lọc khử nhiễu tần cao, giữ thông tin hữu ích (có trễ pha nhỏ).</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ===================== HÀM: BIẾN ĐỔI FOURIER (dựa trên fft) =====================</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> [f, X] = FourierTransform(t, x)</span><span class="m">% vào: t (trục thời gian đều), x (mẫu tín hiệu) | ra: f (Hz), X(f)</span></div>
+<div class="ln"><span class="c">    ns  = size(x, 2);</span><span class="m">% ns: số mẫu tín hiệu (số cột của vector hàng x)</span></div>
+<div class="ln"><span class="c">    dt  = t(2) - t(1);</span><span class="m">% dt: bước thời gian giữa 2 mẫu</span></div>
+<div class="ln"><span class="c">    N   = 2*ns;</span><span class="m">% tính FFT với N = 2·ns điểm (đệm thêm 0) → phổ mịn gấp đôi</span></div>
+<div class="ln"><span class="c">    df  = 1/(N*dt);</span><span class="m">% df: bước tần số của kết quả = 1/(tổng thời lượng N·dt)</span></div>
+<div class="ln"><span class="c">    xp  = zeros(1, N);</span><span class="m">% vector N số 0 để chứa tín hiệu đã sắp xếp lại + phần đệm 0</span></div>
+<div class="ln"><span class="c">    nns = sum(t &lt; 0);</span><span class="m">% nns: số mẫu có t &lt; 0 (đếm số phần tử true)</span></div>
+<div class="ln"><span class="c">    xp(1:ns-nns)    = x(nns+1:ns);</span><span class="m">% fft coi mẫu đầu là t = 0 → đặt phần t ≥ 0 lên ĐẦU xp</span></div>
+<div class="ln"><span class="c">    xp(N-nns+1:N)   = x(1:nns);</span><span class="m">% phần t &lt; 0 đặt ở CUỐI xp (fft tuần hoàn: cuối mảng ≡ thời gian âm)</span></div>
+<div class="ln"><span class="c">    Xf  = dt*fft(xp);</span><span class="m">% fft: biến đổi Fourier rời rạc nhanh; nhân dt để xấp xỉ tích phân ∫x(t)e^(-j2πft)dt</span></div>
+<div class="ln"><span class="c">    n2  = ceil(N/2);</span><span class="m">% ceil: làm tròn lên → n2 = chỉ số &quot;giữa&quot; phổ</span></div>
+<div class="ln"><span class="c">    <b class="k">if</b> n2 == N/2</span><span class="m">% N chẵn (luôn đúng vì N = 2·ns)</span></div>
+<div class="ln"><span class="c">        X(1:n2-1) = Xf(n2+2:N);</span><span class="m">% nửa sau kết quả fft = tần số ÂM → đưa lên đầu</span></div>
+<div class="ln"><span class="c">        X(n2:N)   = Xf(1:n2+1);</span><span class="m">% nửa đầu = tần số 0 và DƯƠNG → đưa ra sau ⇒ X sắp từ f âm → f dương</span></div>
+<div class="ln"><span class="c">        f = (-n2+1)*df : df : n2*df;</span><span class="m">% trục tần số tương ứng (N điểm, cách df)</span></div>
+<div class="ln"><span class="c">    <b class="k">else</b></span><span class="m">% N lẻ (để hàm dùng được tổng quát)</span></div>
+<div class="ln"><span class="c">        X(1:n2-1) = Xf(n2+1:N);</span><span class="m">% tần số âm → lên đầu</span></div>
+<div class="ln"><span class="c">        X(n2:N)   = Xf(1:n2);</span><span class="m">% tần số 0 và dương → ra sau</span></div>
+<div class="ln"><span class="c">        f = (-n2+1)*df : df : (n2-1)*df;</span><span class="m">% trục tần số (N điểm)</span></div>
+<div class="ln"><span class="c">    <b class="k">end</b></span><span class="m">% kết thúc if</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc hàm FourierTransform</span></div>
+<div class="ln e"> </div>
+<div class="ln h"><span class="m">% ===================== HÀM: BIẾN ĐỔI FOURIER NGƯỢC (dựa trên ifft) =====================</span></div>
+<div class="ln"><span class="c"><b class="k">function</b> [t, x] = IFourierTransform(f, X)</span><span class="m">% vào: f (trục tần số đều), X(f) | ra: t (s), x(t)</span></div>
+<div class="ln"><span class="c">    ns  = length(X);</span><span class="m">% ns: số điểm phổ</span></div>
+<div class="ln"><span class="c">    df  = f(2) - f(1);</span><span class="m">% df: bước tần số</span></div>
+<div class="ln"><span class="c">    N   = ns;</span><span class="m">% tính ifft với đúng N = ns điểm</span></div>
+<div class="ln"><span class="c">    dt  = 1/(N*df);</span><span class="m">% bước thời gian của kết quả</span></div>
+<div class="ln"><span class="c">    Xp  = zeros(1, N);</span><span class="m">% vector chứa phổ</span></div>
+<div class="ln"><span class="c">    Xp(1:ns) = X;</span><span class="m">% chép phổ vào</span></div>
+<div class="ln"><span class="c">    nns = sum(f &lt; 0);</span><span class="m">% số điểm có tần số âm</span></div>
+<div class="ln"><span class="c">    Xpp = zeros(1, N);</span><span class="m">% vector chứa phổ đã sắp lại theo thứ tự của ifft</span></div>
+<div class="ln"><span class="c">    Xpp(1:ns-nns)  = Xp(nns+1:ns);</span><span class="m">% ifft cần thứ tự: f = 0 và dương trước...</span></div>
+<div class="ln"><span class="c">    Xpp(N-nns+1:N) = Xp(1:nns);</span><span class="m">% ...tần số âm ở cuối</span></div>
+<div class="ln"><span class="c">    xf  = N*df*ifft(Xpp);</span><span class="m">% ifft rồi nhân N·df để xấp xỉ tích phân ∫X(f)e^(j2πft)df</span></div>
+<div class="ln"><span class="c">    n2  = ceil(N/2);</span><span class="m">% chỉ số giữa</span></div>
+<div class="ln"><span class="c">    <b class="k">if</b> n2 == N/2</span><span class="m">% N chẵn</span></div>
+<div class="ln"><span class="c">        x(1:n2-1) = xf(n2+2:N);</span><span class="m">% phần cuối kết quả ifft = thời gian âm → đưa lên đầu</span></div>
+<div class="ln"><span class="c">        x(n2:N)   = xf(1:n2+1);</span><span class="m">% phần đầu = t ≥ 0 → ra sau ⇒ x sắp theo t tăng dần</span></div>
+<div class="ln"><span class="c">        t = (-n2+1)*dt : dt : n2*dt;</span><span class="m">% trục thời gian tương ứng</span></div>
+<div class="ln"><span class="c">    <b class="k">else</b></span><span class="m">% N lẻ</span></div>
+<div class="ln"><span class="c">        x(1:n2-1) = xf(n2+1:N);</span><span class="m">% thời gian âm → lên đầu</span></div>
+<div class="ln"><span class="c">        x(n2:N)   = xf(1:n2);</span><span class="m">% t ≥ 0 → ra sau</span></div>
+<div class="ln"><span class="c">        t = (-n2+1)*dt : dt : (n2-1)*dt;</span><span class="m">% trục thời gian (N điểm)</span></div>
+<div class="ln"><span class="c">    <b class="k">end</b></span><span class="m">% kết thúc if</span></div>
+<div class="ln"><span class="c"><b class="k">end</b></span><span class="m">% kết thúc hàm IFourierTransform</span></div></div>
+</section></div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const RAW = {"b1_1": "%% ===== BÀI 1 – I. HÀM BƯỚC NHẢY u(t) VÀ HÀM DỐC r(t) (Bài 1 → Bài 4) =====\nclc; clear; close all;          % clc: xóa chữ trong Command Window | clear: xóa mọi biến cũ | close all: đóng mọi cửa sổ hình\nt = -10:0.01:10;                % vector thời gian: bắt đầu -10, bước 0.01, kết thúc 10 → 2001 điểm; bước nhỏ nên đồ thị trông liên tục\n\n% ---------- Bài 3: vẽ 4 tín hiệu dùng ustep, uramp (2 hàm tự viết ở CUỐI file) ----------\ny1 = 5*ustep(t - 2);            % 5u(t-2): (t-2) dịch u(t) sang PHẢI 2 → nhảy tại t=2; nhân 5 → bậc cao 5\ny2 = 3*uramp(t + 5);            % 3r(t+5): (t+5) dịch r(t) sang TRÁI 5 → bắt đầu dốc tại t=-5; nhân 3 → độ dốc 3\ny3 = 2*uramp(t + 2.5) - 5*uramp(t) + 3*uramp(t - 2) + ustep(t - 4);   % cộng/trừ từng mảnh: mỗi r(t-a) đổi độ dốc tại t=a, u(t-4) nhảy +1 tại t=4\ny4 = sin(t) .* (ustep(t + 3) - ustep(t - 3));   % u(t+3)-u(t-3) = \"cửa sổ\" bằng 1 trên [-3,3], 0 ngoài; .* nhân TỪNG PHẦN TỬ → chỉ giữ sin(t) trong [-3,3]\n\nfigure('Name', 'Bai 1 - I - Bai 3');    % mở cửa sổ hình mới, 'Name' = tên hiện trên thanh tiêu đề cửa sổ\nsubplot(2,2,1);                 % chia cửa sổ thành lưới 2 hàng × 2 cột, vẽ vào ô số 1 (đếm trái→phải, trên→dưới)\nplot(t, y1, 'LineWidth', 1.5);  % vẽ y1 theo t; 'LineWidth',1.5 → nét dày 1.5 pt\ngrid on; ylim([-1 6]);          % grid on: bật lưới | ylim([a b]): cố định trục y từ a đến b cho dễ nhìn bước nhảy\ntitle('5u(t-2)'); xlabel('t'); ylabel('y(t)');   % tiêu đề ô + nhãn trục x, trục y\n\nsubplot(2,2,2);                 % ô số 2 (hàng 1, cột 2)\nplot(t, y2, 'LineWidth', 1.5); grid on;   % vẽ y2, bật lưới\ntitle('3r(t+5)'); xlabel('t'); ylabel('y(t)'); % tiêu đề + nhãn 2 trục\n\nsubplot(2,2,3);                 % ô số 3 (hàng 2, cột 1)\nplot(t, y3, 'LineWidth', 1.5); grid on; % vẽ y3, bật lưới\ntitle('2r(t+2.5) - 5r(t) + 3r(t-2) + u(t-4)'); xlabel('t'); ylabel('y(t)'); % tiêu đề ô 3 + nhãn trục\n\nsubplot(2,2,4);                 % ô số 4 (hàng 2, cột 2)\nplot(t, y4, 'LineWidth', 1.5); grid on; ylim([-1.2 1.2]); % vẽ y4 | ylim: trục y từ -1.2 đến 1.2 (biên độ sin ≤ 1)\ntitle('sin(t)[u(t+3) - u(t-3)]'); xlabel('t'); ylabel('y(t)'); % tiêu đề ô 4 + nhãn trục\n\n% ---------- Bài 4: dựng lại 2 hình mẫu từ u(t), r(t) ----------\n% Hình 1: tam giác đáy [-4,4], đỉnh cao 2 tại t=0 → dốc lên 2/4 = 0.5 rồi dốc xuống -0.5\nz1 = 0.5*uramp(t + 4) - uramp(t) + 0.5*uramp(t - 4);   % tại -4: độ dốc 0→+0.5 | tại 0: +0.5→-0.5 (trừ 1·r) | tại 4: -0.5→0 (cộng 0.5·r)\n% Hình 2: bậc cao 1 trên [-8,8] + tam giác đáy [-4,4] cao thêm 2 (đỉnh tổng = 3)\nz2 = ustep(t + 8) - ustep(t - 8) + z1;                 % u(t+8)-u(t-8): xung chữ nhật cao 1 trên [-8,8]; cộng z1 → đỉnh 1+2 = 3\n\nfigure('Name', 'Bai 1 - I - Bai 4');    % cửa sổ hình mới cho Bài 4\nsubplot(2,1,1);                 % lưới 2 hàng × 1 cột, ô 1 (trên)\nplot(t, z1, 'LineWidth', 1.5); grid on; axis([-10 10 -0.5 2]);   % axis([xmin xmax ymin ymax]): đặt cả 2 trục giống hình mẫu\ntitle('Hình 1: 0.5r(t+4) - r(t) + 0.5r(t-4)'); % tiêu đề ô trên\nsubplot(2,1,2);                 % ô 2 (dưới)\nplot(t, z2, 'LineWidth', 1.5); grid on; axis([-10 10 0 3]); % vẽ z2 | trục giống hình mẫu 2: t ∈ [-10,10], y ∈ [0,3]\ntitle('Hình 2: u(t+8) - u(t-8) + 0.5r(t+4) - r(t) + 0.5r(t-4)'); % tiêu đề ô dưới\n\n% ---------- Bài 1 + Bài 2: định nghĩa hàm (hàm cục bộ phải đặt CUỐI script, MATLAB R2016b trở lên) ----------\nfunction y = ustep(t)           % khai báo hàm: tên ustep, đầu vào t (số hoặc vector), đầu ra y cùng kích thước với t\n    y = double(t >= 0);         % t>=0 cho mảng logic (1 nếu đúng, 0 nếu sai); double() đổi sang kiểu số để nhân/cộng được\nend                             % kết thúc hàm ustep\nfunction y = uramp(t)           % hàm dốc đơn vị: r(t) = t khi t ≥ 0, = 0 khi t < 0\n    y = t .* (t >= 0);          % t .* (t>=0): nhân từng phần tử t với 1 (t≥0) hoặc 0 (t<0) → giữ t ở nửa dương, còn lại bằng 0\nend                             % kết thúc hàm uramp (cách khác tương đương: y = max(t, 0);)", "b1_2": "%% ===== BÀI 1 – II. PHẦN CHẴN, PHẦN LẺ CỦA TÍN HIỆU =====\nclc; clear; close all;          % xóa màn hình lệnh, xóa biến, đóng hình cũ\nt = -10:0.01:10;                % t PHẢI đối xứng quanh 0 (từ -a đến a, cùng bước) thì fliplr(y) mới đúng là y(-t)\n\ny = 2*uramp(t + 2.5) - 5*uramp(t) + 3*uramp(t - 2) + ustep(t - 4);   % tín hiệu đề cho, dùng lại ustep/uramp ở cuối file\n[ye, yo] = evenodd(y);          % gọi hàm evenodd: trả về 2 đầu ra cùng lúc → ye = phần chẵn, yo = phần lẻ\n\nfigure('Name', 'Bai 1 - II');   % cửa sổ hình mới\nplot(t, y,  'k-',  'LineWidth', 2);   hold on;   % 'k-': màu đen (k), nét liền (-) | hold on: giữ hình để vẽ chồng đường sau\nplot(t, ye, 'r--', 'LineWidth', 1.5);            % 'r--': màu đỏ, nét đứt dài → phần chẵn\nplot(t, yo, 'b-.', 'LineWidth', 1.5);  hold off; % 'b-.': màu xanh dương, nét gạch-chấm → phần lẻ | hold off: thôi vẽ chồng\ngrid on; xlabel('t'); ylabel('Biên độ'); % bật lưới + nhãn 2 trục\nlegend('y(t)', 'y_e(t) – phần chẵn', 'y_o(t) – phần lẻ', 'Location', 'best');   % chú thích theo đúng thứ tự 3 lệnh plot; 'best': MATLAB tự chọn góc ít che đồ thị\ntitle('y(t) = 2r(t+2.5) - 5r(t) + 3r(t-2) + u(t-4) và phần chẵn/lẻ'); % tiêu đề hình\n\n% Kiểm tra nhanh (không bắt buộc): ye + yo phải trả lại đúng y\ndisp(max(abs(ye + yo - y)));    % sai lệch lớn nhất giữa ye+yo và y; in ra 0 (hoặc ~1e-15) là đúng\n\n% ---------- Các hàm (đặt cuối script) ----------\nfunction [ye, yo] = evenodd(y)  % hàm 1 đầu vào (y), 2 đầu ra (ye, yo) — y là vector mẫu tín hiệu trên t đối xứng\n    yr = fliplr(y);             % fliplr: lật vector trái↔phải → mẫu tại t thành mẫu tại -t, tức yr = y(-t)\n    ye = 0.5*(y + yr);          % phần chẵn: ye(t) = [y(t) + y(-t)]/2 → thỏa ye(-t) = ye(t)\n    yo = 0.5*(y - yr);          % phần lẻ:   yo(t) = [y(t) - y(-t)]/2 → thỏa yo(-t) = -yo(t)\nend                             % (chú ý: trong PDF dấu trừ bị in thành \"–\" dài, gõ lại bằng \"-\" thường kẻo lỗi)\nfunction y = ustep(t)           % u(t): 1 khi t ≥ 0, 0 khi t < 0\n    y = double(t >= 0);         % so sánh → logic 0/1 → đổi sang số\nend                             % kết thúc hàm ustep\nfunction y = uramp(t)           % r(t): t khi t ≥ 0, 0 khi t < 0\n    y = t .* (t >= 0);          % nhân từng phần tử với mặt nạ 0/1\nend                             % kết thúc hàm uramp", "b1_3": "%% ===== BÀI 1 – III. TỔNG CÁC TÍN HIỆU TUẦN HOÀN =====\nclc; clear; close all;          % dọn màn hình, biến, hình\nt  = -10:0.001:10;              % bước 0.001 (mịn hơn) vì cos(6πt) dao động nhanh, chu kỳ chỉ 1/3 s\nW0 = pi/10;                     % Ω0 = π/10 (rad/s)\n\nx1 = 1 + 1.5*cos(2*pi*W0*t) - 0.6*cos(4*W0*t);   % a. x1(t): cos(...) nhận vector t → trả vector, cộng/nhân số áp cho mọi phần tử\nx2 = 1 + 1.5*cos(6*pi*t)    - 0.6*cos(4*W0*t);   % b. x2(t)\n\nfigure('Name', 'Bai 1 - III - Tuan hoan'); % mở cửa sổ hình mới, đặt tên\nsubplot(2,1,1);                 % ô trên: x1\nplot(t, x1, 'LineWidth', 1.2); grid on; xlabel('t'); ylabel('x_1(t)');   % dấu _ trong nhãn → chữ số 1 viết chỉ số dưới\ntitle('a. x_1(t) = 1 + 1.5cos(2\\pi\\Omega_0t) - 0.6cos(4\\Omega_0t)');     % \\pi, \\Omega: MATLAB hiển thị thành ký hiệu π, Ω\nsubplot(2,1,2);                 % ô dưới: x2\nplot(t, x2, 'LineWidth', 1.2); grid on; xlabel('t'); ylabel('x_2(t)'); % vẽ x2, bật lưới, nhãn trục (x_2 → chỉ số dưới)\ntitle('b. x_2(t) = 1 + 1.5cos(6\\pit) - 0.6cos(4\\Omega_0t)'); % tiêu đề; \\pi → π, \\Omega_0 → Ω₀\n\n% ---------- Tìm chu kỳ: tổng tuần hoàn ⇔ tỉ số các chu kỳ thành phần là số HỮU TỈ ----------\n% Thành phần cos(w·t) có chu kỳ T = 2π/w\nT1a = 2*pi/(2*pi*W0);           % x1, số hạng 1: w = 2πΩ0 = π²/5 → T = 10/π ≈ 3.18 s\nT2a = 2*pi/(4*W0);              % x1, số hạng 2: w = 4Ω0 = 2π/5 → T = 5 s\nfprintf('x1: T1 = %.4f, T2 = %.4f, T1/T2 = %.4f\\n', T1a, T2a, T1a/T2a);   % %.4f: in số thực 4 chữ số thập phân | \\n: xuống dòng\n% → T1/T2 = 2/π là số VÔ TỈ ⇒ x1(t) KHÔNG tuần hoàn (đồ thị không lặp lại đúng hình dạng)\n\nT1b = 2*pi/(6*pi);              % x2, số hạng 1: w = 6π → T = 1/3 s\nT2b = 2*pi/(4*W0);              % x2, số hạng 2: T = 5 s\nfprintf('x2: T1 = %.4f, T2 = %.4f, T2/T1 = %.4f\\n', T1b, T2b, T2b/T1b); % in 3 số: T1, T2 và tỉ số T2/T1 của x2\n% → T2/T1 = 15 là số HỮU TỈ ⇒ x2(t) TUẦN HOÀN, chu kỳ T = BCNN(1/3, 5) = 5 s (= 15·T1 = 1·T2)\n\nhold on;                        % đang ở ô dưới (x2): vẽ thêm đường dọc đánh dấu các mốc cách nhau 1 chu kỳ\nxline([-10 -5 0 5 10], 'r--');  % xline: vẽ đường thẳng đứng tại các giá trị t đã cho (MATLAB R2018b+) → thấy đồ thị lặp lại sau mỗi 5 s\nhold off;                       % thôi vẽ chồng", "b1_4": "%% ===== BÀI 1 – III. NĂNG LƯỢNG, CÔNG SUẤT CỦA TÍN HIỆU (biến tượng trưng) =====\n% x(t) = e^(-t)·cos(2πt)·u(t) trên đoạn -10 ≤ t ≤ 10  →  T = 20, [-T/2, T/2] = [-10, 10]\n% E = ∫ |x(t)|² dt (từ -T/2 đến T/2)     P = E / T\nclc; clear; close all;          % dọn màn hình, biến, hình\nsyms t real                     % khai báo t là biến TƯỢNG TRƯNG (không cần giá trị số); 'real' → t là số thực, |x|² = x²\n\nx = exp(-t)*cos(2*pi*t);        % biểu thức tượng trưng phần t ≥ 0 của x(t) (dùng * thường vì đây là ký hiệu, không phải vector)\nT = 20;                         % độ dài đoạn xét: từ -10 đến 10\n\n% u(t) = 0 khi t < 0 ⇒ |x(t)|² = 0 trên [-10, 0) ⇒ cận dưới tích phân thực chất là 0\nE  = int(x^2, t, 0, T/2);       % int(biểu thức, biến, cận dưới, cận trên): tích phân xác định ∫₀¹⁰ e^(-2t)cos²(2πt) dt\nE  = simplify(E);               % rút gọn biểu thức kết quả cho gọn\nEd = double(E);                 % double(): đổi kết quả tượng trưng (chứa π, exp) thành số thực để đọc giá trị\nP  = E / T;                     % công suất trung bình P = E/T (vẫn dạng tượng trưng)\nPd = double(P);                 % đổi P sang số\n\ndisp('Năng lượng E (dạng chính xác) ='); pretty(E);   % pretty: in biểu thức toán dạng \"2 chiều\" dễ đọc\nfprintf('E ≈ %.6f\\n', Ed);      % in E dạng số, 6 chữ số thập phân (≈ 0.256176)\nfprintf('P ≈ %.6f\\n', Pd);      % in P dạng số (≈ 0.012809)\n\n% Vẽ x(t) đầy đủ trên [-10, 10]: nhân thêm hàm bước tượng trưng heaviside(t) (= u(t))\nxu = x*heaviside(t);            % heaviside(t): 0 khi t < 0, 1 khi t > 0 → x(t) bằng 0 ở nửa âm như đề cho\nfplot(xu, [-10 10], 'LineWidth', 1.3);  % fplot: vẽ trực tiếp biểu thức tượng trưng trên khoảng [-10, 10] (ezplot là lệnh cũ)\ngrid on; xlabel('t'); ylabel('x(t)'); % bật lưới + nhãn 2 trục\ntitle('x(t) = e^{-t}cos(2\\pit)u(t)');   % ^{...}: số mũ nhiều ký tự trong tiêu đề", "b1_5": "%% ===== BÀI 1 – IV. PHÉP DỊCH, CO GIÃN, ĐẢO TÍN HIỆU  x(t) = e^(-|t|) =====\nclc; clear; close all;          % dọn màn hình, biến, hình\nt = -10:0.01:10;                % trục thời gian chung\nx = @(t) exp(-abs(t));          % HÀM ẨN DANH: @(t) = \"hàm theo biến t\"; gọi x(t-2), x(2*t)... như viết toán | abs: trị tuyệt đối\n\n% ---------- Bài 1: dịch — x(t), x(t-2), x(t+2) ----------\nfigure('Name', 'Bai 1 - IV - Dich'); % cửa sổ hình 1: phép dịch\nplot(t, x(t),     'k-',  'LineWidth', 2);   hold on;   % gốc: đỉnh tại t = 0\nplot(t, x(t - 2), 'r--', 'LineWidth', 1.5);            % x(t-2): trễ → dịch sang PHẢI 2, đỉnh tại t = 2\nplot(t, x(t + 2), 'b-.', 'LineWidth', 1.5); hold off;  % x(t+2): sớm → dịch sang TRÁI 2, đỉnh tại t = -2\ngrid on; xlabel('t'); ylabel('Biên độ'); title('Phép dịch'); % lưới, nhãn trục, tiêu đề\nlegend('x(t)', 'x(t-2)', 'x(t+2)');   % chú thích theo thứ tự vẽ\n\n% ---------- Bài 2: co giãn — x(t), x(2t), x(0.5t) ----------\nfigure('Name', 'Bai 1 - IV - Co gian'); % cửa sổ hình 2: phép co giãn\nplot(t, x(t),       'k-',  'LineWidth', 2);   hold on; % gốc x(t): đen nét liền | hold on: giữ để vẽ chồng\nplot(t, x(2*t),     'r--', 'LineWidth', 1.5);            % x(2t): hệ số > 1 → NÉN theo trục t 2 lần (đồ thị hẹp lại)\nplot(t, x(0.5*t),   'b-.', 'LineWidth', 1.5); hold off;  % x(0.5t): hệ số < 1 → GIÃN 2 lần (đồ thị rộng ra)\ngrid on; xlabel('t'); ylabel('Biên độ'); title('Phép co giãn'); % lưới, nhãn trục, tiêu đề\nlegend('x(t)', 'x(2t)', 'x(0.5t)'); % chú thích 3 đường theo thứ tự vẽ\n\n% ---------- Bài 3: đảo — x(t), x(-t) ----------\nfigure('Name', 'Bai 1 - IV - Dao'); % cửa sổ hình 3: phép đảo\nplot(t, x(t),  'k-',  'LineWidth', 2);   hold on; % gốc x(t): đen nét liền, giữ hình\nplot(t, x(-t), 'r--', 'LineWidth', 1.5); hold off;      % x(-t): lật đối xứng qua trục tung\ngrid on; xlabel('t'); ylabel('Biên độ'); title('Phép đảo'); % lưới, nhãn trục, tiêu đề\nlegend('x(t)', 'x(-t)');        % chú thích 2 đường\n% Nhận xét: e^(-|t|) là hàm CHẴN nên x(-t) trùng khít x(t) — 2 đường chồng lên nhau", "b2_1": "%% ===== BÀI 2 – 1. TẦN SỐ VÀ NỐT NHẠC =====\n% Mỗi nốt nhạc = 1 tín hiệu sin có tần số riêng. Bảng 1: C D E F G A B = 262 294 330 349 392 440 494 Hz\nclc; clear; close all;          % dọn màn hình, biến, hình\n\n% ---------- A. Chơi và vẽ 1 nốt (ví dụ trong tài liệu: nốt B, 494 Hz) ----------\nFs  = 8000;                     % tần số lấy mẫu: 8000 mẫu mỗi giây (đủ cho âm < 4000 Hz)\nT   = 2;                        % thời gian phát nốt: 2 giây\nt   = 0:1/Fs:T;                 % vector thời điểm lấy mẫu, cách nhau 1/Fs giây → 16001 phần tử\nAmp = 1;                        % biên độ (âm lượng); sound() chỉ nhận giá trị trong [-1, 1]\nph  = 0;                        % pha ban đầu (rad)\nfb  = 494;                      % tần số nốt B\nx   = Amp*sin(2*pi*fb*t + ph);  % sin(2π·f·t + φ) tính cho MỌI phần tử của t → vector mẫu âm thanh\n% thử âm \"tắt dần\" như phím đàn: x = Amp*exp(-t).*sin(2*pi*fb*t + ph);   (.* vì nhân 2 vector từng phần tử)\n\nfigure('Name', 'Bai 2 - 1 not B'); % mở cửa sổ hình, đặt tên\nplot(t(1:300), x(1:300));       % chỉ vẽ 300 mẫu đầu (≈ 0.0375 s ≈ 18 chu kỳ) — vẽ hết 16001 mẫu sẽ thành một vệt đặc\ngrid on; xlabel('t (s)'); ylabel('x(t)'); title('Nốt B – 494 Hz'); % lưới, nhãn trục, tiêu đề\nsound(x, Fs);                   % phát vector x ra loa với tốc độ Fs mẫu/giây\npause(T + 0.5);                 % sound() KHÔNG chờ phát xong → dừng chương trình T+0.5 s để nốt sau không đè lên\n\n% ---------- B. Chơi bản nhạc: CCGGAAG--, FFEEDDC-- ----------\nnames = 'CDEFGAB';              % chuỗi tên nốt, vị trí k trong chuỗi ↔ tần số thứ k ở dòng dưới\nfreqs = [262 294 330 349 392 440 494];   % tần số (Hz) theo Bảng 1\nsong  = 'CCGGAAG--FFEEDDC--';   % bản nhạc: chữ cái = 1 nốt dài 1 phách; mỗi '-' = ngân nốt TRƯỚC đó thêm 1 phách\nbeat  = 0.4;                    % độ dài 1 phách (giây) — chỉnh số này để nhạc nhanh/chậm\ngap   = zeros(1, round(0.03*Fs));   % khoảng lặng 0.03 s giữa 2 nốt (vector toàn số 0) để nghe tách bạch 2 nốt giống nhau\n\n% B1. Đọc chuỗi bản nhạc → danh sách nốt + số phách của từng nốt\nnoteList = '';                  % các nốt (chuỗi ký tự rỗng ban đầu)\nbeats    = [];                  % số phách tương ứng (vector rỗng ban đầu)\nfor k = 1:length(song)          % duyệt từng ký tự của chuỗi song\n    if song(k) == '-'           % gặp dấu '-'\n        beats(end) = beats(end) + 1;   % end = phần tử cuối → nốt vừa thêm được ngân thêm 1 phách\n    else                        % gặp chữ cái (một nốt mới)\n        noteList(end+1) = song(k);     % end+1: thêm vào cuối chuỗi\n        beats(end+1)    = 1;           % nốt mới mặc định dài 1 phách\n    end                         % kết thúc if\nend                             % kết thúc vòng for đọc chuỗi\n\n% B2. Tạo âm cho từng nốt rồi nối lại thành 1 vector dài\ny = [];                         % vector âm thanh của cả bài, ban đầu rỗng\nfor k = 1:length(noteList)      % duyệt từng nốt\n    f  = freqs(names == noteList(k));   % names==... cho mảng logic 1 ở đúng vị trí tên nốt → lấy ra tần số tương ứng\n    d  = beats(k)*beat;                 % thời lượng nốt = số phách × độ dài 1 phách\n    tn = 0:1/Fs:d;                      % trục thời gian riêng cho nốt này\n    xn = exp(-2*tn/d) .* sin(2*pi*f*tn);% sin tần số f, nhân bao hình e^(-2t/d) cho âm nhỏ dần (giống phím đàn); .* từng phần tử\n    y  = [y, xn, gap];                  % nối ngang: [cũ, nốt mới, lặng] → y dài dần\nend                             % kết thúc vòng for tạo âm\ny = 0.9*y/max(abs(y));          % chuẩn hóa biên độ về tối đa 0.9 (trong [-1,1]) để sound() không bị méo/cắt\n\nsound(y, Fs);                   % phát cả bài\nfigure('Name', 'Bai 2 - Ban nhac'); % cửa sổ hình cho cả bản nhạc\nplot((0:length(y)-1)/Fs, y);    % trục thời gian = chỉ số mẫu (0,1,2,...) / Fs\ngrid on; xlabel('t (s)'); ylabel('y(t)'); title(['Bản nhạc: ' song]);   % ['a' b]: nối chuỗi để ghép tiêu đề", "b2_2": "%% ===== BÀI 2 – 2. CHUỖI FOURIER CỦA KÈN TRUMPET (nốt B, 494 Hz) =====\n% x(t) = Σ_{k=1..9} A_k·cos(2π·k·494·t − θ_k)   (A0 = 0: không có thành phần một chiều DC)\nclc; clear; close all;          % dọn màn hình, biến, hình\n\n% ---------- (a) Tổng hợp tín hiệu từ 9 số hạng và nghe ----------\nt = linspace(0, 1, 44100);      % linspace(đầu, cuối, số điểm): 44100 điểm cách đều trong 1 s → 44100 mẫu/giây (như đề yêu cầu)\nF = 494;                        % tần số cơ bản (nốt B); họa âm thứ k có tần số k·F\nFs = 44100;                     % tần số lấy mẫu tương ứng, dùng cho sound()\nA  = [0.1155 0.3417 0.1789 0.1232 0.0678 0.0473 0.0260 0.0065 0.0020];   % biên độ A1..A9 (Bảng 2)\nth = [-2.1299 1.6727 -2.5454 0.6607 -2.0390 2.1597 -1.0467 1.8581 -2.3925]; % pha θ1..θ9 (rad) (Bảng 2, giữ đúng dấu ±)\n\nx = zeros(size(t));             % vector toàn 0 cùng kích thước t, dùng để cộng dồn\nfor k = 1:9                     % k = 1 (cơ bản), 2..9 (họa âm)\n    x = x + A(k)*cos(2*pi*k*F*t - th(k));   % cộng thêm số hạng thứ k: biên độ A(k), tần số k·F, pha θ(k)\nend                             % kết thúc vòng for\n% (cách viết gọn không cần vòng lặp: x = A*cos(2*pi*F*(1:9)'*t - th'); — (1:9)'*t tạo ma trận 9×44100, A (1×9) nhân ma trận → cộng 9 hàng)\n\nsound(x/max(abs(x)), Fs);       % chuẩn hóa về [-1,1] rồi phát: nghe giống tiếng kèn hơn sin đơn\npause(1.5);                     % chờ phát xong (1 s + dư) trước khi phát bản (c)\n\n% ---------- (b) Vẽ 3 chu kỳ: 3·T = 3/494 ≈ 6.1e-3 s (đề ghi ~4.5e-3 s; muốn đúng số đề thì thay 3/F bằng 4.5e-3) ----------\nidx = t <= 3/F;                 % mảng logic: true tại các mẫu có t ≤ 3 chu kỳ → dùng làm \"bộ lọc chỉ số\"\nfigure('Name', 'Bai 2 - Trumpet'); % mở cửa sổ hình, đặt tên\nplot(t(idx)*1e3, x(idx), 'b', 'LineWidth', 1.5);   % t(idx): chỉ lấy mẫu thỏa điều kiện | *1e3: đổi giây → mili giây cho dễ đọc\nhold on;                        % giữ để vẽ chồng bản (c)\n\n% ---------- (c) Lặp lại với mọi θ_k = 0 ----------\nx0 = zeros(size(t));            % tín hiệu mới, cộng dồn từ 0\nfor k = 1:9                     % lặp k = 1..9\n    x0 = x0 + A(k)*cos(2*pi*k*F*t);         % giống trên nhưng bỏ pha (θ_k = 0)\nend                             % kết thúc vòng for\nsound(x0/max(abs(x0)), Fs);     % nghe bản không pha để so sánh với (a)\nplot(t(idx)*1e3, x0(idx), 'r--', 'LineWidth', 1.5); hold off;   % vẽ chồng, đỏ nét đứt\ngrid on; xlabel('t (ms)'); ylabel('x(t)'); % lưới + nhãn trục (thời gian tính bằng ms)\nlegend('(a) có pha \\theta_k', '(c) \\theta_k = 0'); % chú thích; \\theta_k → θₖ\ntitle('Trumpet – nốt B, 3 chu kỳ'); % tiêu đề hình\n% Trả lời (c): DẠNG SÓNG khác hẳn (đỉnh/đáy dời chỗ) nhưng ÂM NGHE gần như không đổi —\n% tai người cảm nhận chủ yếu theo BIÊN ĐỘ các họa âm (phổ biên độ giống nhau), rất kém nhạy với pha.", "b3_1": "%% ===== BÀI 3 – I. TÍCH CHẬP: LỌC ÂM THANH BẰNG BỘ LỌC THÔNG THẤP LÝ TƯỞNG (fc = 1500 Hz) =====\n% Cần file female_voice.wav nằm cùng thư mục với script (hoặc trong Current Folder của MATLAB)\nclc; clear; close all;          % dọn màn hình, biến, hình\n\n[data, Fs] = audioread('female_voice.wav');   % đọc file wav: data = ma trận mẫu (mỗi cột 1 kênh), Fs = tần số lấy mẫu (Hz)\n                                % (MATLAB cũ dùng [data, Fs, Nbits] = wavread(...); từ R2014 đổi thành audioread)\ndata = data(:, 1).';            % data(:,1): lấy MỌI hàng của cột 1 (kênh trái) | .' : chuyển vị cột → hàng (vector ngang)\nTs = 1/Fs;                      % chu kỳ lấy mẫu: khoảng thời gian giữa 2 mẫu liên tiếp (s)\n\nsound(data, Fs);                % phát âm thanh gốc (bị nhiễu, \"rè\")\npause(length(data)/Fs + 0.5);   % length(data)/Fs = thời lượng file (s) → chờ phát xong rồi mới phát bản đã lọc\n\nt  = -0.05:Ts:0.05;             % trục thời gian cho đáp ứng xung h(t), cùng bước Ts với tín hiệu\n                                % (PDF dùng -10:Ts:10 → ~900 nghìn điểm, conv chạy RẤT lâu; sinc ngoài ±0.05 s đã gần 0 nên cắt ngắn\n                                %  cho nhanh, kết quả nghe như nhau. Muốn đúng PDF thì đổi lại t = -10:Ts:10)\nwb = 1500*2*pi;                 % tần số cắt ωb = 2π·1500 (rad/s)\n\nht = wb/(2*pi)*sinc(wb*t/(2*pi));   % đáp ứng xung lọc thông thấp lý tưởng: h(t) = (ωb/2π)·sinc(ωb·t/2π)\n                                % ↔ biến đổi Fourier H(ω) = rect(ω/2ωb): cho qua |f| < 1500 Hz, chặn hết phần trên\n                                % sinc(x) = sin(πx)/(πx) (MATLAB, cần Signal Processing Toolbox)\n\ny = conv(data, ht, 'same');     % TÍCH CHẬP y = data * h → tín hiệu ra của hệ LTI | 'same': giữ y dài bằng data (cắt phần đầu/cuối thừa)\n\ny = y/max(abs(y));              % chuẩn hóa về [-1, 1]: chia cho giá trị tuyệt đối lớn nhất để sound() không bị cắt méo\nsound(y, Fs);                   % phát âm thanh đã lọc (bớt rè do nhiễu tần cao bị loại)\n\n% Vẽ so sánh trước/sau (thêm cho dễ nhìn, không bắt buộc)\ntt = (0:length(data)-1)*Ts;     % trục thời gian của file: chỉ số mẫu × Ts\nfigure('Name', 'Bai 3 - I');    % cửa sổ hình so sánh\nsubplot(2,1,1); plot(tt, data); grid on; title('Trước lọc'); xlabel('t (s)'); % ô trên: tín hiệu gốc theo thời gian\nsubplot(2,1,2); plot(tt, y, 'r'); grid on; title('Sau lọc thông thấp 1500 Hz'); xlabel('t (s)'); % ô dưới: tín hiệu đã lọc (màu đỏ)", "b3_2": "%% ===== BÀI 3 – II. BIẾN ĐỔI FOURIER & LỌC TÍN HIỆU ĐIỆN TIM (ECG) — main.m =====\n% Cần file hum3hb.mat (PTN) cùng thư mục: chứa vector điện áp hb và bước lấy mẫu T = 0.002 s\n% Hai hàm FourierTransform / IFourierTransform nằm CUỐI script này (nếu GV yêu cầu file riêng thì cắt mỗi hàm ra\n% FourierTransform.m và IFourierTransform.m, tên file phải trùng tên hàm)\nclc; clear; close all;          % dọn màn hình, biến, hình\n\n% ---------- 1. Tín hiệu điện tim và phổ biên độ ----------\nload hum3hb;                    % nạp mọi biến trong hum3hb.mat vào workspace → có hb (điện áp) và T (bước lấy mẫu)\nx  = hb;                        % đặt tên ngắn x cho tín hiệu\ntf = (size(x,2) - 1)*T;         % size(x,2): số cột = số mẫu N → thời điểm mẫu cuối = (N-1)·T\nt  = 0:T:tf;                    % trục thời gian 0, T, 2T, ..., tf (đúng N phần tử, khớp với x)\n[f, Xf] = FourierTransform(t, hb);   % gọi hàm tự viết: f = trục tần số (Hz), Xf = phổ X(f) (số phức)\n\nfigure(1);                      % cửa sổ hình số 1\nsubplot(2,1,1);                 % ô trên: tín hiệu theo thời gian\nplot(t, x, 'linewidth', 1);     % vẽ x(t), nét dày 1\ngrid; axis([0 2.5 -0.5 1.5]);   % grid (không đối số) = bật/tắt lưới | axis: t từ 0→2.5 s, biên độ -0.5→1.5\nxlabel('t (sec)'); ylabel('x(t)'); % nhãn 2 trục\nsubplot(2,1,2);                 % ô dưới: phổ biên độ\nplot(f, abs(Xf), 'linewidth', 1);    % abs(Xf): mô-đun số phức = phổ BIÊN ĐỘ |X(f)|\ngrid; axis([-150 150 0 0.12]);  % chỉ xem dải tần -150 → 150 Hz\nxlabel('f (Hz)'); ylabel('|X(f)|'); % nhãn 2 trục\n% Câu hỏi 1 (gợi ý): x(t) có dạng nhịp tim lặp lại (sóng P–QRS–T) nhưng bị \"răng cưa\" do nhiễu nhỏ chồng lên.\n% Trên phổ: phần năng lượng chính tập trung ở TẦN THẤP quanh 0 Hz; ngoài ra có các thành phần/đỉnh lẻ ở TẦN CAO\n% tách khỏi phần chính → đó là nhiễu tần số cao (vd nhiễu điện lưới) cần lọc bỏ.\n\n% ---------- 2. Đáp ứng xung, đáp ứng biên độ và pha của bộ lọc ----------\nh = (568*exp(-300*t) - 485*exp(-243*t).*cos(176*t) ...   % h(t) của bộ lọc (t ≥ 0); ... = viết tiếp dòng dưới\n   + 668*exp(-243*t).*sin(176*t) - 83*exp(-93*t).*cos(285*t) ...   % .* : nhân từng phần tử 2 vector cùng cỡ\n   - 255*exp(-93*t).*sin(285*t)); % (dòng cuối của biểu thức h, đóng ngoặc)\n[f, Hf] = FourierTransform(t, h);    % H(f) = biến đổi Fourier của h(t) = đáp ứng tần số của bộ lọc\n\nfigure(2);                      % cửa sổ hình số 2\nsubplot(2,2,[1 2]);             % lưới 2×2, gộp ô 1 và 2 → 1 ô rộng cả hàng trên\nplot(t, h, 'linewidth', 1); grid; % vẽ h(t), bật lưới\naxis([0 0.5 -50 150]);          % h(t) tắt gần hết sau 0.5 s\nxlabel('t (sec)'); ylabel('h(t)'); % nhãn 2 trục\nsubplot(2,2,3);                 % ô dưới trái: đáp ứng biên độ\nplot(f, abs(Hf), 'k', 'linewidth', 1); grid;    % 'k': màu đen\naxis([-150 150 0 1.2]);         % f ∈ [-150,150] Hz, |H| ∈ [0, 1.2]\nxlabel('f (Hz)'); ylabel('|H(j2\\pi f)|'); % nhãn trục; \\pi → π\nsubplot(2,2,4);                 % ô dưới phải: đáp ứng pha\nangleH = unwrap(angle(Hf)) + 2*pi;   % angle: góc pha (rad) trong (-π, π] | unwrap: bỏ các bước nhảy 2π cho đường pha liền mạch | +2π: dời lên cho dễ nhìn\nplot(f, angleH, 'k', 'linewidth', 1); grid; % vẽ pha, màu đen, bật lưới\naxis([-150 150 -10 10]);        % f ∈ [-150,150] Hz, pha ∈ [-10,10] rad\nxlabel('f (Hz)'); ylabel('\\angle H(f)');        % \\angle: ký hiệu góc ∠\n% Câu hỏi 2 (gợi ý): |H| ≈ 1 ở tần thấp rồi giảm dần về 0 khi |f| tăng → bộ lọc THÔNG THẤP (Butterworth bậc 5:\n% 5 cực -300, -243±176j, -93±285j đều có mô-đun ≈ 300 rad/s) → tần số cắt fc ≈ 300/(2π) ≈ 48 Hz,\n% cho qua vùng |f| < ~48 Hz, chặn tần cao.\n\n% ---------- 3. Phổ và tín hiệu ra của bộ lọc ----------\nYf = Xf.*Hf;                    % miền tần số: tích chập y = x*h ⇔ NHÂN phổ Y(f) = X(f)·H(f) (nhân từng phần tử)\nfigure(3);                      % cửa sổ hình số 3\nsubplot(2,1,1);                 % ô trên: phổ tín hiệu ra\nplot(f, abs(Yf), 'r', 'linewidth', 1); grid;    % phổ biên độ tín hiệu ra, màu đỏ\naxis([-150 150 0 0.12]);        % cùng thang với hình 1 để so sánh\nxlabel('f (Hz)'); ylabel('|Y(f)|'); % nhãn 2 trục\n[t2, y] = IFourierTransform(f, Yf);  % biến đổi Fourier NGƯỢC → tín hiệu ra y(t) theo thời gian\nsubplot(2,1,2);                 % ô dưới: tín hiệu ra theo thời gian\nplot(t2, real(y), 'r', 'linewidth', 1); grid;   % real(): bỏ phần ảo cực nhỏ (sai số tính toán) trước khi vẽ\naxis([0 2.5 -0.5 1.5]);         % cùng thang với ô x(t) ở hình 1 để so sánh\nxlabel('t (sec)'); ylabel('y(t)'); % nhãn 2 trục\n% Câu hỏi 3 (gợi ý): so với hình 1, phổ ra mất các thành phần tần cao; y(t) mượt, hết răng cưa nhưng vẫn giữ\n% nguyên dạng P–QRS–T và nhịp tim → bộ lọc khử nhiễu tần cao, giữ thông tin hữu ích (có trễ pha nhỏ).\n\n% ===================== HÀM: BIẾN ĐỔI FOURIER (dựa trên fft) =====================\nfunction [f, X] = FourierTransform(t, x)   % vào: t (trục thời gian đều), x (mẫu tín hiệu) | ra: f (Hz), X(f)\n    ns  = size(x, 2);           % ns: số mẫu tín hiệu (số cột của vector hàng x)\n    dt  = t(2) - t(1);          % dt: bước thời gian giữa 2 mẫu\n    N   = 2*ns;                 % tính FFT với N = 2·ns điểm (đệm thêm 0) → phổ mịn gấp đôi\n    df  = 1/(N*dt);             % df: bước tần số của kết quả = 1/(tổng thời lượng N·dt)\n    xp  = zeros(1, N);          % vector N số 0 để chứa tín hiệu đã sắp xếp lại + phần đệm 0\n    nns = sum(t < 0);           % nns: số mẫu có t < 0 (đếm số phần tử true)\n    xp(1:ns-nns)    = x(nns+1:ns);   % fft coi mẫu đầu là t = 0 → đặt phần t ≥ 0 lên ĐẦU xp\n    xp(N-nns+1:N)   = x(1:nns);      % phần t < 0 đặt ở CUỐI xp (fft tuần hoàn: cuối mảng ≡ thời gian âm)\n    Xf  = dt*fft(xp);           % fft: biến đổi Fourier rời rạc nhanh; nhân dt để xấp xỉ tích phân ∫x(t)e^(-j2πft)dt\n    n2  = ceil(N/2);            % ceil: làm tròn lên → n2 = chỉ số \"giữa\" phổ\n    if n2 == N/2                % N chẵn (luôn đúng vì N = 2·ns)\n        X(1:n2-1) = Xf(n2+2:N);      % nửa sau kết quả fft = tần số ÂM → đưa lên đầu\n        X(n2:N)   = Xf(1:n2+1);      % nửa đầu = tần số 0 và DƯƠNG → đưa ra sau ⇒ X sắp từ f âm → f dương\n        f = (-n2+1)*df : df : n2*df; % trục tần số tương ứng (N điểm, cách df)\n    else                        % N lẻ (để hàm dùng được tổng quát)\n        X(1:n2-1) = Xf(n2+1:N); % tần số âm → lên đầu\n        X(n2:N)   = Xf(1:n2);   % tần số 0 và dương → ra sau\n        f = (-n2+1)*df : df : (n2-1)*df; % trục tần số (N điểm)\n    end                         % kết thúc if\nend                             % kết thúc hàm FourierTransform\n\n% ===================== HÀM: BIẾN ĐỔI FOURIER NGƯỢC (dựa trên ifft) =====================\nfunction [t, x] = IFourierTransform(f, X)  % vào: f (trục tần số đều), X(f) | ra: t (s), x(t)\n    ns  = length(X);            % ns: số điểm phổ\n    df  = f(2) - f(1);          % df: bước tần số\n    N   = ns;                   % tính ifft với đúng N = ns điểm\n    dt  = 1/(N*df);             % bước thời gian của kết quả\n    Xp  = zeros(1, N);          % vector chứa phổ\n    Xp(1:ns) = X;               % chép phổ vào\n    nns = sum(f < 0);           % số điểm có tần số âm\n    Xpp = zeros(1, N);          % vector chứa phổ đã sắp lại theo thứ tự của ifft\n    Xpp(1:ns-nns)  = Xp(nns+1:ns);   % ifft cần thứ tự: f = 0 và dương trước...\n    Xpp(N-nns+1:N) = Xp(1:nns);      % ...tần số âm ở cuối\n    xf  = N*df*ifft(Xpp);       % ifft rồi nhân N·df để xấp xỉ tích phân ∫X(f)e^(j2πft)df\n    n2  = ceil(N/2);            % chỉ số giữa\n    if n2 == N/2                % N chẵn\n        x(1:n2-1) = xf(n2+2:N);      % phần cuối kết quả ifft = thời gian âm → đưa lên đầu\n        x(n2:N)   = xf(1:n2+1);      % phần đầu = t ≥ 0 → ra sau ⇒ x sắp theo t tăng dần\n        t = (-n2+1)*dt : dt : n2*dt; % trục thời gian tương ứng\n    else                        % N lẻ\n        x(1:n2-1) = xf(n2+1:N); % thời gian âm → lên đầu\n        x(n2:N)   = xf(1:n2);   % t ≥ 0 → ra sau\n        t = (-n2+1)*dt : dt : (n2-1)*dt; % trục thời gian (N điểm)\n    end                         % kết thúc if\nend                             % kết thúc hàm IFourierTransform"};
+if (/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
+const tabs = document.querySelectorAll('#tabs button'), panes = document.querySelectorAll('.pane');
+function show(t){
+  tabs.forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
+  panes.forEach(p => p.hidden = p.dataset.t !== t);
+  try{ localStorage.setItem('thht_tab', t) }catch(e){}
+}
+tabs.forEach(b => b.onclick = () => { show(b.dataset.t); window.scrollTo(0, 0); });
+panes.forEach(p => {   // mục lục nhanh trong từng tab
+  const secs = p.querySelectorAll('section'); if (secs.length < 2) return;
+  const toc = document.createElement('div'); toc.className = 'toc';
+  secs.forEach(s => { const a = document.createElement('a'); a.href = '#' + s.id; a.textContent = s.querySelector('h3').dataset.short;
+    a.onclick = e => { e.preventDefault(); s.scrollIntoView({behavior: 'smooth'}); }; toc.appendChild(a); });
+  p.querySelector('h2').after(toc);
+});
+let t0 = 'b1'; try{ t0 = localStorage.getItem('thht_tab') || 'b1' }catch(e){}
+show(document.querySelector('.pane[data-t="' + t0 + '"]') ? t0 : 'b1');
+const toast = m => { const el = document.getElementById('toast'); el.textContent = m; el.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => el.classList.remove('on'), 1400); };
+document.querySelectorAll('.cp').forEach(b => b.onclick = async () => {
+  const s = RAW[b.dataset.s];
+  try{ await navigator.clipboard.writeText(s); toast('Đã copy ' + s.split('\n').length + ' dòng'); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = s; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); toast('Đã copy'); }catch(_){ toast('Không copy được'); } ta.remove(); }
+});
+document.querySelectorAll('.dl').forEach(b => b.onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([RAW[b.dataset.s]], {type: 'text/plain;charset=utf-8'}));
+  a.download = b.dataset.f; document.body.appendChild(a); a.click(); a.remove();
+});
+</script>
+</body></html>

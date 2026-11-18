@@ -484,5 +484,15 @@
    "https://datafiles.chinhphu.vn/cpp/files/vbpq/2008/07/72836_l13qh.doc"
   ],
   "n": 18199
+ },
+ "107-2023-qh15": {
+  "so": "107/2023/QH15",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=209231&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2023/12/107-qh15.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 23125
  }
 }

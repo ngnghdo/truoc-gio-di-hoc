@@ -34,5 +34,15 @@
   ],
   "ocr": true,
   "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ },
+ "88-2015-qh13": {
+  "so": "88/2015/QH13",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=183198&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2016/01/88.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 75485
  }
 }

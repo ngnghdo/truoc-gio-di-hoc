@@ -1,0 +1,25 @@
+{
+ "99-2025-tt-btc": {
+  "so": "99/2025/TT-BTC",
+  "ok": false,
+  "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "108-2025-qh15": {
+  "so": "108/2025/QH15",
+  "ok": false,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=218689&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/7/254-ndcp.signed.pdf"
+  ],
+  "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ },
+ "254-2026-nd-cp": {
+  "so": "254/2026/NĐ-CP",
+  "ok": false,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=218689&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/7/254-ndcp.signed.pdf"
+  ],
+  "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ }
+}

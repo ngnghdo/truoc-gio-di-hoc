@@ -274,5 +274,15 @@
   "so": "345/QĐ-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "05-2019-nd-cp": {
+  "so": "05/2019/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=196045&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2019/01/05.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 33481
  }
 }

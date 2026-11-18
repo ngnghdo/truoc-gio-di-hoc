@@ -654,5 +654,15 @@
   ],
   "ocr": true,
   "n": 116293
+ },
+ "399-2026-nd-cp": {
+  "so": "399/2026/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=220166&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/399_2026_nd-cp_02112026_6-signed.signed.pdf",
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/11/399_2026_nd-cp_02112026_7-signed.pdf"
+  ],
+  "n": 28397
  }
 }

@@ -97,5 +97,15 @@
    "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/01/luat48.pdf"
   ],
   "n": 44830
+ },
+ "181-2025-nd-cp": {
+  "so": "181/2025/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=214336&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/7/181nd.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 173394
  }
 }

@@ -12,5 +12,10 @@
   "so": "132/2026/NĐ-CP",
   "ok": false,
   "err": "Error: page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://vanban.chinhphu.vn/he-thong-van-ban?classid=1&m"
+ },
+ "99-2025-tt-btc": {
+  "so": "99/2025/TT-BTC",
+  "ok": false,
+  "err": "không tìm thấy trên vanban.chinhphu.vn"
  }
 }

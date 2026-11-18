@@ -127,5 +127,15 @@
   ],
   "ocr": true,
   "n": 47489
+ },
+ "320-2025-nd-cp": {
+  "so": "320/2025/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=216219&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/12/320-ndcp.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 181571
  }
 }

@@ -1,0 +1,22 @@
+name: Tải toàn văn văn bản
+on:
+  workflow_dispatch:
+    inputs:
+      only: { description: "slug cần tải (cách nhau dấu phẩy), để trống = tất cả", required: false, default: "" }
+      force: { description: "tải lại cả văn bản đã có (1/0)", required: false, default: "" }
+permissions: { contents: write }
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils pandoc catdoc >/dev/null
+      - run: npm i --no-save playwright@1.47.0 && npx playwright install --with-deps chromium
+      - run: node scripts/vb-fulltext.mjs
+        env: { ONLY: "${{ github.event.inputs.only }}", FORCE: "${{ github.event.inputs.force }}" }
+      - run: |
+          git config user.name "vb-bot"; git config user.email "actions@users.noreply.github.com"
+          git add vb && git commit -m "Toàn văn văn bản: cập nhật" && (git push || (git pull --rebase && git push)) || true

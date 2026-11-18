@@ -59,5 +59,15 @@
   "so": "58/2026/TT-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "152-2025-tt-btc": {
+  "so": "152/2025/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=216533&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/01/152-btc.pdf"
+  ],
+  "ocr": true,
+  "n": 20693
  }
 }

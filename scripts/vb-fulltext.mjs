@@ -50,8 +50,8 @@ for(const it of LIST){
         if(f.endsWith(".pdf")){ txt=execSync(`pdftotext -enc UTF-8 ${f} -`,{maxBuffer:1<<28}).toString();
           const pages=+((execSync(`pdfinfo ${f}`).toString().match(/Pages:\s+(\d+)/)||[])[1]||1);
           if(txt.replace(/\s/g,"").length < pages*300){ // PDF scan → OCR tiếng Việt
-            console.log("  OCR",pages,"trang"); execSync(`rm -rf /tmp/vbf/pg && mkdir -p /tmp/vbf/pg && pdftoppm -r 200 -gray -png ${f} /tmp/vbf/pg/p`);
-            execSync(`ls /tmp/vbf/pg/*.png | xargs -P 4 -I{} sh -c 'tesseract {} {} -l vie --psm 4 quiet'`,{maxBuffer:1<<26,timeout:3*3600*1000});
+            console.log("  OCR",pages,"trang"); execSync(`rm -rf /tmp/vbf/pg && mkdir -p /tmp/vbf/pg && pdftoppm -r 170 -gray -png ${f} /tmp/vbf/pg/p`);
+            execSync(`ls /tmp/vbf/pg/*.png | xargs -P 4 -I{} sh -c 'OMP_THREAD_LIMIT=1 tesseract {} {} -l vie --oem 1 --psm 4 quiet'`,{maxBuffer:1<<26,timeout:45*60*1000});
             const fs2=fs.readdirSync("/tmp/vbf/pg").filter(x=>x.endsWith(".txt")).sort((a,b)=>(+a.match(/(\d+)/)[1])-(+b.match(/(\d+)/)[1]));
             txt=fs2.map(x=>fs.readFileSync("/tmp/vbf/pg/"+x,"utf8")).join("\n\n"); rec.ocr=true; } }
         else if(f.endsWith(".docx")) txt=execSync(`pandoc -t plain --wrap=none ${f}`,{maxBuffer:1<<28}).toString();

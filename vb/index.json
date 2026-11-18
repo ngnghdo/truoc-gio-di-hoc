@@ -259,5 +259,15 @@
   "so": "15/2006/QĐ-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "90-2025-nd-cp": {
+  "so": "90/2025/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=213373&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/4/90-nd.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 4768
  }
 }

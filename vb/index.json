@@ -400,5 +400,15 @@
   ],
   "ocr": true,
   "n": 70547
+ },
+ "78-2021-tt-btc": {
+  "so": "78/2021/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=204200&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2021/09/78-btc.pdf"
+  ],
+  "ocr": true,
+  "n": 53211
  }
 }

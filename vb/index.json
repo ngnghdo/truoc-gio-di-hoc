@@ -370,5 +370,15 @@
   ],
   "ocr": true,
   "n": 499680
+ },
+ "38-2019-qh14": {
+  "so": "38/2019/QH14",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=197312&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2019/07/38.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 201136
  }
 }

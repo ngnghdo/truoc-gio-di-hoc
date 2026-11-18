@@ -25,9 +25,11 @@ async function findDoc(q){
   await pg.fill("#ctrl_191017_163_txtSearchKeyword",q);
   await Promise.all([pg.waitForLoadState("domcontentloaded").catch(()=>{}), pg.click("#ctrl_191017_163_btnSearch")]);
   await pg.waitForTimeout(2500);
-  const rows=await pg.$$eval("a[href*='docid=']",as=>as.map(a=>({h:a.href,t:(a.closest("tr")||a).textContent.replace(/\s+/g," ").trim()})));
+  const rows=await pg.$$eval("a[href*='docid=']",as=>as.map(a=>{ const tr=a.closest("tr"); const td=tr&&tr.querySelector("td"); return {h:a.href,s:(td||a).textContent.replace(/\s+/g," ").trim(),t:(tr||a).textContent.replace(/\s+/g," ").trim()}; }));
   const nq=norm(q);
-  return rows.find(r=>norm(r.t).includes(nq))||null;
+  const hit=rows.find(r=>norm(r.s)===nq)||rows.find(r=>norm(r.t).startsWith(nq))||rows.find(r=>norm(r.s).startsWith(nq));
+  if(!hit) console.log("  rows:",JSON.stringify(rows.slice(0,6).map(r=>r.s+" | "+r.t.slice(0,80))));
+  return hit||null;
 }
 for(const it of LIST){
   const id=slug(it.so); if(ONLY&&!ONLY.includes(id)) continue;
@@ -45,14 +47,20 @@ for(const it of LIST){
       const f="/tmp/vbf/x"+(u.match(/\.\w+$/)[0].toLowerCase());
       try{ execSync(`curl -sL --max-time 120 -o ${f} "${u}"`);
         let txt="";
-        if(f.endsWith(".pdf")) txt=execSync(`pdftotext -enc UTF-8 ${f} -`,{maxBuffer:1<<28}).toString();
+        if(f.endsWith(".pdf")){ txt=execSync(`pdftotext -enc UTF-8 ${f} -`,{maxBuffer:1<<28}).toString();
+          const pages=+((execSync(`pdfinfo ${f}`).toString().match(/Pages:\s+(\d+)/)||[])[1]||1);
+          if(txt.replace(/\s/g,"").length < pages*300){ // PDF scan → OCR tiếng Việt
+            execSync(`rm -rf /tmp/vbf/pg && mkdir -p /tmp/vbf/pg && pdftoppm -r 200 -gray -png ${f} /tmp/vbf/pg/p`);
+            execSync(`ls /tmp/vbf/pg/*.png | xargs -P 4 -I{} sh -c 'tesseract {} {} -l vie --psm 4 quiet'`,{maxBuffer:1<<26,timeout:3*3600*1000});
+            const fs2=fs.readdirSync("/tmp/vbf/pg").filter(x=>x.endsWith(".txt")).sort((a,b)=>(+a.match(/(\d+)/)[1])-(+b.match(/(\d+)/)[1]));
+            txt=fs2.map(x=>fs.readFileSync("/tmp/vbf/pg/"+x,"utf8")).join("\n\n"); rec.ocr=true; } }
         else if(f.endsWith(".docx")) txt=execSync(`pandoc -t plain --wrap=none ${f}`,{maxBuffer:1<<28}).toString();
         else txt=execSync(`catdoc -d utf-8 -w ${f}`,{maxBuffer:1<<28}).toString();
         if(txt.replace(/\s/g,"").length>200){ paras=paras.concat(paras.length?["———"]:[]).concat(reflow(txt)); if(/\.docx?$/i.test(u)) break; }
       }catch(e){ console.log("file err",u,String(e).slice(0,100)); }
     }
     if(!paras.length){ rec.err="tệp đính kèm là ảnh scan hoặc không đọc được"; throw 0; }
-    fs.writeFileSync(`vb/${id}.json`,JSON.stringify({so:it.so,src:rec.src,files:att,p:paras}));
+    fs.writeFileSync(`vb/${id}.json`,JSON.stringify({so:it.so,src:rec.src,files:att,ocr:!!rec.ocr,p:paras}));
     rec.ok=true; rec.n=paras.join("\n").length;
   }catch(e){ if(e) rec.err=rec.err||String(e).slice(0,150); }
   IDX[id]=rec; fs.writeFileSync("vb/index.json",JSON.stringify(IDX,null,1));

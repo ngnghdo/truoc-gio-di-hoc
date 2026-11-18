@@ -225,5 +225,15 @@
   "so": "24/2024/TT-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "88-2021-tt-btc": {
+  "so": "88/2021/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=204329&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2021/10/88-btc.pdf"
+  ],
+  "ocr": true,
+  "n": 36242
  }
 }

@@ -284,5 +284,15 @@
   ],
   "ocr": true,
   "n": 33481
+ },
+ "84-2016-nd-cp": {
+  "so": "84/2016/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=185562&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2016/07/84.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 18685
  }
 }

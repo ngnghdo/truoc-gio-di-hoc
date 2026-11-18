@@ -623,5 +623,15 @@
   ],
   "ocr": true,
   "n": 35180
+ },
+ "102-2021-nd-cp": {
+  "so": "102/2021/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=204477&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2021/11/102.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 54747
  }
 }

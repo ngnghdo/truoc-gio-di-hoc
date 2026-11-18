@@ -644,5 +644,15 @@
   ],
   "ocr": true,
   "n": 164312
+ },
+ "41-2018-nd-cp": {
+  "so": "41/2018/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=193189&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2018/03/41.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 116293
  }
 }

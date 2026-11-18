@@ -569,5 +569,14 @@
   ],
   "ocr": true,
   "n": 181066
+ },
+ "04-2007-qh12": {
+  "so": "04/2007/QH12",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=51258&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2007/12/52937_l4qh.doc"
+  ],
+  "n": 25637
  }
 }

@@ -7,5 +7,10 @@
    "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/6/46-btc.pdf"
   ],
   "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ },
+ "132-2026-nd-cp": {
+  "so": "132/2026/NĐ-CP",
+  "ok": false,
+  "err": "Error: page.goto: Target page, context or browser has been closed\nCall log:\n  - navigating to \"https://vanban.chinhphu.vn/he-thong-van-ban?classid=1&m"
  }
 }

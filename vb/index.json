@@ -269,5 +269,10 @@
   ],
   "ocr": true,
   "n": 4768
+ },
+ "345-qd-btc": {
+  "so": "345/QĐ-BTC",
+  "ok": false,
+  "err": "không tìm thấy trên vanban.chinhphu.vn"
  }
 }

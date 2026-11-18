@@ -425,5 +425,15 @@
   "so": "255/2026/NĐ-CP",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "20-2025-nd-cp": {
+  "so": "20/2025/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=212716&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/01/20-cp.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 54978
  }
 }

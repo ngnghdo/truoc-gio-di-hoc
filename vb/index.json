@@ -74,5 +74,14 @@
   "so": "48/2019/TT-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "67-2011-qh12": {
+  "so": "67/2011/QH12",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=100155&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2011/04/105909_l67qh.doc"
+  ],
+  "n": 66454
  }
 }

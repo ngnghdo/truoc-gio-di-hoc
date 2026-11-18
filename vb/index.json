@@ -524,5 +524,15 @@
   ],
   "ocr": true,
   "n": 17647
+ },
+ "253-2026-nd-cp": {
+  "so": "253/2026/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=218684&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/7/253m-ndcp.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 135724
  }
 }

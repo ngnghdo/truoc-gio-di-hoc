@@ -117,5 +117,15 @@
   ],
   "ocr": true,
   "n": 47717
+ },
+ "67-2025-qh15": {
+  "so": "67/2025/QH15",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=214607&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/7/67qh.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 47489
  }
 }

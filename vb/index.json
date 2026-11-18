@@ -544,5 +544,15 @@
   ],
   "ocr": true,
   "n": 29553
+ },
+ "110-2025-ubtvqh15": {
+  "so": "110/2025/UBTVQH15",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=215927&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/11/nq110cuaubtvqh.pdf"
+  ],
+  "ocr": true,
+  "n": 1588
  }
 }

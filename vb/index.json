@@ -235,5 +235,15 @@
   ],
   "ocr": true,
   "n": 36242
+ },
+ "132-2018-tt-btc": {
+  "so": "132/2018/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=196286&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2019/02/132-btc.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 141158
  }
 }

@@ -328,5 +328,16 @@
   ],
   "ocr": true,
   "n": 314614
+ },
+ "89-2026-tt-btc": {
+  "so": "89/2026/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=218974&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/7/89-btc.signed.pdf",
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/9/dinh-chinh-tt-89-2026-btc.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 1388121
  }
 }

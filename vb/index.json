@@ -199,5 +199,15 @@
   "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=212484&classid=1",
   "files": [],
   "err": "tệp đính kèm là ảnh scan hoặc không đọc được"
+ },
+ "luat-38-2019-qh14": {
+  "so": "Luật 38/2019/QH14",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=197312&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2019/07/38.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 201136
  }
 }

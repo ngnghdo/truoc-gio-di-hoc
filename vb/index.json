@@ -299,5 +299,14 @@
   "so": "70/2015/TT-BTC",
   "ok": false,
   "err": "không tìm thấy trên vanban.chinhphu.vn"
+ },
+ "17-2012-nd-cp": {
+  "so": "17/2012/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=156171&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2012/04/17nd.doc"
+  ],
+  "n": 27882
  }
 }

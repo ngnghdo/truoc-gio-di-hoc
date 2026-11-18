@@ -107,5 +107,15 @@
   ],
   "ocr": true,
   "n": 173394
+ },
+ "69-2025-tt-btc": {
+  "so": "69/2025/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=214417&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/7/69-btc.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 47717
  }
 }

@@ -504,5 +504,15 @@
   ],
   "ocr": true,
   "n": 106871
+ },
+ "78-2014-tt-btc": {
+  "so": "78/2014/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=174750&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2014/07/tt-78.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 189772
  }
 }

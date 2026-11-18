@@ -44,5 +44,15 @@
   ],
   "ocr": true,
   "n": 75485
+ },
+ "174-2016-nd-cp": {
+  "so": "174/2016/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=187897&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2017/01/174.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 57642
  }
 }

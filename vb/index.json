@@ -245,5 +245,14 @@
   ],
   "ocr": true,
   "n": 141158
+ },
+ "48-2006-qd-btc": {
+  "so": "48/2006/QĐ-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=16155&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2006/09/16594_qd48btc.doc"
+  ],
+  "n": 90444
  }
 }

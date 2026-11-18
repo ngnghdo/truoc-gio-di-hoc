@@ -588,5 +588,15 @@
   ],
   "ocr": true,
   "n": 8057
+ },
+ "68-2026-nd-cp": {
+  "so": "68/2026/NĐ-CP",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=217111&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/3/68-ndcp.signed.pdf"
+  ],
+  "ocr": true,
+  "n": 45301
  }
 }

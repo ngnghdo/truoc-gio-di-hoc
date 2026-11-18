@@ -69,5 +69,10 @@
   ],
   "ocr": true,
   "n": 20693
+ },
+ "48-2019-tt-btc": {
+  "so": "48/2019/TT-BTC",
+  "ok": false,
+  "err": "không tìm thấy trên vanban.chinhphu.vn"
  }
 }

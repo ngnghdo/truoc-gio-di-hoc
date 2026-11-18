@@ -465,5 +465,15 @@
   ],
   "ocr": true,
   "n": 1455
+ },
+ "219-2013-tt-btc": {
+  "so": "219/2013/TT-BTC",
+  "ok": true,
+  "src": "https://vanban.chinhphu.vn/?pageid=27160&docid=172570&classid=1",
+  "files": [
+   "https://datafiles.chinhphu.vn/cpp/files/vbpq/2014/02/tt-219.pdf"
+  ],
+  "ocr": true,
+  "n": 201013
  }
 }
